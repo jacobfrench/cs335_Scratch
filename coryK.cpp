@@ -11,7 +11,6 @@
 using namespace std;
 
 void submitScore() {
-  char postToWeb[] = "curl --data param1=5 http://cs.csubak.edu/~ckitchens/cs335/finalproject/index.php";
+  char postToWeb[] = "curl --data param1=1 http://cs.csubak.edu/~ckitchens/cs335/finalproject/index.php";
   system(postToWeb);
 }
-
