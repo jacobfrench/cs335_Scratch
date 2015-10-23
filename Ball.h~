@@ -8,7 +8,7 @@ private:
     float yPos;
 
 public:
-    void render(float k, float r, float h);
+    void render(int k, int r, int h);
     Ball();
     ~Ball();
 };
