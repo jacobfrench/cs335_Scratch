@@ -148,14 +148,14 @@ int main(void)
     ballXVel = 8.0f;
 
     //init paddle1
-    paddle1.setXPos(150.0f);
-    paddle1.setYPos(200.0f);
+    paddle1.setXPos(50.0f);
+    paddle1.setYPos((float)yres/2);
     paddle1.setHeight(120.0f);
     paddle1.setWidth(15.0f);
 
     //init paddle2
-    paddle2.setXPos(750.0f);
-    paddle2.setYPos(200.0f);
+    paddle2.setXPos((float)xres - 50.0f);
+    paddle2.setYPos((float)yres/2);
     paddle2.setHeight(120.0f);
     paddle2.setWidth(15.0f);
 
@@ -309,7 +309,7 @@ int check_keys(XEvent *e, Game *g){
         if (key == XK_Shift_L || key == XK_Shift_R)
             shift=0;
         if(key == XK_W)
-            std::cout << "w was released" << std::endl;
+            paddle1.setYVel(0.0f);
         return 0;
     }
 
@@ -326,6 +326,7 @@ int check_keys(XEvent *e, Game *g){
 
 
 
+    paddle1.setYPos(paddle1.getYPos());
     float paddleSpeed = 10.0f;
     if (shift){}
     switch(key) {
@@ -349,6 +350,8 @@ int check_keys(XEvent *e, Game *g){
             break;
 
     }
+
+
     return 0;
 
 
