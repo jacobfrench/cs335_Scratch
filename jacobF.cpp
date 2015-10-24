@@ -14,6 +14,7 @@ void Ball::render(float xPos, float yPos, float radius){
     float twicePi = 2.0f * 3.14159265358979f;
 
     glBegin(GL_TRIANGLE_FAN);
+    glColor3f(0.0f,1.0f,10.0f);
         glVertex2f(xPos, yPos); // center of circle
         for(i = 0; i <= triangleAmount;i++) {
             glVertex2f(
