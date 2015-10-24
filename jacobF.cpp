@@ -42,9 +42,11 @@
 #include "ppm.h"
 #include "log.h"
 #include "Ball.h"
-extern "C" {
-    #include "fonts.h"
-}
+#include "fonts.h"
+
+#include "player.cpp"
+#include "keithH.cpp"
+
 
 //defined types
 typedef float Flt;
@@ -181,6 +183,13 @@ void render(Game *game);
 void set_mouse_position(int x, int y);
 void show_mouse_cursor(const int onoff);
 
+//KEITHS ADDITION:
+Hud *hud;
+Game game;
+Player p1;
+Player p2;
+time_t timeBegin;
+//-----------------
 
 
 
@@ -197,18 +206,24 @@ int main(void)
     clock_gettime(CLOCK_REALTIME, &timeStart);
     set_mouse_position(100,100);
 
+    //KEITHS ADDITION:
+    hud = new Hud(xres ,yres);
+    timeBegin = time(NULL);
+    //-----------------------------
 
     //init ball variables
     ballXPos = xres/2;
     ballYPos = yres/2;
 
     int done=0;
+
     while (!done) {
+        if (timeBegin + 2.0 <= time(NULL)){
         while (XPending(dpy)) {
             XEvent e;
             XNextEvent(dpy, &e);
             check_resize(&e);
-            check_mouse(&e, &game);
+            //check_mouse(&e, &game);
             done = check_keys(&e, &game);
         }
         clock_gettime(CLOCK_REALTIME, &timeCurrent);
@@ -218,6 +233,7 @@ int main(void)
         while (physicsCountdown >= physicsRate) {
             physics(&game);
             physicsCountdown -= physicsRate;
+        }
         }
         render(&game);
         glXSwapBuffers(dpy, win);
@@ -405,10 +421,10 @@ void show_mouse_cursor(const int onoff)
     //(thus do only use ONCE XDefineCursor and then XUndefineCursor):
 }
 
-void check_mouse(XEvent *e, Game *g)
-{
+//void check_mouse(XEvent *e, Game *g)
+//{
 
-}
+//}
 
 int check_keys(XEvent *e, Game *g){
     //keyboard input?
@@ -741,16 +757,24 @@ void physics(Game *g)
 }
 
 void render(Game *g)
-{
-    Rect r;
+{    
+
+
     glClear(GL_COLOR_BUFFER_BIT);
-    //
-    r.bot = yres - 20;
-    r.left = 10;
-    r.center = 0;
-    ggprint8b(&r, 16, 0x00ff0000, "cs335 - Asteroids");
-    ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g->nbullets);
-    ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g->nasteroids);
+
+    //KEITHS ADDITIONS:------------------
+    if (timeBegin + 2.0 > time(NULL)){
+        //PASS showWelcome the high score:
+        hud->showWelcome(0);
+        hud->is_show_welcome = true;
+        return;
+    }
+    hud->is_show_welcome = false;
+    hud->showScore(p1.getScore(), p2.getScore());
+    hud->showCourtYard();
+    //------------------------------------
+
+
     //-------------------------------------------------------------------------
     //Draw the ship
     glColor3fv(g->ship.color);
