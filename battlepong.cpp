@@ -99,18 +99,12 @@ float ballXVel;
 float ballYVel;
 
 Paddle paddle1;
-float paddle1XPos;
-float paddle1YPos;
 float paddle1YVel;
-float paddle1Width;
-float paddle1Height;
+
 
 Paddle paddle2;
-float paddle2XPos;
-float paddle2YPos;
 float paddle2YVel;
-float paddle2Width;
-float paddle2Height;
+
 
 struct Game {
     bool mouseThrustOn;
@@ -134,7 +128,6 @@ void physics(Game *game);
 void render(Game *game);
 
 
-
 int main(void)
 {
 
@@ -154,11 +147,17 @@ int main(void)
     ballYVel = 8.0f;
     ballXVel = 8.0f;
 
-    //init paddle1 variables
-    paddle1XPos = 150;
-    paddle1YPos = 200;
-    paddle1Height = 120;
-    paddle1Width = 15;
+    //init paddle1
+    paddle1.setXPos(150.0f);
+    paddle1.setYPos(200.0f);
+    paddle1.setHeight(120.0f);
+    paddle1.setWidth(15.0f);
+
+    //init paddle2
+    paddle2.setXPos(750.0f);
+    paddle2.setYPos(200.0f);
+    paddle2.setHeight(120.0f);
+    paddle2.setWidth(15.0f);
 
     int done=0;
     while (!done) {
@@ -326,7 +325,6 @@ int check_keys(XEvent *e, Game *g){
     }
 
 
-    paddle1YVel = 0.0f;
 
     float paddleSpeed = 10.0f;
     if (shift){}
@@ -343,7 +341,11 @@ int check_keys(XEvent *e, Game *g){
             break;
         case XK_d:
             break;
-        case XK_minus:
+        case XK_o:
+        paddle2YVel = paddleSpeed;
+            break;
+        case XK_l:
+        paddle2YVel = -paddleSpeed;
             break;
 
     }
@@ -374,13 +376,11 @@ void physics(Game *g)
         ballXVel = ballSpeed;
     }
 
+
     //paddle collision
-    if(paddle1YPos + paddle1Height >= yres && paddle1YVel > 0){
-        paddle1YPos = yres - paddle1Height;
-    }
-    else if(paddle1YPos <= 0 && paddle1YVel < 0){
-        paddle1YPos = 0;
-    }
+    paddle1.checkCollision(xres, yres);
+    paddle2.checkCollision(xres, yres);
+
 
 
     //ball movement
@@ -388,10 +388,10 @@ void physics(Game *g)
     ballXPos += ballXVel;
 
     //paddle1 movement
-    paddle1YPos += paddle1YVel;
+    paddle1.setYVel(paddle1YVel);
 
     //paddle2 movement
-    paddle2YPos += paddle1YVel;
+    paddle2.setYVel(paddle2YVel);
 
 
 }
@@ -407,7 +407,8 @@ void render(Game *g)
     ggprint8b(&r, 16, 0x00ff0000, "cs335 - Pong!");
 
     //Draw the paddle
-    paddle1.render(paddle1XPos, paddle1YPos, paddle1Height, paddle1Width);
+    paddle1.render();
+    paddle2.render();
 
     //Draw the ball
     ball.render(ballXPos, ballYPos, 5.0f);
