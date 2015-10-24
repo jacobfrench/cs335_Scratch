@@ -42,6 +42,7 @@
 #include "ppm.h"
 #include "log.h"
 #include "Ball.h"
+#include "coryK.h"
 extern "C" {
     #include "fonts.h"
 }
