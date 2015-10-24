@@ -378,17 +378,19 @@ void physics(Game *g)
 
 
     //ball physics & collision
-    float ballSpeed = 10.0f;
-    if(ballYPos >= yres && ballYVel > 0){
+    float ballSpeed = 7.0f;
+    int offset = 40;
+     //3 *offset is unknown drawing error:
+    if(ballYPos >= yres + 3*offset && ballYVel > 0){
         ballYVel = -ballSpeed;
     }
-    else if(ballYPos <= 0 && ballYVel < 0){
+    else if(ballYPos <= 0 + offset && ballYVel < 0){
         ballYVel = ballSpeed;
     }
-    else if(ballXPos >= xres && ballXVel > 0){
+    else if(ballXPos >= xres - offset && ballXVel > 0){
         ballXVel = -ballSpeed;
     }
-    else if(ballXPos <= 0 && ballXVel < 0){
+    else if(ballXPos <= 0 + offset && ballXVel < 0){
         ballXVel = ballSpeed;
     }
 
