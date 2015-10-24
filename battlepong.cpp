@@ -43,8 +43,6 @@
 #include "log.h"
 #include "Ball.h"
 #include "coryK.h"
-#include "brianC.h"
-#include "fmod.h"
 extern "C" {
     #include "fonts.h"
 }
@@ -138,9 +136,6 @@ void init(Game *g);
 void init_sounds(void);
 void physics(Game *game);
 void render(Game *game);
-void init_sounds(void);
-void play_music(int a);
-
 
 
 
@@ -152,8 +147,6 @@ int main(void)
     init_opengl();
     Game game;
     init(&game);
-    init_sounds();
-    play_music();
     srand(time(NULL));
     clock_gettime(CLOCK_REALTIME, &timePause);
     clock_gettime(CLOCK_REALTIME, &timeStart);
