@@ -393,14 +393,8 @@ void physics(Game *g)
     else if(ballXPos <= 0 + offset && ballXVel < 0){
         ballXVel = ballSpeed;
     }
-
-    if (ballXPos <= g->ship.pos[0] && ballXVel < 0 && ballYPos >= g->ship.pos[1] && ballYPos <= (g->ship.pos[1] + 100.0)){
-        ballXVel = ballSpeed;
-    }
-    else if (ballXPos >= g->ship.pos[0] && ballXVel > 0 && ballYPos >= g->ship.pos[1] && ballYPos <= (g->ship.pos[1] + 100.0)){
-        ballXVel = -ballSpeed;
-    }
-
+    
+    if (g)
 
 
     ballYPos += ballYVel;
