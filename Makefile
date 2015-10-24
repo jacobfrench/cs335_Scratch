@@ -1,10 +1,11 @@
 CFLAGS = -I ./include
-#LFLAGS = -lrt -lX11 -lGLU -lGL -pthread -lm #-lXrandr
-LFLAGS =  -lX11 -lGLU -lglut -lGL -I/usr/X11R6/include -L/usr/X11R6/lib -pthread -lm
+##LIB    = ./libggfonts.so
+LFLAGS = -lrt -lX11 -lGLU -lGL -pthread -lm #-lXrandr
 
-all:	jacobF
+all: battlepong
 
-jacobF:	jacobF.cpp ppm.c log.c mytime.cpp
-	g++ $(CFLAGS) jacobF.cpp log.c mytime.cpp ball.cpp fonts.o fonttex.o -Wall -Wextra $(LFLAGS) -ojacobF
+battlepong: battlepong.cpp ppm.c log.c mytime.cpp
+	g++ $(CFLAGS) battlepong.cpp log.c mytime.cpp jacobF.cpp fonts.o fonttex.o -Wall -Wextra $(LFLAGS) -obattlepong
 clean:
-	rm -f jacobF
+	rm -f battlepong
+
