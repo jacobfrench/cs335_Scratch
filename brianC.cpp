@@ -1,67 +1,52 @@
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/stat.h>
+//#include "structures.h"
+#include <cstdio>
+#include <FMOD/fmod.h>
+#include <FMOD/wincompat.h>
+#include <X11/Xlib.h>
+#include <X11/keysym.h>
+#include "fmod.h"
+#include "ppm.h"
 #include "brianC.h"
-#include </usr/include/AL/alut.h> //not sure where to find this 
 
-int main()
+extern Ppmimage *bgImg;
+extern GLuint bgTxtr;
+void init_sounds(void)
 {
-    //Get started right here.
-    alutInit(0, NULL);
-    if (alGetError() != AL_NO_ERROR) {
-        printf("ERROR: alutInit()\n");
-        return 0;
+    if(fmod_init()) {
+    printf("ERROR");
+    return;
     }
-    //Clear error state.
-    alGetError();
-    //
-    //Setup the listener.
-    //Forward and up vectors are used.
-    float vec[6] = {0.0f,0.0f,1.0f, 0.0f,1.0f,0.0f};
-    alListener3f(AL_POSITION, 0.0f, 0.0f, 0.0f);
-    alListenerfv(AL_ORIENTATION, vec);
-    alListenerf(AL_GAIN, 1.0f);
-    //
-    //Buffer holds the sound information.
-    ALuint alBuffer;
-    alBuffer = alutCreateBufferFromFile("./pong.wav");
-    //
-    //Source refers to the sound.
-    ALuint alSource;
-    //Generate a source, and store it in a buffer.
-    alGenSources(1, &alSource);
-    alSourcei(alSource, AL_BUFFER, alBuffer);
-    //Set volume and pitch to normal, no looping of sound.
-    alSourcef(alSource, AL_GAIN, 1.0f);
-    alSourcef(alSource, AL_PITCH, 1.0f);
-    alSourcei(alSource, AL_LOOPING, AL_FALSE);
-    if (alGetError() != AL_NO_ERROR) {
-        printf("ERROR: setting source\n");
-        return 0;
+    if(fmod_createsound((char *)"./sounds/pong.wav", 0)) {
+    printf("ERROR");
+    return;
     }
-    for (int i=0; i<4; i++) {
-        alSourcePlay(alSource);
-        usleep(250000);
+    if(fmod_createsound((char *)"./sounds/gamemusic.wav", 1)) {
+    printf("ERROR");
+    return;
     }
-    //Cleanup.
-    //First delete the source.
-    alDeleteSources(1, &alSource);
-    //Delete the buffer.
-    alDeleteBuffers(1, &alBuffer);
-    //Close out OpenAL itself.
-    //Get active context.
-    ALCcontext *Context = alcGetCurrentContext();
-    //Get device for active context.
-    ALCdevice *Device = alcGetContextsDevice(Context);
-    //Disable context.
-    alcMakeContextCurrent(NULL);
-    //Release context(s).
-    alcDestroyContext(Context);
-    //Close device.
-    alcCloseDevice(Device);
-    return 0;
+    fmod_setmode(0,FMOD_LOOP_NORMAL);
+    fmod_setmode(1,FMOD_LOOP_NORMAL);
+}
+  
+void play_music(int a) {
+    fmod_playsound(a);
+}
+void init(&game)(int b){
+    fmod_playmusic(b);
+}   
+       
+int done()
+{
+       if(done == 3){
+        play_music(0);
+        init(&game);
+        break;
+    }
+    glXSwapBuffers(dpy, win);
 }
 
+
+
+return 0;
+}
+         
