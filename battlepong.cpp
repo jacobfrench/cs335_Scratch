@@ -87,6 +87,10 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 
 int xres=1250, yres=900;
 
+
+Ppmimage *bgImage = NULL;
+GLuint bgTexture;
+
 struct Ship {
     Vec dir;
     Vec pos;
@@ -265,6 +269,20 @@ void init_opengl(void)
     //Do this to allow fonts
     glEnable(GL_TEXTURE_2D);
     initialize_fonts();
+    
+    //Load image
+    bgImage = ppm6GetImage("./images/pipboy.ppm");
+    //Create OpenGL texture element
+    glGenTextures(1, &bgTexture);
+    
+	glBindTexture(GL_TEXTURE_2D, bgTexture);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3,
+							bgImage->width, bgImage->height,
+							0, GL_RGB, GL_UNSIGNED_BYTE, bgImage->data);
+    
+    
 }
 
 void check_resize(XEvent *e)
@@ -387,12 +405,23 @@ void physics(Game *g)
 void render(Game *g)
 {
     Rect r;
+
+    //Draw the background
     glClear(GL_COLOR_BUFFER_BIT);
-    //
+	
+	glColor3f(1.0, 1.0, 1.0);
+	glBindTexture(GL_TEXTURE_2D, bgTexture);
+	glBegin(GL_QUADS);
+		glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+		glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
+		glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
+		glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
+	glEnd();
+    
     r.bot = yres - 20;
     r.left = 10;
     r.center = 0;
-    ggprint8b(&r, 16, 0x00ff0000, "cs335 - Asteroids");
+    ggprint8b(&r, 16, 0x00ff0000, "BattlePong");
     //-------------------------------------------------------------------------
     //Draw the ship
     glColor3fv(g->ship.color);
