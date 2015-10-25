@@ -6,9 +6,29 @@ class Ball{
 private:
     float xPos;
     float yPos;
+	float yVel;
+	float xVel;
+	float radius;
 
 public:
-    void render(int k, int r, int h);
+    void render();
+	void setXVel(float xVel);
+	float getXVel();
+
+	void setYVel(float yVel);
+	float getYVel();
+
+	void setXPos(float xPos);
+	float getXPos();
+
+	void setYPos(float yPos);
+	float getYPos();
+
+	void setRaius(float radius);
+	float getRadius();
+
+	void checkCollision(float xres, float yres);
+
     Ball();
     ~Ball();
 };

@@ -23,7 +23,7 @@ public:
     float getHeight();
     void setYVel(float yVel);
     float getYVel();
-    void checkCollision(int yres);
+    void checkCollision(int xres, int yres);
     Paddle();
     ~Paddle();
 };

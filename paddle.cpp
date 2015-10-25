@@ -62,7 +62,7 @@ float Paddle::getWidth(){
     return width;
 }
 
-void Paddle::checkCollision(int xres, int yres){
+void Paddle::checkCollision(int yres){
     if(yPos + height >= yres && yVel > 0){
         yPos = yres - height;
     }

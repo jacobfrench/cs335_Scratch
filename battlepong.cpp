@@ -4,28 +4,6 @@
 //author:  Gordon Griesel
 //date:    2014
 //mod spring 2015: added constructors
-//
-//This program is a game starting point for 335
-//
-// Possible requirements:
-// ----------------------
-// welcome screen
-// menu
-// multiple simultaneous key-press
-// show exhaust for thrusting
-// move the asteroids
-// collision detection for bullet on asteroid
-// collision detection for asteroid on ship
-// control of bullet launch point
-// life span for each bullet
-// cleanup the bullets that miss a target
-// split asteroids into pieces when blasted
-// random generation of new asteroids
-// score keeping
-// levels of difficulty
-// sound
-// use of textures
-//
 
 #include <iostream>
 #include <cstdlib>
@@ -87,8 +65,8 @@ extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
 //-----------------------------------------------------------------------------
 
+//screen width and height
 int xres=1250, yres=900;
-
 
 
 //temporary instance variables
@@ -142,10 +120,13 @@ int main(void)
 
 
     //init ball variables
-    ballXPos = xres/2;
-    ballYPos = yres/2;
+    ball.setXPos(xres/2);
+    ball.setYPos(yres/2);
+    ball.setRadius(15.0f);
     ballYVel = 8.0f;
     ballXVel = 8.0f;
+    ball.setYVel(ballXVel);
+    ball.setXVel(ballYVel);
 
     //init paddle1
     paddle1.setXPos(50.0f);
@@ -324,9 +305,6 @@ int check_keys(XEvent *e, Game *g){
         return 0;
     }
 
-
-
-    paddle1.setYPos(paddle1.getYPos());
     float paddleSpeed = 10.0f;
     if (shift){}
     switch(key) {
@@ -351,44 +329,21 @@ int check_keys(XEvent *e, Game *g){
 
     }
 
-
     return 0;
-
-
 
 }
 
 void physics(Game *g)
 {
 
-
-
-
-    //ball physics & collision
-    float ballSpeed = 10.0f;
-    if(ballYPos >= yres && ballYVel > 0){
-        ballYVel = -ballSpeed;
-    }
-    else if(ballYPos <= 0 && ballYVel < 0){
-        ballYVel = ballSpeed;
-    }
-    else if(ballXPos >= xres && ballXVel > 0){
-        ballXVel = -ballSpeed;
-    }
-    else if(ballXPos <= 0 && ballXVel < 0){
-        ballXVel = ballSpeed;
-    }
-
+    //ball collision
+    ball.setYVel(ball.getYVel());
+    ball.setXVel(ball.getXVel());
+    ball.checkCollision(xres, yres);
 
     //paddle collision
-    paddle1.checkCollision(xres, yres);
-    paddle2.checkCollision(xres, yres);
-
-
-
-    //ball movement
-    ballYPos += ballYVel;
-    ballXPos += ballXVel;
+    paddle1.checkCollision(yres);
+    paddle2.checkCollision(yres);
 
     //paddle1 movement
     paddle1.setYVel(paddle1YVel);
@@ -401,12 +356,13 @@ void physics(Game *g)
 
 void render(Game *g)
 {
-    //draw text
     Rect r;
     glClear(GL_COLOR_BUFFER_BIT);
     r.bot = yres - 20;
     r.left = 10;
     r.center = 0;
+
+    //drawtext
     ggprint8b(&r, 16, 0x00ff0000, "cs335 - Pong!");
 
     //Draw the paddle
@@ -414,8 +370,6 @@ void render(Game *g)
     paddle2.render();
 
     //Draw the ball
-    ball.render(ballXPos, ballYPos, 5.0f);
-
-    //---------------------------------------------------------------------
+    ball.render();
 
 }
