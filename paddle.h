@@ -4,6 +4,7 @@
 #include <cmath>
 #include <GL/glx.h>
 #include "Ball.h"
+#include <stdlib.h>
 
 
 class Paddle{

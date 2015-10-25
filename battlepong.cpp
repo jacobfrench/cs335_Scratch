@@ -285,8 +285,8 @@ int check_keys(XEvent *e, Game *g){
         keys[key]=0;
         if (key == XK_Shift_L || key == XK_Shift_R)
             shift=0;
-        if(key == XK_W)
-            paddle1.setYVel(0.0f);
+        if(key == XK_w)
+            std::cout << "w was released" << std::endl;
         return 0;
     }
 

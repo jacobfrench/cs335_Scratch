@@ -4,6 +4,7 @@
 #include <cmath>
 #include <GL/glx.h>
 #include "Ball.h"
+#include <stdlib>
 
 
 class Paddle{
@@ -27,7 +28,7 @@ public:
     float getHeight();
     void setYVel(float yVel);
     float getYVel();
-    void checkCollision(int yres, Ball ball);
+    void checkCollision(int yres, Ball &ball);
     Paddle();
     ~Paddle();
 };
