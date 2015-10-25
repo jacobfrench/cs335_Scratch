@@ -4,9 +4,10 @@
  * that reads through submitted scores and displays high scores
  *
  * */
+
 #include <iostream>
 #include <stdlib.h>
-
+#include "coryK.h"
 using namespace std;
 
 void submitScore() {

@@ -4,28 +4,6 @@
 //author:  Gordon Griesel
 //date:    2014
 //mod spring 2015: added constructors
-//
-//This program is a game starting point for 335
-//
-// Possible requirements:
-// ----------------------
-// welcome screen
-// menu
-// multiple simultaneous key-press
-// show exhaust for thrusting
-// move the asteroids
-// collision detection for bullet on asteroid
-// collision detection for asteroid on ship
-// control of bullet launch point
-// life span for each bullet
-// cleanup the bullets that miss a target
-// split asteroids into pieces when blasted
-// random generation of new asteroids
-// score keeping
-// levels of difficulty
-// sound
-// use of textures
-//
 
 #include <iostream>
 #include <cstdlib>
@@ -42,6 +20,8 @@
 #include "ppm.h"
 #include "log.h"
 #include "Ball.h"
+#include "coryK.h"
+#include "paddle.h"
 extern "C" {
     #include "fonts.h"
 }
@@ -85,47 +65,31 @@ extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
 //-----------------------------------------------------------------------------
 
+//screen width and height
 int xres=1250, yres=900;
 
-
-Ppmimage *bgImage = NULL;
-GLuint bgTexture;
-
-struct Ship {
-    Vec dir;
-    Vec pos;
-    Vec vel;
-    float angle;
-    float color[3];
-    Ship() {
-        VecZero(dir);
-        pos[0] = (Flt)(xres/3);
-        pos[1] = (Flt)(yres/2);
-        pos[2] = 0.0f;
-        VecZero(vel);
-        angle = 0.0;
-        color[0] = 2.0;
-        color[1] = 1.0;
-        color[2] = 1.0;
-    }
-};
-
-
-//temporary instance variables
+//instance variables
 Ball ball;
 float ballXPos;
 float ballYPos;
 float ballXVel;
 float ballYVel;
 
+Paddle paddle1;
+float paddle1YVel;
+
+Paddle paddle2;
+float paddle2YVel;
+
 struct Game {
-    Ship ship;
     bool mouseThrustOn;
     Game() {
         mouseThrustOn = false;
     }
 };
 
+Ppmimage *bgImage = NULL;
+GLuint bgTexture;
 
 int keys[65536];
 
@@ -141,7 +105,6 @@ void physics(Game *game);
 void render(Game *game);
 
 
-
 int main(void)
 {
 
@@ -154,13 +117,26 @@ int main(void)
     clock_gettime(CLOCK_REALTIME, &timePause);
     clock_gettime(CLOCK_REALTIME, &timeStart);
 
-
     //init ball variables
-    ballXPos = xres/2;
-    ballYPos = yres/2;
+    ball.setXPos(xres/2);
+    ball.setYPos(yres/2);
+    ball.setRadius(15.0f);
     ballYVel = 8.0f;
     ballXVel = 8.0f;
+    ball.setYVel(ballXVel);
+    ball.setXVel(ballYVel);
 
+    //init paddle1
+    paddle1.setXPos(50.0f);
+    paddle1.setYPos((float)yres/2);
+    paddle1.setHeight(120.0f);
+    paddle1.setWidth(15.0f);
+
+    //init paddle2
+    paddle2.setXPos((float)xres - 50.0f);
+    paddle2.setYPos((float)yres/2);
+    paddle2.setHeight(120.0f);
+    paddle2.setWidth(15.0f);
 
     int done=0;
     while (!done) {
@@ -325,9 +301,8 @@ int check_keys(XEvent *e, Game *g){
         keys[key]=0;
         if (key == XK_Shift_L || key == XK_Shift_R)
             shift=0;
-        if(key == XK_W)
-            g->ship.vel[1] = 0;
-            std::cout << "w was released" << std::endl;
+        if(key == XK_w)
+
         return 0;
     }
 
@@ -342,32 +317,30 @@ int check_keys(XEvent *e, Game *g){
         return 0;
     }
 
-    g->ship.vel[1] = 0.0f;
-    g->ship.vel[0] = 0.0f;
-
-    float shipSpeed = 10.0f;
+    float paddleSpeed = 10.0f;
     if (shift){}
     switch(key) {
         case XK_Escape:
             return 1;
         case XK_w:
-        std::cout << "w was pressed" << std::endl;
-        g->ship.vel[1] = shipSpeed;
+        paddle1YVel = paddleSpeed;
             break;
         case XK_s:
-        std::cout << "s was pressed" << std::endl;
-        g->ship.vel[1] = -shipSpeed;
+        paddle1YVel = -paddleSpeed;
             break;
         case XK_a:
-        g->ship.vel[0] = -shipSpeed;
             break;
         case XK_d:
-        g->ship.vel[0] = shipSpeed;
             break;
-        case XK_minus:
+        case XK_o:
+        paddle2YVel = paddleSpeed;
+            break;
+        case XK_l:
+        paddle2YVel = -paddleSpeed;
             break;
 
     }
+
     return 0;
 
 }
@@ -375,29 +348,24 @@ int check_keys(XEvent *e, Game *g){
 void physics(Game *g)
 {
 
-    //update paddle positions
-    g->ship.pos[0] += g->ship.vel[0];
-    g->ship.pos[1] += g->ship.vel[1];
+    //ball collision
+    ball.setYVel(ball.getYVel());
+    ball.setXVel(ball.getXVel());
+    ball.checkCollision(xres, yres);
 
+    //paddle collision
+    paddle1.checkCollision(yres, ball);
+    paddle2.checkCollision(yres, ball);
 
-    //ball physics & collision
-    float ballSpeed = 10.0f;
-    if(ballYPos >= yres && ballYVel > 0){
-        ballYVel = -ballSpeed;
-    }
-    else if(ballYPos <= 0 && ballYVel < 0){
-        ballYVel = ballSpeed;
-    }
-    else if(ballXPos >= xres && ballXVel > 0){
-        ballXVel = -ballSpeed;
-    }
-    else if(ballXPos <= 0 && ballXVel < 0){
-        ballXVel = ballSpeed;
-    }
+    //paddle1 movement
+    paddle1.setYVel(paddle1YVel);
 
+    //paddle2 movement
+    paddle2.setYVel(paddle2YVel);
 
-    ballYPos += ballYVel;
-    ballXPos += ballXVel;
+    //temporary. delete this later.
+    std::cout << "player1: " << ball.getPlayer1Score() << " player2: " << ball.getPlayer2Score() << std::endl;
+
 
 
 }
@@ -422,44 +390,12 @@ void render(Game *g)
     r.left = 10;
     r.center = 0;
     ggprint8b(&r, 16, 0x00ff0000, "BattlePong");
-    //-------------------------------------------------------------------------
-    //Draw the ship
-    glColor3fv(g->ship.color);
-    glPushMatrix();
-    glTranslatef(g->ship.pos[0], g->ship.pos[1], g->ship.pos[2]);
-    glRotatef(g->ship.angle, 0.0f, 0.0f, 1.0f);
-    glRectf(0.0f, 0.0f, 10.0f, 100.0f);
-    glEnd();
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glBegin(GL_POINTS);
-    glVertex2f(0.0f, 0.0f);
-    glEnd();
-    glPopMatrix();
-    if (keys[XK_Up] || g->mouseThrustOn) {
-        int i;
-        //draw thrust
-        Flt rad = ((g->ship.angle+90.0) / 360.0f) * PI * 2.0;
-        //convert angle to a vector
-        Flt xdir = cos(rad);
-        Flt ydir = sin(rad);
-        Flt xs,ys,xe,ye,r;
-        glBegin(GL_LINES);
-        for (i=0; i<16; i++) {
-            xs = -xdir * 11.0f + rnd() * 4.0 - 2.0;
-            ys = -ydir * 11.0f + rnd() * 4.0 - 2.0;
-            r = rnd()*40.0+40.0;
-            xe = -xdir * r + rnd() * 18.0 - 9.0;
-            ye = -ydir * r + rnd() * 18.0 - 9.0;
-            glColor3f(rnd()*.3+.7, rnd()*.3+.7, 0);
-            glVertex2f(g->ship.pos[0]+xs,g->ship.pos[1]+ys);
-            glVertex2f(g->ship.pos[0]+xe,g->ship.pos[1]+ye);
-        }
-        glEnd();
-    }
-    //--------------------------------------------------------------------
-    //Draw the ball
-    ball.render(ballXPos, ballYPos, 5.0f);
 
-    //---------------------------------------------------------------------
+    //Draw the paddle
+    paddle1.render();
+    paddle2.render();
+
+    //Draw the ball
+    ball.render();
 
 }
