@@ -24,7 +24,7 @@ public:
 	void setYPos(float yPos);
 	float getYPos();
 
-	void setRaius(float radius);
+	void setRadius(float radius);
 	float getRadius();
 
 	void checkCollision(float xres, float yres);

@@ -1,5 +1,10 @@
+#ifndef PADDLE_H
+#define PADDLE_H
+
 #include <cmath>
 #include <GL/glx.h>
+#include "Ball.h"
+
  
 
 class Paddle{
@@ -23,9 +28,10 @@ public:
     float getHeight();
     void setYVel(float yVel);
     float getYVel();
-    void checkCollision(int xres, int yres);
+    void checkCollision(int yres);
     Paddle();
     ~Paddle();
 };
 
+#endif // PADDLE_H
 

@@ -1,5 +1,5 @@
 #include "Ball.h"
-#include "paddle.h"
+
 Ball::Ball(){
 
 }
@@ -24,7 +24,7 @@ void Ball::render(){
                 yPos + (radius * sin(i * twicePi / triangleAmount))
             );
         }
-    glTranslatef(xPos, yPos, 0);
+    //glTranslatef(xPos, yPos, 0);
     glEnd();
 }
 
@@ -32,17 +32,17 @@ void Ball::checkCollision(float xres, float yres){
     float ballSpeed = 10.0f;
 
     //check collision with screen edges
-    if(this->yPos >= yres && this->yVel > 0){
-        this->yVel = -ballSpeed;
+    if(yPos >= yres && yVel > 0){
+        yVel = -ballSpeed;
     }
     else if(yPos <= 0 && yVel < 0){
-        this->yVel = ballSpeed;
+        yVel = ballSpeed;
     }
     else if(xPos >= xres && xVel > 0){
-        this->xVel = -ballSpeed;
+        xVel = -ballSpeed;
     }
     else if(xPos <= 0 && xVel < 0){
-        this->xVel = ballSpeed;
+        xVel = ballSpeed;
     }
 
     //check collision with paddles

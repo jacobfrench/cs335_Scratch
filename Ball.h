@@ -1,3 +1,6 @@
+#ifndef BALL_H
+#define BALL_H
+
 #include <cmath>
 #include <GL/glx.h>
 
@@ -32,5 +35,5 @@ public:
     Ball();
     ~Ball();
 };
-
+#endif // BALL_H
 

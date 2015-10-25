@@ -68,8 +68,7 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 //screen width and height
 int xres=1250, yres=900;
 
-
-//temporary instance variables
+//instance variables
 Ball ball;
 float ballXPos;
 float ballYPos;
@@ -79,10 +78,8 @@ float ballYVel;
 Paddle paddle1;
 float paddle1YVel;
 
-
 Paddle paddle2;
 float paddle2YVel;
-
 
 struct Game {
     bool mouseThrustOn;
@@ -117,7 +114,6 @@ int main(void)
     srand(time(NULL));
     clock_gettime(CLOCK_REALTIME, &timePause);
     clock_gettime(CLOCK_REALTIME, &timeStart);
-
 
     //init ball variables
     ball.setXPos(xres/2);
@@ -342,8 +338,8 @@ void physics(Game *g)
     ball.checkCollision(xres, yres);
 
     //paddle collision
-    paddle1.checkCollision(yres);
-    paddle2.checkCollision(yres);
+    paddle1.checkCollision(yres, ball);
+    paddle2.checkCollision(yres, ball);
 
     //paddle1 movement
     paddle1.setYVel(paddle1YVel);
