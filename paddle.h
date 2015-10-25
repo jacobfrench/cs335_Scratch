@@ -15,6 +15,7 @@ private:
 	float width;
 	float height;
     float yVel;
+	
 
 public:
     void render();

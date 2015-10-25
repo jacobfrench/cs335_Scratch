@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <GL/glx.h>
+#include <stdlib.h>
 
 class Ball{
 
@@ -12,6 +13,8 @@ private:
 	float yVel;
 	float xVel;
 	float radius;
+	int player1Score;
+	int player2Score;
 
 public:
     void render();
@@ -31,6 +34,9 @@ public:
 	float getRadius();
 
 	void checkCollision(float xres, float yres);
+
+	int getPlayer1Score();
+	int getPlayer2Score();
 
     Ball();
     ~Ball();

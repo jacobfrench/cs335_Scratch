@@ -1,6 +1,9 @@
 #include "Ball.h"
 
+
 Ball::Ball(){
+    this->player1Score = 0;
+    this->player2Score = 0;
 
 }
 
@@ -29,7 +32,7 @@ void Ball::render(){
 }
 
 void Ball::checkCollision(float xres, float yres){
-    float ballSpeed = 10.0f;
+    float ballSpeed = (float)(rand() % 13 + 10);
 
     //check collision with screen edges
     if(yPos >= yres && yVel > 0){
@@ -40,9 +43,11 @@ void Ball::checkCollision(float xres, float yres){
     }
     else if(xPos >= xres && xVel > 0){
         xVel = -ballSpeed;
+        player1Score++;
     }
     else if(xPos <= 0 && xVel < 0){
         xVel = ballSpeed;
+        player2Score++;
     }
 
 }
@@ -87,4 +92,12 @@ void Ball::setRadius(float radius){
 
 float Ball::getRadius(){
     return radius;
+}
+
+int Ball::getPlayer1Score(){
+    return player1Score;
+}
+
+int Ball::getPlayer2Score(){
+    return player2Score;
 }

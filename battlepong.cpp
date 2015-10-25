@@ -286,7 +286,7 @@ int check_keys(XEvent *e, Game *g){
         if (key == XK_Shift_L || key == XK_Shift_R)
             shift=0;
         if(key == XK_w)
-            std::cout << "w was released" << std::endl;
+
         return 0;
     }
 
@@ -346,6 +346,10 @@ void physics(Game *g)
 
     //paddle2 movement
     paddle2.setYVel(paddle2YVel);
+
+    //temporary. delete this later.
+    std::cout << "player1: " << ball.getPlayer1Score() << " player2: " << ball.getPlayer2Score() << std::endl;
+
 
 
 }
