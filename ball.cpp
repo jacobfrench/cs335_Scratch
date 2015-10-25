@@ -45,9 +45,6 @@ void Ball::checkCollision(float xres, float yres){
         xVel = ballSpeed;
     }
 
-    //check collision with paddles
-    //TODO -  implement collision with paddles here
-
 }
 
 void Ball::setXVel(float xVel){

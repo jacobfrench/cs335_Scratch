@@ -62,12 +62,28 @@ float Paddle::getWidth(){
     return width;
 }
 
-void Paddle::checkCollision(int yres, Ball ball){
+void Paddle::checkCollision(int yres, Ball &ball){
+    bool onLeftSide = ball.getXPos() < 150 && xPos < 150;
+    bool onRightSide = ball.getXPos() > 150 && xPos > 150;
+    bool hitLeftPaddle = (ball.getXPos()-ball.getRadius() <= xPos) &&
+            ball.getYPos() >= yPos && ball.getYPos() <= yPos + height;
+    bool hitRightPaddle  = (ball.getXPos() >= xPos)
+            && ball.getYPos() >= yPos && ball.getYPos() <= yPos + height;
+
+    //collision with edges of screen
     if(yPos + height >= yres && yVel > 0){
         yPos = yres - height;
     }
     else if(yPos <= 0 && yVel < 0){
         yPos = 0;
+    }
+
+    //collision with ball
+    if(onLeftSide && hitLeftPaddle){
+        ball.setXVel(10.0f);
+    }
+    else if(onRightSide && hitRightPaddle){
+        ball.setXVel(-10.0f);
     }
 
 }
