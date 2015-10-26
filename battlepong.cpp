@@ -301,7 +301,24 @@ int check_keys(XEvent *e, Game *g){
         keys[key]=0;
         if (key == XK_Shift_L || key == XK_Shift_R)
             shift=0;
-        if(key == XK_w)
+        if(key == XK_w){
+            paddle1YVel = 0;
+            paddle1.setYPos(paddle1.getYPos());
+
+        }
+        if(key == XK_s){
+            paddle1YVel = 0;
+            paddle1.setYPos(paddle1.getYPos());
+        }
+        if(key == XK_o){
+            paddle2YVel = 0;
+            paddle2.setYPos(paddle2.getYPos());
+
+        }
+        if(key == XK_l){
+            paddle2YVel = 0;
+            paddle2.setYPos(paddle2.getYPos());
+        }
 
         return 0;
     }
