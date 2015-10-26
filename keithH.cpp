@@ -6,12 +6,15 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/keysym.h>
+//#include <X11/Xutil.h>
+//#include <X11/keysym.h>
 #include <GL/glx.h>
+#include <cstdio>
+#include <cstring>
+#include "fonts.h"
 
-#include <GL/glut.h>
 #include <string>
+
 
 using namespace std;
 
@@ -33,10 +36,6 @@ Hud::Hud(const int in_xres, const int in_yres){
     xres = in_xres;
     yres = in_yres;
     is_show_welcome=true;
-    char fakeParam[] = "fake";
-    char *fakeargv[] = { fakeParam, NULL };
-    int fakeargc = 1;
-    glutInit( &fakeargc, fakeargv );
 }
 
 
@@ -67,30 +66,25 @@ void Hud::showCourtYard(){
 
 
 void Hud::showWelcome(int in_high_score){
-    //PRINT WELCOME MESSAGE:
-    glPushMatrix();
     glColor3ub(0,255,255);
-    glTranslatef(xres/2.0 - 50.0, yres/2.0, 0.0);
-    glScalef(1/4.0, 1/4.0, 1/4.0);
-    string str1="Welcome to Pong!";
-    for(unsigned int i=0; i<str1.length(); i++)
-    {
-        glutStrokeCharacter(GLUT_STROKE_ROMAN,str1[i]);
-    }
-    glPopMatrix();
-    //--------------------------------------------------------
+    unsigned int cref = 0x0000ffff;
+    glEnable(GL_TEXTURE_2D);
+    //glBindTexture(GL_TEXTURE_2D, 0);
+    //PRINT WELCOME MESSAGE:    
+    Rect r0;
+    r0.bot = yres/2.0;
+    r0.left = xres/2.0 - 50.0;
+    r0.center = 0;
+    ggprint16(&r0, 70, cref, "Welcome to Pong!");
 
     //PRINT HIGH SCORE:
-    glPushMatrix();
-    glTranslatef(xres/2.0 - 50.0, yres/2.0 - 30.0, 0.0);
-    glColor3ub(0,255,255);
-    glScalef(1/8.0, 1/8.0, 1/8.0);
-    string str2="Current high score is:";
-    for(unsigned int i=0; i<str2.length(); i++)
-    {
-        glutStrokeCharacter(GLUT_STROKE_ROMAN,str2[i]);
-    }
-    glPopMatrix();
+    Rect r1;
+    r1.bot = yres/2.0 - 30.0;
+    r1.left = xres/2.0 - 50.0;
+    r1.center = 0;
+    char buf[50];
+    sprintf(buf,"Current high score is:%d",in_high_score);
+    ggprint12(&r1, 70, cref, buf);
     //--------------------------------------------------------
 }
 
@@ -98,30 +92,28 @@ void Hud::showWelcome(int in_high_score){
 void Hud::showScore(int in_score1, int in_score2){    
 
     glColor3ub(255,255,255);
+    char buf[50];
+    unsigned int cref = 0x00ffffff;
+    glEnable(GL_TEXTURE_2D);
+    //glBindTexture(GL_TEXTURE_2D, 0);
 
     //PRINT PLAYER 1'S SCORE:
-    glPushMatrix();
-    glTranslatef(40.0, yres - 30, 0.0);
-    glScalef(1/8.0, 1/8.0, 1/8.0);
-    string str1="Player 1 Score:" + in_score1;
-    for(unsigned int i=0; i<str1.length(); i++)
-    {
-        glutStrokeCharacter(GLUT_STROKE_ROMAN,str1[i]);
-    }
-    glPopMatrix();
+    //PRINT HIGH SCORE:
+    Rect r0;
+    r0.bot = yres - 33.0;
+    r0.left = 40.0,
+    r0.center = 0;
+    sprintf(buf,"Player 1 Score:%d",in_score1);
+    ggprint16(&r0, 70, cref, buf);
     //--------------------------------------------------------
 
     //PRINT PLAYER 2'S SCORE:
-    glPushMatrix();
-    glTranslatef(xres/2.0, yres - 30, 0.0);
-    glScalef(1/8.0, 1/8.0, 1/8.0);
-    string str2="Player 2 Score:" + in_score2;
-    for(unsigned int i=0; i<str2.length(); i++)
-    {
-        glutStrokeCharacter(GLUT_STROKE_ROMAN,str2[i]);
-    }
-    glPopMatrix();
+    Rect r1;
+    r1.bot = yres - 33.0;
+    r1.left = xres/2,
+    r1.center = 0;
+    sprintf(buf,"Player 2 Score:%d",in_score2);
+    ggprint16(&r1, 70, cref, buf);
     //--------------------------------------------------------
-
 
 }
