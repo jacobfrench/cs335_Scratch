@@ -21,6 +21,9 @@
 #include "log.h"
 #include "Ball.h"
 #include "coryK.h"
+#include "player.h"
+#include "keithH.h"
+
 #include "paddle.h"
 extern "C" {
     #include "fonts.h"
@@ -109,8 +112,8 @@ void render(Game *game);
 
 
 //KEITHS ADDITION:
-#include "player.cpp"
-#include "keithH.cpp"
+/*#include "player.cpp"
+#include "keithH.cpp"*/
 Hud *hud;
 Player p1;
 Player p2;
@@ -422,7 +425,7 @@ void render(Game *g)
         return;
     }
     hud->is_show_welcome = false;
-    hud->showScore(p1.getScore(), p2.getScore());
+    //hud->showScore(p1.getScore(), p2.getScore());
     hud->showCourtYard();
     //------------------------------------
 	
