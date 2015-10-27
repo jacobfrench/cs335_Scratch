@@ -62,7 +62,7 @@ typedef struct t_screen {
 	float gl_perspective_viewangle;
 	Flt xcenter, ycenter;
 	Flt fy_res, fx_res;
-} Screen;
+} DefScreen;
 
 #define MAX_LIGHTS (4)
 typedef struct t_lights {

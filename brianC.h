@@ -1,4 +1,23 @@
-#ifndef _OALSOUND_H_
+#ifndef _brianC_H_
+#define _brianC_H_
+
+
+#include <iostream>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <AL/alut.h>
+using namespace std;
+
+
+extern int initAlut();
+
+
+/*#ifndef _OALSOUND_H_
 #define _OALSOUND_H_
 
 //#include "al.h"
@@ -7,7 +26,7 @@
 #include <al/alut.h>
 #endif //GGWINDOWS
 #ifdef GGLINUX
-#include </usr/include/AL/alut.h>
+#include <AL/alut.h>
 #endif //GGLINUX
 
 //#define USE_SOUNDQUEUE
@@ -151,3 +170,6 @@ public:
 };
 
 #endif //_OALSOUND_H_
+*/
+
+#endif

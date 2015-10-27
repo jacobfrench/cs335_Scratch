@@ -1,3 +1,7 @@
+#ifndef _brianC_H_
+#define _brianC_H_
+
+
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -5,9 +9,12 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include "brianC.h"
-#include </usr/include/AL/alut.h> //not sure where to find this 
+#include <stdlib.h>
+#include <AL/alut.h>
 
-int main()
+
+
+int initAlut()
 {
     //Get started right here.
     alutInit(0, NULL);
@@ -15,7 +22,7 @@ int main()
         printf("ERROR: alutInit()\n");
         return 0;
     }
-    //Clear error state.
+   /* //Clear error state.
     alGetError();
     //
     //Setup the listener.
@@ -61,7 +68,8 @@ int main()
     //Release context(s).
     alcDestroyContext(Context);
     //Close device.
-    alcCloseDevice(Device);
+    alcCloseDevice(Device);*/
     return 0;
 }
 
+#endif

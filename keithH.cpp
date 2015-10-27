@@ -12,25 +12,11 @@
 #include <cstdio>
 #include <cstring>
 #include "fonts.h"
-
+#include "keithH.h"
 #include <string>
 
 
 using namespace std;
-
-
-class Hud{
-  private:
-  int xres;
-  int yres;  
-  public:
-   bool is_show_welcome;
-   Hud(const int in_xres, const int in_yres);
-   void showWelcome(int in_high_score);
-   void showScore(int in_score1, int in_score2);
-   void showCourtYard();
-};
-
 
 Hud::Hud(const int in_xres, const int in_yres){
     xres = in_xres;
