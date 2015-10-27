@@ -88,6 +88,9 @@ struct Game {
     }
 };
 
+string BG_IMAGE_PATH = "./images/pipboy.ppm";
+string ATOM_IMAGE_PATH = "./images/atom.ppm";
+
 Ppmimage *bgImage = NULL;
 GLuint bgTexture;
 
@@ -263,18 +266,9 @@ void init_opengl(void)
     initialize_fonts();
     
     //Load image
-    bgImage = ppm6GetImage("./images/pipboy.ppm");
+    bgImage = loadImage(BG_IMAGE_PATH.c_str());
     //Create OpenGL texture element
-    glGenTextures(1, &bgTexture);
-    
-	glBindTexture(GL_TEXTURE_2D, bgTexture);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3,
-							bgImage->width, bgImage->height,
-							0, GL_RGB, GL_UNSIGNED_BYTE, bgImage->data);
-    
-    
+    bgTexture = generateTexture(bgTexture, bgImage);
 }
 
 void check_resize(XEvent *e)
@@ -410,7 +404,8 @@ void render(Game *g)
     //Draw the background
     glClear(GL_COLOR_BUFFER_BIT);
     
-    	glColor3f(1.0, 1.0, 1.0);
+    renderTexture(bgTexture, xres, yres);
+    /*glColor3f(1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, bgTexture);
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
@@ -418,7 +413,7 @@ void render(Game *g)
 		glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
 		glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
 	glEnd();
-    
+    */
         //KEITHS ADDITIONS:------------------
     if (timeBegin + 2.0 > time(NULL)){
         //PASS showWelcome the high score:
