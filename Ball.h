@@ -4,17 +4,19 @@
 #include <cmath>
 #include <GL/glx.h>
 #include <stdlib.h>
+#include "ppm.h"
 
 class Ball{
 
 private:
-    float xPos;
-    float yPos;
+  float xPos;
+  float yPos;
 	float yVel;
 	float xVel;
 	float radius;
 	int player1Score;
 	int player2Score;
+  Ppmimage *ballImage;
 
 public:
     void render();
