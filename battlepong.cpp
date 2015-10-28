@@ -91,7 +91,7 @@ struct Game {
     }
 };
 
-string BG_IMAGE_PATH = "./images/pipboy.ppm";
+//string BG_IMAGE_PATH = "./images/pipboy.ppm";
 string ATOM_IMAGE_PATH = "./images/atom.ppm";
 
 Ppmimage *bgImage = NULL;
@@ -269,9 +269,9 @@ void init_opengl(void)
     initialize_fonts();
     
     //Load image
-    bgImage = loadImage(BG_IMAGE_PATH.c_str());
+    //bgImage = loadImage(BG_IMAGE_PATH.c_str());
     //Create OpenGL texture element
-    bgTexture = generateTexture(bgTexture, bgImage);
+    //bgTexture = generateTexture(bgTexture, bgImage);
 }
 
 void check_resize(XEvent *e)
