@@ -23,11 +23,16 @@
 #include "coryK.h"
 #include "player.h"
 #include "keithH.h"
+#include "brianC.h"
 
 #include "paddle.h"
 extern "C" {
     #include "fonts.h"
 }
+
+#include <FMOD/fmod.h>
+#include <FMOD/wincompat.h>
+#include "fmod.h"
 
 //defined types
 typedef float Flt;
