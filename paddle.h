@@ -14,11 +14,13 @@ private:
     float yPos;
 	float width;
 	float height;
-    float yVel;
+    float yVel;    
+    int yres;
 	
 
 public:
     void render();
+    void setWindowHeight(int in_yres);
     void setXPos(float xPos);
     float getXPos();
     void setYPos(float yPos);
@@ -30,7 +32,7 @@ public:
     void setYVel(float yVel);
     float getYVel();
     void checkCollision(int yres, Ball &ball);
-    Paddle();
+    Paddle(const int yres);
     ~Paddle();
 };
 

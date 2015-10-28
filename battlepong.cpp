@@ -21,6 +21,9 @@
 #include "log.h"
 #include "Ball.h"
 #include "coryK.h"
+#include "player.h"
+#include "keithH.h"
+
 #include "paddle.h"
 extern "C" {
     #include "fonts.h"
@@ -69,16 +72,16 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 int xres=1250, yres=900;
 
 //instance variables
-Ball ball;
+Ball ball(xres,yres);
 float ballXPos;
 float ballYPos;
 float ballXVel;
 float ballYVel;
 
-Paddle paddle1;
+Paddle paddle1(yres);
 float paddle1YVel;
 
-Paddle paddle2;
+Paddle paddle2(yres);
 float paddle2YVel;
 
 struct Game {
@@ -87,6 +90,9 @@ struct Game {
         mouseThrustOn = false;
     }
 };
+
+string BG_IMAGE_PATH = "./images/pipboy.ppm";
+string ATOM_IMAGE_PATH = "./images/atom.ppm";
 
 Ppmimage *bgImage = NULL;
 GLuint bgTexture;
@@ -106,8 +112,8 @@ void render(Game *game);
 
 
 //KEITHS ADDITION:
-#include "player.cpp"
-#include "keithH.cpp"
+/*#include "player.cpp"
+#include "keithH.cpp"*/
 Hud *hud;
 Player p1;
 Player p2;
@@ -231,9 +237,27 @@ void initXWindows(void)
 
 void reshape_window(int width, int height)
 {
+    xres = width;
+    yres = height;
+
     //window has been resized.
     setup_screen_res(width, height);
     //
+
+    //KEITHS ADDITION:
+    hud->setResolution(xres,yres);
+    //----------------------
+
+    //RESET THE TWO PADDLES POSITION AND BALL RESOLUTION:
+    paddle1.setXPos(50.0f);
+    paddle1.setYPos((float)yres/2);
+    paddle2.setXPos((float)xres - 50.0f);
+    paddle2.setYPos((float)yres/2);
+    paddle1.setWindowHeight(yres);
+    paddle2.setWindowHeight(yres);
+    ball.setResolution(xres,yres);
+    //-------------------------
+
     glViewport(0, 0, (GLint)width, (GLint)height);
     glMatrixMode(GL_PROJECTION); glLoadIdentity();
     glMatrixMode(GL_MODELVIEW); glLoadIdentity();
@@ -243,6 +267,8 @@ void reshape_window(int width, int height)
 
 void init_opengl(void)
 {
+
+
     //OpenGL initialization
     glViewport(0, 0, xres, yres);
     //Initialize matrices
@@ -263,18 +289,9 @@ void init_opengl(void)
     initialize_fonts();
     
     //Load image
-    bgImage = ppm6GetImage("./images/pipboy.ppm");
+    bgImage = loadImage(BG_IMAGE_PATH.c_str());
     //Create OpenGL texture element
-    glGenTextures(1, &bgTexture);
-    
-	glBindTexture(GL_TEXTURE_2D, bgTexture);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3,
-							bgImage->width, bgImage->height,
-							0, GL_RGB, GL_UNSIGNED_BYTE, bgImage->data);
-    
-    
+    bgTexture = generateTexture(bgTexture, bgImage);
 }
 
 void check_resize(XEvent *e)
@@ -285,7 +302,7 @@ void check_resize(XEvent *e)
         return;
     XConfigureEvent xce = e->xconfigure;
     if (xce.width != xres || xce.height != yres) {
-        //Window size did change.
+        //Window size did change.        
         reshape_window(xce.width, xce.height);
     }
 }
@@ -404,13 +421,13 @@ void physics(Game *g)
 }
 
 void render(Game *g)
-{
-    Rect r;
+{    
 
     //Draw the background
     glClear(GL_COLOR_BUFFER_BIT);
     
-    	glColor3f(1.0, 1.0, 1.0);
+    renderTexture(bgTexture, xres, yres);
+    /*glColor3f(1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, bgTexture);
 	glBegin(GL_QUADS);
 		glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
@@ -418,7 +435,7 @@ void render(Game *g)
 		glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
 		glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
 	glEnd();
-    
+    */
         //KEITHS ADDITIONS:------------------
     if (timeBegin + 2.0 > time(NULL)){
         //PASS showWelcome the high score:
@@ -428,15 +445,15 @@ void render(Game *g)
     }
     hud->is_show_welcome = false;
     hud->showScore(p1.getScore(), p2.getScore());
+    hud->showHealth(50, 70);
     hud->showCourtYard();
     //------------------------------------
 	
-
-    
-    r.bot = yres - 20;
-    r.left = 10;
+    Rect r;
+    r.bot = yres / 2.0;
+    r.left = xres / 2.0 - 50.0;
     r.center = 0;
-    ggprint8b(&r, 16, 0x00ff0000, "BattlePong");
+    ggprint16(&r, 16, 0x00ff0000, "BattlePong");
 
     //Draw the paddle
     paddle1.render();

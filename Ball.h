@@ -14,9 +14,12 @@ private:
 	float xVel;
 	float radius;
 	int player1Score;
-	int player2Score;
+	int player2Score;    
 
 public:
+    int xres;
+    int yres;
+    void setResolution(int in_xres,int in_yres);
     void render();
 	void setXVel(float xVel);
 	float getXVel();
@@ -38,7 +41,7 @@ public:
 	int getPlayer1Score();
 	int getPlayer2Score();
 
-    Ball();
+    Ball(const int in_xres, const int yres);
     ~Ball();
 };
 #endif // BALL_H

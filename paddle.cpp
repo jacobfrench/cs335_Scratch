@@ -1,7 +1,10 @@
 #include "paddle.h"
-Paddle::Paddle(){
+Paddle::Paddle(const int in_yres){
+yres = in_yres;
+}
 
-
+void Paddle::setWindowHeight(int in_yres){
+    yres = in_yres;
 }
 
 Paddle::~Paddle(){

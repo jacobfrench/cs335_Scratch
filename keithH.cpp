@@ -12,25 +12,11 @@
 #include <cstdio>
 #include <cstring>
 #include "fonts.h"
-
+#include "keithH.h"
 #include <string>
 
 
 using namespace std;
-
-
-class Hud{
-  private:
-  int xres;
-  int yres;  
-  public:
-   bool is_show_welcome;
-   Hud(const int in_xres, const int in_yres);
-   void showWelcome(int in_high_score);
-   void showScore(int in_score1, int in_score2);
-   void showCourtYard();
-};
-
 
 Hud::Hud(const int in_xres, const int in_yres){
     xres = in_xres;
@@ -38,6 +24,10 @@ Hud::Hud(const int in_xres, const int in_yres){
     is_show_welcome=true;
 }
 
+void Hud::setResolution(const int in_xres, const int in_yres){
+    xres = in_xres;
+    yres = in_yres;
+}
 
 void Hud::showCourtYard(){
       //DRAW OUTER RECTANGLE:
@@ -86,6 +76,61 @@ void Hud::showWelcome(int in_high_score){
     sprintf(buf,"Current high score is:%d",in_high_score);
     ggprint12(&r1, 70, cref, buf);
     //--------------------------------------------------------
+}
+
+void Hud::showHealth(int player1_health, int player2_health){
+    float width = 25.0;
+    float height;
+    //SHOW PLAYER1'S HEALTH:
+    glColor3ub(0,255,0);
+    glPushMatrix();
+    glTranslatef(10, yres - 110.0, 0);
+    height = player1_health;
+    glRectf(0.0f, 0.0f, width, height);
+    glEnd();
+    glBegin(GL_POINTS);
+    glVertex2f(0.0f, 0.0f);
+    glEnd();
+    glPopMatrix();
+    //----------------------------
+    //SHOW PLAYER2'S HEALTH:
+    glColor3ub(0,255,0);
+    glPushMatrix();
+    glTranslatef(xres - 35.0, yres - 110.0, 0);
+    height = player2_health;
+    glRectf(0.0f, 0.0f, width, height);
+    glEnd();
+    glBegin(GL_POINTS);
+    glVertex2f(0.0f, 0.0f);
+    glEnd();
+    glPopMatrix();
+    //----------------------------
+    //----------------------------
+    //SHOW PLAYER1'S DEATH:
+    glColor3ub(255,0,0);
+    glPushMatrix();
+    glTranslatef(10, player1_health + yres - 110.0, 0);
+    height = 100.0 - player1_health;
+    glRectf(0.0f, 0.0f, width, height);
+    glEnd();
+    glBegin(GL_POINTS);
+    glVertex2f(0.0f, 0.0f);
+    glEnd();
+    glPopMatrix();
+    //----------------------------
+    //SHOW PLAYER2'S DEATH:
+    glColor3ub(255,0,0);
+    glPushMatrix();
+    glTranslatef(xres - 35.0, player2_health + yres - 110.0, 0);
+    height = 100.0 - player2_health;
+    glRectf(0.0f, 0.0f, width, height);
+    glEnd();
+    glBegin(GL_POINTS);
+    glVertex2f(0.0f, 0.0f);
+    glEnd();
+    glPopMatrix();
+    //----------------------------
+
 }
 
 
