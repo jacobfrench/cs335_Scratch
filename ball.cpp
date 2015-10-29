@@ -1,10 +1,16 @@
 #include "Ball.h"
 
 
-Ball::Ball(){
+Ball::Ball(int in_xres, int _in_yres){
     this->player1Score = 0;
-    this->player2Score = 0;
+    this->player2Score = 0;    
+    xres = in_xres;
+    yres = in_yres;
+}
 
+void Ball::setResolution(int in_xres, int _in_yres){
+    xres = in_xres;
+    yres = in_yres;
 }
 
 Ball::~Ball(){

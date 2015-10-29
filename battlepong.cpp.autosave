@@ -4,6 +4,28 @@
 //author:  Gordon Griesel
 //date:    2014
 //mod spring 2015: added constructors
+//
+//This program is a game starting point for 335
+//
+// Possible requirements:
+// ----------------------
+// welcome screen
+// menu
+// multiple simultaneous key-press
+// show exhaust for thrusting
+// move the asteroids
+// collision detection for bullet on asteroid
+// collision detection for asteroid on ship
+// control of bullet launch point
+// life span for each bullet
+// cleanup the bullets that miss a target
+// split asteroids into pieces when blasted
+// random generation of new asteroids
+// score keeping
+// levels of difficulty
+// sound
+// use of textures
+//
 
 #include <iostream>
 #include <cstdlib>
@@ -20,14 +42,10 @@
 #include "ppm.h"
 #include "log.h"
 #include "Ball.h"
-#include "coryK.h"
-#include "player.h"
-#include "keithH.h"
+#include "fonts.h"
+#include "player.cpp"
+#include "keithH.cpp"
 
-#include "paddle.h"
-extern "C" {
-    #include "fonts.h"
-}
 
 //defined types
 typedef float Flt;
@@ -56,6 +74,13 @@ Window win;
 GLXContext glc;
 
 
+//KEITHS ADDITION:
+Hud *hud;
+Player p1;
+Player p2;
+time_t timeBegin;
+//-----------------
+
 //-----------------------------------------------------------------------------
 //Setup timers
 const double physicsRate = 1.0 / 60.0;
@@ -68,38 +93,45 @@ extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
 //-----------------------------------------------------------------------------
 
-//screen width and height
 int xres=1250, yres=900;
 
-//instance variables
-Ball ball(xres,yres);
+struct Ship {
+    Vec dir;
+    Vec pos;
+    Vec vel;
+    float angle;
+    float color[3];
+    Ship() {
+        VecZero(dir);
+        pos[0] = (Flt)(xres/3);
+        pos[1] = (Flt)(yres/2);
+        pos[2] = 0.0f;
+        VecZero(vel);
+        angle = 0.0;
+        color[0] = 2.0;
+        color[1] = 1.0;
+        color[2] = 1.0;
+    }
+};
+
+
+//temporary instance variables
+Ball ball;
 float ballXPos;
 float ballYPos;
 float ballXVel;
 float ballYVel;
 
-Paddle paddle1(yres);
-float paddle1YVel;
-
-Paddle paddle2(yres);
-float paddle2YVel;
-
 struct Game {
+    Ship ship;
     bool mouseThrustOn;
     Game() {
         mouseThrustOn = false;
     }
 };
 
-string BG_IMAGE_PATH = "./images/pipboy.ppm";
-string ATOM_IMAGE_PATH = "./images/atom.ppm";
-
-Ppmimage *bgImage = NULL;
-GLuint bgTexture;
 
 int keys[65536];
-
-Game g;
 
 //function prototypes
 void initXWindows(void);
@@ -113,14 +145,6 @@ void physics(Game *game);
 void render(Game *game);
 
 
-//KEITHS ADDITION:
-/*#include "player.cpp"
-#include "keithH.cpp"*/
-Hud *hud;
-Player p1;
-Player p2;
-time_t timeBegin;
-//-----------------
 
 int main(void)
 {
@@ -129,56 +153,45 @@ int main(void)
     initXWindows();
     init_opengl();
     Game game;
-    init(&game);
+    //init(&game);
     srand(time(NULL));
     clock_gettime(CLOCK_REALTIME, &timePause);
     clock_gettime(CLOCK_REALTIME, &timeStart);
 
+
     //init ball variables
-    ball.setXPos(xres/2);
-    ball.setYPos(yres/2);
-    ball.setRadius(15.0f);
+    ballXPos = xres/2;
+    ballYPos = yres/2;
     ballYVel = 8.0f;
     ballXVel = 8.0f;
-    ball.setYVel(ballXVel);
-    ball.setXVel(ballYVel);
 
-    //init paddle1
-    paddle1.setXPos(50.0f);
-    paddle1.setYPos((float)yres/2);
-    paddle1.setHeight(120.0f);
-    paddle1.setWidth(15.0f);
-
-    //init paddle2
-    paddle2.setXPos((float)xres - 50.0f);
-    paddle2.setYPos((float)yres/2);
-    paddle2.setHeight(120.0f);
-    paddle2.setWidth(15.0f);
-    
-        //KEITHS ADDITION:
+    //KEITHS ADDITION:
     hud = new Hud(xres ,yres);
     timeBegin = time(NULL);
     //-----------------------------
 
+
     int done=0;
-      while (!done) {        
-        while (XPending(dpy)) {
-            XEvent e;
-            XNextEvent(dpy, &e);
-            check_resize(&e);
-            done = check_keys(&e, &game);
-        }
-        clock_gettime(CLOCK_REALTIME, &timeCurrent);
-        timeSpan = timeDiff(&timeStart, &timeCurrent);
-        timeCopy(&timeStart, &timeCurrent);
-        physicsCountdown += timeSpan;
-        while (physicsCountdown >= physicsRate) {
-            physics(&game);
-            physicsCountdown -= physicsRate;
+    while (!done) {
+        if (timeBegin + 2.0 <= time(NULL)){
+            while (XPending(dpy)) {
+                XEvent e;
+                XNextEvent(dpy, &e);
+                check_resize(&e);
+                done = check_keys(&e, &game);
+            }
+            clock_gettime(CLOCK_REALTIME, &timeCurrent);
+            timeSpan = timeDiff(&timeStart, &timeCurrent);
+            timeCopy(&timeStart, &timeCurrent);
+            physicsCountdown += timeSpan;
+            while (physicsCountdown >= physicsRate) {
+                physics(&game);
+                physicsCountdown -= physicsRate;
+            }            
         }
         render(&game);
         glXSwapBuffers(dpy, win);
-      }
+    }
     cleanupXWindows();
     cleanup_fonts();
     logClose();
@@ -237,27 +250,9 @@ void initXWindows(void)
 
 void reshape_window(int width, int height)
 {
-    xres = width;
-    yres = height;
-
     //window has been resized.
     setup_screen_res(width, height);
     //
-
-    //KEITHS ADDITION:
-    hud->setResolution(xres,yres);
-    //----------------------
-
-    //RESET THE TWO PADDLES POSITION AND BALL RESOLUTION:
-    paddle1.setXPos(50.0f);
-    paddle1.setYPos((float)yres/2);
-    paddle2.setXPos((float)xres - 50.0f);
-    paddle2.setYPos((float)yres/2);
-    paddle1.setWindowHeight(yres);
-    paddle2.setWindowHeight(yres);
-    ball.setResolution(xres,yres);
-    //-------------------------
-
     glViewport(0, 0, (GLint)width, (GLint)height);
     glMatrixMode(GL_PROJECTION); glLoadIdentity();
     glMatrixMode(GL_MODELVIEW); glLoadIdentity();
@@ -267,8 +262,6 @@ void reshape_window(int width, int height)
 
 void init_opengl(void)
 {
-
-
     //OpenGL initialization
     glViewport(0, 0, xres, yres);
     //Initialize matrices
@@ -287,11 +280,6 @@ void init_opengl(void)
     //Do this to allow fonts
     glEnable(GL_TEXTURE_2D);
     initialize_fonts();
-    
-    //Load image
-    bgImage = loadImage(BG_IMAGE_PATH.c_str());
-    //Create OpenGL texture element
-    bgTexture = generateTexture(bgTexture, bgImage);
 }
 
 void check_resize(XEvent *e)
@@ -302,14 +290,14 @@ void check_resize(XEvent *e)
         return;
     XConfigureEvent xce = e->xconfigure;
     if (xce.width != xres || xce.height != yres) {
-        //Window size did change.        
+        //Window size did change.
         reshape_window(xce.width, xce.height);
     }
 }
 
-void init(Game *g) {
-    g->mouseThrustOn=false;
-}
+//void init(Game *g) {
+
+//}
 
 void normalize(Vec v) {
     Flt len = v[0]*v[0] + v[1]*v[1];
@@ -326,7 +314,6 @@ void normalize(Vec v) {
 
 
 int check_keys(XEvent *e, Game *g){
-    g->mouseThrustOn=false;
     //keyboard input?
     static int shift=0;
     int key = XLookupKeysym(&e->xkey, 0);
@@ -335,25 +322,9 @@ int check_keys(XEvent *e, Game *g){
         keys[key]=0;
         if (key == XK_Shift_L || key == XK_Shift_R)
             shift=0;
-        if(key == XK_w){
-            paddle1YVel = 0;
-            paddle1.setYPos(paddle1.getYPos());
-
-        }
-        if(key == XK_s){
-            paddle1YVel = 0;
-            paddle1.setYPos(paddle1.getYPos());
-        }
-        if(key == XK_o){
-            paddle2YVel = 0;
-            paddle2.setYPos(paddle2.getYPos());
-
-        }
-        if(key == XK_l){
-            paddle2YVel = 0;
-            paddle2.setYPos(paddle2.getYPos());
-        }
-
+        if(key == XK_W)
+            g->ship.vel[1] = 0;
+            std::cout << "w was released" << std::endl;
         return 0;
     }
 
@@ -363,107 +334,129 @@ int check_keys(XEvent *e, Game *g){
             shift=1;
             return 0;
         }
-        if (hud->is_show_welcome == true){
-            hud->is_show_welcome = false;
-        }
     }
     else {
         return 0;
     }
 
-    float paddleSpeed = 10.0f;
+    g->ship.vel[1] = 0.0f;
+    g->ship.vel[0] = 0.0f;
+
+    float shipSpeed = 10.0f;
     if (shift){}
     switch(key) {
         case XK_Escape:
             return 1;
         case XK_w:
-        paddle1YVel = paddleSpeed;
+        std::cout << "w was pressed" << std::endl;
+        g->ship.vel[1] = shipSpeed;
             break;
         case XK_s:
-        paddle1YVel = -paddleSpeed;
+        std::cout << "s was pressed" << std::endl;
+        g->ship.vel[1] = -shipSpeed;
             break;
         case XK_a:
+        g->ship.vel[0] = -shipSpeed;
             break;
         case XK_d:
+        g->ship.vel[0] = shipSpeed;
             break;
-        case XK_o:
-        paddle2YVel = paddleSpeed;
-            break;
-        case XK_l:
-        paddle2YVel = -paddleSpeed;
+        case XK_minus:
             break;
 
     }
-
     return 0;
 
 }
 
 void physics(Game *g)
 {
-    g->mouseThrustOn=false;
 
-    //ball collision
-    ball.setYVel(ball.getYVel());
-    ball.setXVel(ball.getXVel());
-    ball.checkCollision(xres, yres);
+    //update paddle positions
+    g->ship.pos[0] += g->ship.vel[0];
+    g->ship.pos[1] += g->ship.vel[1];
 
-    //paddle collision
-    paddle1.checkCollision(yres, ball);
-    paddle2.checkCollision(yres, ball);
 
-    //paddle1 movement
-    paddle1.setYVel(paddle1YVel);
+    //ball physics & collision
+    float ballSpeed = 7.0f;
+    int offset = 40;
+     //3 *offset is unknown drawing error:
+    if(ballYPos >= yres + 3*offset && ballYVel > 0){
+        ballYVel = -ballSpeed;
+    }
+    else if(ballYPos <= 0 + offset && ballYVel < 0){
+        ballYVel = ballSpeed;
+    }
+    else if(ballXPos >= xres - offset && ballXVel > 0){
+        ballXVel = -ballSpeed;
+    }
+    else if(ballXPos <= 0 + offset && ballXVel < 0){
+        ballXVel = ballSpeed;
+    }
+    
+    if (g)
 
-    //paddle2 movement
-    paddle2.setYVel(paddle2YVel);
 
-    //temporary. delete this later.
-    std::cout << "player1: " << ball.getPlayer1Score() << " player2: " << ball.getPlayer2Score() << std::endl;
-
+    ballYPos += ballYVel;
+    ballXPos += ballXVel;
 
 
 }
 
 void render(Game *g)
-{    
-    g->mouseThrustOn=false;
-
-    //Draw the background
+{
     glClear(GL_COLOR_BUFFER_BIT);
-    
-    renderTexture(bgTexture, xres, yres);
-    /*glColor3f(1.0, 1.0, 1.0);
-	glBindTexture(GL_TEXTURE_2D, bgTexture);
-	glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
-	glEnd();
-    */
-        //KEITHS ADDITIONS:------------------
-    if (hud->is_show_welcome == true){
+
+    //KEITHS ADDITIONS:------------------
+    if (timeBegin + 2.0 > time(NULL)){
         //PASS showWelcome the high score:
-        hud->showWelcome(0);        
+        hud->showWelcome(0);
+        hud->is_show_welcome = true;
         return;
-    }    
+    }
+    hud->is_show_welcome = false;
     hud->showScore(p1.getScore(), p2.getScore());
-    hud->showHealth(50, 70);
     hud->showCourtYard();
     //------------------------------------
-	
-    Rect r;
-    r.bot = yres / 2.0;
-    r.left = xres / 2.0 - 50.0;
-    r.center = 0;
-    ggprint16(&r, 16, 0x00ff0000, "BattlePong");
 
-    //Draw the paddle
-    paddle1.render();
-    paddle2.render();
-
+    //-------------------------------------------------------------------------
+    //Draw the ship
+    glColor3fv(g->ship.color);
+    glPushMatrix();
+    glTranslatef(g->ship.pos[0], g->ship.pos[1], g->ship.pos[2]);
+    glRotatef(g->ship.angle, 0.0f, 0.0f, 1.0f);
+    glRectf(0.0f, 0.0f, 10.0f, 100.0f);
+    glEnd();
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glBegin(GL_POINTS);
+    glVertex2f(0.0f, 0.0f);
+    glEnd();
+    glPopMatrix();
+    if (keys[XK_Up] || g->mouseThrustOn) {
+        int i;
+        //draw thrust
+        Flt rad = ((g->ship.angle+90.0) / 360.0f) * PI * 2.0;
+        //convert angle to a vector
+        Flt xdir = cos(rad);
+        Flt ydir = sin(rad);
+        Flt xs,ys,xe,ye,r;
+        glBegin(GL_LINES);
+        for (i=0; i<16; i++) {
+            xs = -xdir * 11.0f + rnd() * 4.0 - 2.0;
+            ys = -ydir * 11.0f + rnd() * 4.0 - 2.0;
+            r = rnd()*40.0+40.0;
+            xe = -xdir * r + rnd() * 18.0 - 9.0;
+            ye = -ydir * r + rnd() * 18.0 - 9.0;
+            glColor3f(rnd()*.3+.7, rnd()*.3+.7, 0);
+            glVertex2f(g->ship.pos[0]+xs,g->ship.pos[1]+ys);
+            glVertex2f(g->ship.pos[0]+xe,g->ship.pos[1]+ye);
+        }
+        glEnd();
+    }
+    //--------------------------------------------------------------------
     //Draw the ball
-    ball.render();
+    ball.render(ballXPos, ballYPos, 5.0f);
+
+    //---------------------------------------------------------------------
 
 }

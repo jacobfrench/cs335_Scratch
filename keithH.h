@@ -22,6 +22,8 @@ class Hud{
    void showWelcome(int in_high_score);
    void showScore(int in_score1, int in_score2);
    void showCourtYard();
+   void setResolution(int in_xres, int in_yres);
+   void showHealth(int player1_health, int player2_health);
 };
 
 
