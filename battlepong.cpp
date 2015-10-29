@@ -99,6 +99,8 @@ GLuint bgTexture;
 
 int keys[65536];
 
+Game g;
+
 //function prototypes
 void initXWindows(void);
 void init_opengl(void);
@@ -159,26 +161,24 @@ int main(void)
     //-----------------------------
 
     int done=0;
-      while (!done) {
-        if (timeBegin + 2.0 <= time(NULL)){
-            while (XPending(dpy)) {
-                XEvent e;
-                XNextEvent(dpy, &e);
-                check_resize(&e);
-                done = check_keys(&e, &game);
-            }
-            clock_gettime(CLOCK_REALTIME, &timeCurrent);
-            timeSpan = timeDiff(&timeStart, &timeCurrent);
-            timeCopy(&timeStart, &timeCurrent);
-            physicsCountdown += timeSpan;
-            while (physicsCountdown >= physicsRate) {
-                physics(&game);
-                physicsCountdown -= physicsRate;
-            }            
+      while (!done) {        
+        while (XPending(dpy)) {
+            XEvent e;
+            XNextEvent(dpy, &e);
+            check_resize(&e);
+            done = check_keys(&e, &game);
+        }
+        clock_gettime(CLOCK_REALTIME, &timeCurrent);
+        timeSpan = timeDiff(&timeStart, &timeCurrent);
+        timeCopy(&timeStart, &timeCurrent);
+        physicsCountdown += timeSpan;
+        while (physicsCountdown >= physicsRate) {
+            physics(&game);
+            physicsCountdown -= physicsRate;
         }
         render(&game);
         glXSwapBuffers(dpy, win);
-    }
+      }
     cleanupXWindows();
     cleanup_fonts();
     logClose();
@@ -308,7 +308,7 @@ void check_resize(XEvent *e)
 }
 
 void init(Game *g) {
-
+    g->mouseThrustOn=false;
 }
 
 void normalize(Vec v) {
@@ -326,6 +326,7 @@ void normalize(Vec v) {
 
 
 int check_keys(XEvent *e, Game *g){
+    g->mouseThrustOn=false;
     //keyboard input?
     static int shift=0;
     int key = XLookupKeysym(&e->xkey, 0);
@@ -362,6 +363,9 @@ int check_keys(XEvent *e, Game *g){
             shift=1;
             return 0;
         }
+        if (hud->is_show_welcome == true){
+            hud->is_show_welcome = false;
+        }
     }
     else {
         return 0;
@@ -397,6 +401,7 @@ int check_keys(XEvent *e, Game *g){
 
 void physics(Game *g)
 {
+    g->mouseThrustOn=false;
 
     //ball collision
     ball.setYVel(ball.getYVel());
@@ -422,6 +427,7 @@ void physics(Game *g)
 
 void render(Game *g)
 {    
+    g->mouseThrustOn=false;
 
     //Draw the background
     glClear(GL_COLOR_BUFFER_BIT);
@@ -437,13 +443,11 @@ void render(Game *g)
 	glEnd();
     */
         //KEITHS ADDITIONS:------------------
-    if (timeBegin + 2.0 > time(NULL)){
+    if (hud->is_show_welcome == true){
         //PASS showWelcome the high score:
-        hud->showWelcome(0);
-        hud->is_show_welcome = true;
+        hud->showWelcome(0);        
         return;
-    }
-    hud->is_show_welcome = false;
+    }    
     hud->showScore(p1.getScore(), p2.getScore());
     hud->showHealth(50, 70);
     hud->showCourtYard();

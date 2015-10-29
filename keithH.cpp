@@ -66,15 +66,23 @@ void Hud::showWelcome(int in_high_score){
     r0.left = xres/2.0 - 50.0;
     r0.center = 0;
     ggprint16(&r0, 70, cref, "Welcome to Pong!");
+    char buf[50];
 
     //PRINT HIGH SCORE:
     Rect r1;
     r1.bot = yres/2.0 - 30.0;
     r1.left = xres/2.0 - 50.0;
-    r1.center = 0;
-    char buf[50];
+    r1.center = 0;    
     sprintf(buf,"Current high score is:%d",in_high_score);
     ggprint12(&r1, 70, cref, buf);
+    //--------------------------------------------------------
+
+    //PRINT GAME START PROMPT:
+    Rect r2;
+    r2.bot = yres/2.0 - 100.0;
+    r2.left = xres/2.0 - 50.0;
+    r2.center = 0;
+    ggprint12(&r2, 70, cref, "Press any key to begin.");
     //--------------------------------------------------------
 }
 
