@@ -1,5 +1,5 @@
 #include "Ball.h"
-
+#include "brianC.h"
 
 Ball::Ball(const int in_xres, const int in_yres){
     this->player1Score = 0;
@@ -43,6 +43,8 @@ void Ball::checkCollision(float xres, float yres){
     //check collision with screen edges
     if(yPos >= yres && yVel > 0){
         yVel = -ballSpeed;
+        createSound(1);
+        cleanupSound();
     }
     else if(yPos <= 0 && yVel < 0){
         yVel = ballSpeed;
