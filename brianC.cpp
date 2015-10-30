@@ -38,6 +38,13 @@ void createSound(int trackNo)
         case 2:
             alBuffer = alutCreateBufferFromFile("./paddle1.wav");
             break;
+        case 3:
+            alBuffer = alutCreateBufferFromFile("./score.wav");
+            break;
+       case 4:
+            alBuffer = alutCreateBufferFromFile("./pong2.wav");
+            break;
+     
     }
 
 
