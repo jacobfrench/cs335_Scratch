@@ -23,6 +23,7 @@
 #include "coryK.h"
 #include "player.h"
 #include "keithH.h"
+#include "brianC.h"
 
 #include "paddle.h"
 extern "C" {
