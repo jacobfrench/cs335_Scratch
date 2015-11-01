@@ -70,7 +70,7 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 
 //screen width and height
 int xres=1250, yres=900;
-
+int intro = 0;
 //instance variables
 Ball ball(xres,yres);
 float ballXPos;
@@ -91,11 +91,15 @@ struct Game {
     }
 };
 
-string BG_IMAGE_PATH = "./images/pipboy.ppm";
+string BG_IMAGE_PATH = "./images/titlescreen.ppm";
+string MAINBG_IMAGE_PATH = "./images/mainBG.ppm";
 string ATOM_IMAGE_PATH = "./images/atom.ppm";
 
-Ppmimage *bgImage = NULL;
-GLuint bgTexture;
+Ppmimage *introBG = NULL;
+GLuint introTexture;
+
+Ppmimage *mainBG = NULL;
+GLuint mainTexture;
 
 int keys[65536];
 
@@ -119,6 +123,8 @@ void render(Game *game);
 Hud *hud;
 Player p1;
 Player p2;
+
+
 time_t timeBegin;
 //-----------------
 
@@ -160,6 +166,19 @@ int main(void)
     timeBegin = time(NULL);
     //-----------------------------
 
+    //MAIN MENU LOOP 
+    while(intro != 0) {
+        while (XPending(dpy)) {
+            XEvent e;
+            XNextEvent(dpy, &e);
+            check_resize(&e);
+            intro = check_keys(&e, &game);
+        }
+        render(&game);
+        glXSwapBuffers(dpy, win);
+    }
+
+    //BEGIN MAIN GAME LOOP
     int done=0;
       while (!done) {        
         while (XPending(dpy)) {
@@ -289,9 +308,11 @@ void init_opengl(void)
     initialize_fonts();
     
     //Load image
-    bgImage = loadImage(BG_IMAGE_PATH.c_str());
+    introBG = loadImage(BG_IMAGE_PATH.c_str());
+    mainBG = loadImage(MAINBG_IMAGE_PATH.c_str());
     //Create OpenGL texture element
-    bgTexture = generateTexture(bgTexture, bgImage);
+    introTexture = generateTexture(introTexture, introBG);
+    mainTexture = generateTexture(mainTexture, mainBG);
 }
 
 void check_resize(XEvent *e)
@@ -354,6 +375,7 @@ int check_keys(XEvent *e, Game *g){
             paddle2.setYPos(paddle2.getYPos());
         }
 
+
         return 0;
     }
 
@@ -362,6 +384,10 @@ int check_keys(XEvent *e, Game *g){
         if (key == XK_Shift_L || key == XK_Shift_R) {
             shift=1;
             return 0;
+        }
+        if(key == XK_b) {
+            printf("Enter pressed\n");
+            intro = 1;
         }
         if (hud->is_show_welcome == true){
             hud->is_show_welcome = false;
@@ -427,12 +453,22 @@ void physics(Game *g)
 
 void render(Game *g)
 {    
+    if(intro < 1) {
+        glClear(GL_COLOR_BUFFER_BIT);
+        renderTexture(introTexture, xres, yres);
+        Rect r;
+        r.bot = yres / 2.0;
+        r.left = xres / 2.0 - 50.0;
+        r.center = 0;
+        ggprint16(&r, 16, 0x00ff0000, "Welcome to BattlePong");
+        return;
+    }
     g->mouseThrustOn=false;
 
     //Draw the background
     glClear(GL_COLOR_BUFFER_BIT);
     
-    renderTexture(bgTexture, xres, yres);
+    renderTexture(mainTexture, xres, yres);
     /*glColor3f(1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, bgTexture);
 	glBegin(GL_QUADS);
