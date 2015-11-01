@@ -3,6 +3,7 @@
  * Purpose: To show start screen, and score screen:
  * */
 
+#include <iostream>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <X11/Xlib.h>
@@ -62,7 +63,7 @@ void Hud::showWelcome(int in_high_score){
     //glBindTexture(GL_TEXTURE_2D, 0);
     //PRINT WELCOME MESSAGE:    
     Rect r0;
-    r0.bot = yres/2.0;
+    r0.bot = yres/2.0 + 300;
     r0.left = xres/2.0 - 50.0;
     r0.center = 0;
     ggprint16(&r0, 70, cref, "Welcome to Pong!");
@@ -70,84 +71,81 @@ void Hud::showWelcome(int in_high_score){
 
     //PRINT HIGH SCORE:
     Rect r1;
-    r1.bot = yres/2.0 - 30.0;
+    r1.bot = yres/2.0 + 200.0;
     r1.left = xres/2.0 - 50.0;
     r1.center = 0;    
     sprintf(buf,"Current high score is:%d",in_high_score);
     ggprint12(&r1, 70, cref, buf);
     //--------------------------------------------------------
 
-    //PRINT GAME START PROMPT:
+    //PRINT CHOOSE BACKGROUND SCREEN:
     Rect r2;
-    r2.bot = yres/2.0 - 100.0;
+    r2.bot = yres/2.0 + 100.0;
     r2.left = xres/2.0 - 50.0;
     r2.center = 0;
-    ggprint12(&r2, 70, cref, "Press any key to begin.");
+    ggprint12(&r2, 70, cref, "Press <- -> to choose background:");
+    //--------------------------------------------------------
+
+    //PRINT GAME START PROMPT:
+    Rect r3;
+    r3.bot = yres/2.0 - 300.0;
+    r3.left = xres/2.0 - 50.0;
+    r3.center = 0;
+    ggprint12(&r3, 70, cref, "Press any key to begin.");
     //--------------------------------------------------------
 }
 
-void Hud::showHealth(int player1_health, int player2_health){
+void Hud::showHealth(int player1_health, int player2_health){    
     float width = 25.0;
     float height;
-    //SHOW PLAYER1'S HEALTH:
-    glColor3ub(0,255,0);
-    glPushMatrix();
-    glTranslatef(10, yres - 110.0, 0);
-    height = player1_health;
-    glRectf(0.0f, 0.0f, width, height);
-    glEnd();
-    glBegin(GL_POINTS);
-    glVertex2f(0.0f, 0.0f);
-    glEnd();
-    glPopMatrix();
-    //----------------------------
-    //SHOW PLAYER2'S HEALTH:
-    glColor3ub(0,255,0);
-    glPushMatrix();
-    glTranslatef(xres - 35.0, yres - 110.0, 0);
-    height = player2_health;
-    glRectf(0.0f, 0.0f, width, height);
-    glEnd();
-    glBegin(GL_POINTS);
-    glVertex2f(0.0f, 0.0f);
-    glEnd();
-    glPopMatrix();
-    //----------------------------
-    //----------------------------
+
+    glBegin(GL_QUADS);
+    glColor3f(1.0f,0.0f,0.0f);
+    height = 100.0;
     //SHOW PLAYER1'S DEATH:
-    glColor3ub(255,0,0);
-    glPushMatrix();
-    glTranslatef(10, player1_health + yres - 110.0, 0);
-    height = 100.0 - player1_health;
-    glRectf(0.0f, 0.0f, width, height);
-    glEnd();
-    glBegin(GL_POINTS);
-    glVertex2f(0.0f, 0.0f);
-    glEnd();
-    glPopMatrix();
+    glVertex2f(10 + width, yres -110.0 + height);
+    glVertex2f(10 + width, yres -110.0);
+    glVertex2f(10, yres -110.0);
+    glVertex2f(10, yres -110.0 +height);
     //----------------------------
     //SHOW PLAYER2'S DEATH:
-    glColor3ub(255,0,0);
-    glPushMatrix();
-    glTranslatef(xres - 35.0, player2_health + yres - 110.0, 0);
-    height = 100.0 - player2_health;
-    glRectf(0.0f, 0.0f, width, height);
-    glEnd();
-    glBegin(GL_POINTS);
-    glVertex2f(0.0f, 0.0f);
-    glEnd();
-    glPopMatrix();
+    glVertex2f(xres - 35.0 + width, yres -110.0 + height);
+    glVertex2f(xres - 35.0 + width, yres -110.0);
+    glVertex2f(xres - 35.0, yres -110.0);
+    glVertex2f(xres - 35.0, yres -110.0 +height);
     //----------------------------
+    glEnd();
 
+    glBegin(GL_QUADS);
+    glColor3f(0.0f,1.0f,0.0f);
+    height = 9;
+    //SHOW PLAYER1'S HEALTH:
+    int num_rects = (int)(player1_health/10);
+    for (int i=1;i<=num_rects;i++){
+        glVertex2f(10 + width, yres -110.0 + (i* 10));
+        glVertex2f(10 + width, yres -110.0 + (i* 10) - 9);
+        glVertex2f(10, yres -110.0 + (i* 10) - 9);
+        glVertex2f(10, yres -110.0 + (i* 10));
+    }
+    //----------------------------
+    //SHOW PLAYER2'S HEALTH:
+    num_rects = (int)(player2_health/10);
+    for (int i=1;i<=num_rects;i++){
+        glVertex2f(xres - 35.0 + width, yres -110.0 + (i* 10));
+        glVertex2f(xres - 35.0 + width, yres -110.0 + (i* 10) - 9);
+        glVertex2f(xres - 35.0, yres -110.0 + (i* 10) - 9);
+        glVertex2f(xres - 35.0, yres -110.0 + (i* 10));
+    }
+    glEnd();
+    //----------------------------
 }
 
 
 void Hud::showScore(int in_score1, int in_score2){    
-
+    glEnable(GL_TEXTURE_2D);
     glColor3ub(255,255,255);
     char buf[50];
-    unsigned int cref = 0x00ffffff;
-    glEnable(GL_TEXTURE_2D);
+    unsigned int cref = 0x00ffffff;    
     //glBindTexture(GL_TEXTURE_2D, 0);
 
     //PRINT PLAYER 1'S SCORE:
@@ -169,4 +167,26 @@ void Hud::showScore(int in_score1, int in_score2){
     ggprint16(&r1, 70, cref, buf);
     //--------------------------------------------------------
 
+}
+
+void Hud::selectLeftScreen(){
+    glColor3ub( 255, 0, 255 );
+    glBegin(GL_QUADS);
+    glLineWidth(10);
+    glVertex2f( xres/2 - 285, yres/2 + 10 );
+    glVertex2f( xres/2 -285, yres/2 - 210 );
+    glVertex2f( xres/2 - 15, yres/2 - 210);
+    glVertex2f( xres/2 - 15, yres/2 + 10);
+    glEnd();
+}
+
+void Hud::selectRightScreen(){
+    glColor3ub( 255, 0, 255 );
+    glBegin(GL_QUADS);
+    glLineWidth(10);
+    glVertex2f( xres/2 + 285, yres/2 + 10 );
+    glVertex2f( xres/2 + 285, yres/2 - 210 );
+    glVertex2f( xres/2 + 15, yres/2 - 210);
+    glVertex2f( xres/2 + 15, yres/2 + 10);
+    glEnd();
 }

@@ -4,8 +4,6 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <X11/Xlib.h>
-//#include <X11/Xutil.h>
-//#include <X11/keysym.h>
 #include <GL/glx.h>
 #include <cstdio>
 #include <cstring>
@@ -24,6 +22,8 @@ class Hud{
    void showCourtYard();
    void setResolution(int in_xres, int in_yres);
    void showHealth(int player1_health, int player2_health);
+   void selectLeftScreen();
+   void selectRightScreen();
 };
 
 
