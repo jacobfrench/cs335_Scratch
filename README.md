@@ -71,5 +71,9 @@ else {
 int camelCase;
 int CONSTANT_VARIABLE;
 ```
-
+### Keyboard Controls
+ - W = Move left paddle up
+ - S = Move left paddle down
+ - O - Move right paddle up
+ - L - Move right paddle down
 
