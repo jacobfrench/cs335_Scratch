@@ -91,6 +91,7 @@ struct Game {
     }
 };
 
+<<<<<<< HEAD
 string BG_IMAGE_PATH = "./images/titlescreen.ppm";
 string MAINBG_IMAGE_PATH = "./images/mainBG.ppm";
 string ATOM_IMAGE_PATH = "./images/atom.ppm";
@@ -100,6 +101,16 @@ GLuint introTexture;
 
 Ppmimage *mainBG = NULL;
 GLuint mainTexture;
+=======
+string BG_IMAGE_PATH1 = "./images/pipboy.ppm";
+string BG_IMAGE_PATH2 = "./images/ninja_robot.ppm";
+string BG_IMAGE_PATH3 = "./images/pong.ppm";
+
+Ppmimage *bgImage1 = NULL;
+Ppmimage *bgImage2 = NULL;
+Ppmimage *bgImage3 = NULL;
+GLuint bgStartTexture, bgTexture, bgTexture1, bgTexture2;
+>>>>>>> 7d8dbd6b682db57bc93f9034fecba471c65aaa3d
 
 int keys[65536];
 
@@ -126,6 +137,8 @@ Player p2;
 
 
 time_t timeBegin;
+enum BG_Screen {LEFT,RIGHT};
+BG_Screen selected_screen;
 //-----------------
 
 int main(void)
@@ -164,6 +177,7 @@ int main(void)
         //KEITHS ADDITION:
     hud = new Hud(xres ,yres);
     timeBegin = time(NULL);
+    selected_screen = LEFT;
     //-----------------------------
 
     //MAIN MENU LOOP 
@@ -308,11 +322,22 @@ void init_opengl(void)
     initialize_fonts();
     
     //Load image
+<<<<<<< HEAD
     introBG = loadImage(BG_IMAGE_PATH.c_str());
     mainBG = loadImage(MAINBG_IMAGE_PATH.c_str());
     //Create OpenGL texture element
     introTexture = generateTexture(introTexture, introBG);
     mainTexture = generateTexture(mainTexture, mainBG);
+=======
+    bgImage1 = loadImage(BG_IMAGE_PATH1.c_str());
+    bgImage2 = loadImage(BG_IMAGE_PATH2.c_str());
+    bgImage3 = loadImage(BG_IMAGE_PATH3.c_str());
+    //Create OpenGL texture element
+    bgTexture = generateTexture(bgTexture, bgImage1);
+    bgTexture1 = generateTexture(bgTexture1, bgImage1);
+    bgTexture2 = generateTexture(bgTexture2, bgImage2);
+    bgStartTexture = generateTexture(bgStartTexture, bgImage3);
+>>>>>>> 7d8dbd6b682db57bc93f9034fecba471c65aaa3d
 }
 
 void check_resize(XEvent *e)
@@ -384,13 +409,27 @@ int check_keys(XEvent *e, Game *g){
         if (key == XK_Shift_L || key == XK_Shift_R) {
             shift=1;
             return 0;
+<<<<<<< HEAD
         }
         if(key == XK_b) {
             printf("Enter pressed\n");
             intro = 1;
         }
+=======
+        }        
+>>>>>>> 7d8dbd6b682db57bc93f9034fecba471c65aaa3d
         if (hud->is_show_welcome == true){
+            if (key == XK_Left) {
+            bgTexture = generateTexture(bgTexture, bgImage1);
+            selected_screen = LEFT;
+            }
+            else if (key == XK_Right) {
+            bgTexture = generateTexture(bgTexture, bgImage2);            
+            selected_screen = RIGHT;
+            }
+            else{
             hud->is_show_welcome = false;
+            }
         }
     }
     else {
@@ -467,6 +506,7 @@ void render(Game *g)
 
     //Draw the background
     glClear(GL_COLOR_BUFFER_BIT);
+<<<<<<< HEAD
     
     renderTexture(mainTexture, xres, yres);
     /*glColor3f(1.0, 1.0, 1.0);
@@ -478,14 +518,48 @@ void render(Game *g)
 		glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
 	glEnd();
     */
+=======
+
+>>>>>>> 7d8dbd6b682db57bc93f9034fecba471c65aaa3d
         //KEITHS ADDITIONS:------------------
     if (hud->is_show_welcome == true){
+        renderTexture(bgStartTexture, xres, yres);
         //PASS showWelcome the high score:
-        hud->showWelcome(0);        
+        hud->showWelcome(0);
+        switch(selected_screen){
+            case LEFT:
+            hud->selectLeftScreen();
+            break;
+            case RIGHT:
+            hud->selectRightScreen();
+            break;
+            default:
+            break;
+        }
+        glColor3f(1.0, 1.0, 1.0);
+        //RENDER OPTION BG1:
+        glBindTexture(GL_TEXTURE_2D, bgTexture1);
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 1.0f); glVertex2i(xres/2 - 275, yres/2 - 200);
+            glTexCoord2f(0.0f, 0.0f); glVertex2i(xres/2 - 275, yres/2);
+            glTexCoord2f(1.0f, 0.0f); glVertex2i(xres/2 -25 , yres/2);
+            glTexCoord2f(1.0f, 1.0f); glVertex2i(xres/2 - 25, yres/2 - 200);
+        glEnd();
+        //RENDER OPTION BG2:
+        glBindTexture(GL_TEXTURE_2D, bgTexture2);
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 1.0f); glVertex2i(xres/2 + 275, yres/2 - 200);
+            glTexCoord2f(0.0f, 0.0f); glVertex2i(xres/2 + 275, yres/2);
+            glTexCoord2f(1.0f, 0.0f); glVertex2i(xres/2 + 25 , yres/2);
+            glTexCoord2f(1.0f, 1.0f); glVertex2i(xres/2 + 25, yres/2 - 200);
+        glEnd();
         return;
-    }    
+    }
+    else{
+        renderTexture(bgTexture, xres, yres);
+    }
     hud->showScore(p1.getScore(), p2.getScore());
-    hud->showHealth(50, 70);
+    hud->showHealth(100, 70);
     hud->showCourtYard();
     //------------------------------------
 	
