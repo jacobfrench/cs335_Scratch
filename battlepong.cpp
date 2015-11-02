@@ -131,7 +131,7 @@ void render(Game *game);
 Hud *hud;
 Player p1;
 Player p2;
-
+Obstacle* ob = new Obstacle(3);
 
 time_t timeBegin;
 enum BG_Screen {LEFT,RIGHT};
@@ -518,6 +518,14 @@ void render(Game *g)
             default:
             break;
         }
+
+        //Countdown Clock?
+        Rect r;
+        r.bot = (yres / 2.0) - 150;
+        r.left = xres / 2.0 - 50.0;
+        r.center = 0;
+        ggprint16(&r, 16, 0xffffff, "60"); 
+
         glColor3f(1.0, 0.0, 1.0);
         //RENDER OPTION BG1:
         glBindTexture(GL_TEXTURE_2D, bgTexture1);
