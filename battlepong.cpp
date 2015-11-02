@@ -91,7 +91,6 @@ struct Game {
     }
 };
 
-<<<<<<< HEAD
 string BG_IMAGE_PATH = "./images/titlescreen.ppm";
 string MAINBG_IMAGE_PATH = "./images/mainBG.ppm";
 string ATOM_IMAGE_PATH = "./images/atom.ppm";
@@ -101,7 +100,6 @@ GLuint introTexture;
 
 Ppmimage *mainBG = NULL;
 GLuint mainTexture;
-=======
 string BG_IMAGE_PATH1 = "./images/pipboy.ppm";
 string BG_IMAGE_PATH2 = "./images/ninja_robot.ppm";
 string BG_IMAGE_PATH3 = "./images/pong.ppm";
@@ -110,7 +108,6 @@ Ppmimage *bgImage1 = NULL;
 Ppmimage *bgImage2 = NULL;
 Ppmimage *bgImage3 = NULL;
 GLuint bgStartTexture, bgTexture, bgTexture1, bgTexture2;
->>>>>>> 7d8dbd6b682db57bc93f9034fecba471c65aaa3d
 
 int keys[65536];
 
@@ -322,13 +319,11 @@ void init_opengl(void)
     initialize_fonts();
     
     //Load image
-<<<<<<< HEAD
     introBG = loadImage(BG_IMAGE_PATH.c_str());
     mainBG = loadImage(MAINBG_IMAGE_PATH.c_str());
     //Create OpenGL texture element
     introTexture = generateTexture(introTexture, introBG);
     mainTexture = generateTexture(mainTexture, mainBG);
-=======
     bgImage1 = loadImage(BG_IMAGE_PATH1.c_str());
     bgImage2 = loadImage(BG_IMAGE_PATH2.c_str());
     bgImage3 = loadImage(BG_IMAGE_PATH3.c_str());
@@ -337,7 +332,6 @@ void init_opengl(void)
     bgTexture1 = generateTexture(bgTexture1, bgImage1);
     bgTexture2 = generateTexture(bgTexture2, bgImage2);
     bgStartTexture = generateTexture(bgStartTexture, bgImage3);
->>>>>>> 7d8dbd6b682db57bc93f9034fecba471c65aaa3d
 }
 
 void check_resize(XEvent *e)
@@ -409,15 +403,12 @@ int check_keys(XEvent *e, Game *g){
         if (key == XK_Shift_L || key == XK_Shift_R) {
             shift=1;
             return 0;
-<<<<<<< HEAD
         }
         if(key == XK_b) {
             printf("Enter pressed\n");
             intro = 1;
         }
-=======
-        }        
->>>>>>> 7d8dbd6b682db57bc93f9034fecba471c65aaa3d
+
         if (hud->is_show_welcome == true){
             if (key == XK_Left) {
             bgTexture = generateTexture(bgTexture, bgImage1);
@@ -505,9 +496,7 @@ void render(Game *g)
     g->mouseThrustOn=false;
 
     //Draw the background
-    glClear(GL_COLOR_BUFFER_BIT);
-<<<<<<< HEAD
-    
+    glClear(GL_COLOR_BUFFER_BIT);    
     renderTexture(mainTexture, xres, yres);
     /*glColor3f(1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, bgTexture);
@@ -518,9 +507,7 @@ void render(Game *g)
 		glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
 	glEnd();
     */
-=======
 
->>>>>>> 7d8dbd6b682db57bc93f9034fecba471c65aaa3d
         //KEITHS ADDITIONS:------------------
     if (hud->is_show_welcome == true){
         renderTexture(bgStartTexture, xres, yres);
