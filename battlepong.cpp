@@ -154,8 +154,11 @@ int main(void)
     ball.setXPos(xres/2);
     ball.setYPos(yres/2);
     ball.setRadius(15.0f);
-    ballYVel = 8.0f;
-    ballXVel = 8.0f;
+    
+    //ball velocity
+    ballXVel = 8.0f * cos(30);
+    ballYVel = 8.0f * sin(90);
+
     ball.setYVel(ballXVel);
     ball.setXVel(ballYVel);
 
@@ -166,7 +169,7 @@ int main(void)
     paddle1.setWidth(15.0f);
 
     //init paddle2
-    paddle2.setXPos((float)xres - 50.0f);
+    paddle2.setXPos((float)xres - 65.0f);
     paddle2.setYPos((float)yres/2);
     paddle2.setHeight(120.0f);
     paddle2.setWidth(15.0f);
@@ -281,7 +284,7 @@ void reshape_window(int width, int height)
     //RESET THE TWO PADDLES POSITION AND BALL RESOLUTION:
     paddle1.setXPos(50.0f);
     paddle1.setYPos((float)yres/2);
-    paddle2.setXPos((float)xres - 50.0f);
+    paddle2.setXPos((float)xres - 65.0f);
     paddle2.setYPos((float)yres/2);
     paddle1.setWindowHeight(yres);
     paddle2.setWindowHeight(yres);
@@ -427,7 +430,7 @@ int check_keys(XEvent *e, Game *g){
         return 0;
     }
 
-    float paddleSpeed = 10.0f;
+    float paddleSpeed = 20.0f;
     if (shift){}
     switch(key) {
         case XK_Escape:
@@ -487,10 +490,10 @@ void render(Game *g)
         glClear(GL_COLOR_BUFFER_BIT);
         renderTexture(introTexture, xres, yres);
         Rect r;
-        r.bot = yres / 2.0;
+        r.bot = (yres / 2.0) - 150;
         r.left = xres / 2.0 - 50.0;
         r.center = 0;
-        ggprint16(&r, 16, 0x00ff0000, "Welcome to BattlePong");
+        ggprint16(&r, 16, 0xffffff, "Press 'B' to start");
         return;
     }
     g->mouseThrustOn=false;
@@ -498,15 +501,7 @@ void render(Game *g)
     //Draw the background
     glClear(GL_COLOR_BUFFER_BIT);    
     renderTexture(mainTexture, xres, yres);
-    /*glColor3f(1.0, 1.0, 1.0);
-	glBindTexture(GL_TEXTURE_2D, bgTexture);
-	glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
 	glEnd();
-    */
 
         //KEITHS ADDITIONS:------------------
     if (hud->is_show_welcome == true){
@@ -523,7 +518,7 @@ void render(Game *g)
             default:
             break;
         }
-        glColor3f(1.0, 1.0, 1.0);
+        glColor3f(1.0, 0.0, 1.0);
         //RENDER OPTION BG1:
         glBindTexture(GL_TEXTURE_2D, bgTexture1);
         glBegin(GL_QUADS);
@@ -545,21 +540,19 @@ void render(Game *g)
     else{
         renderTexture(bgTexture, xres, yres);
     }
-    hud->showScore(p1.getScore(), p2.getScore());
+    hud->showScore(ball.getPlayer1Score(), ball.getPlayer2Score());
     hud->showHealth(100, 70);
     hud->showCourtYard();
     //------------------------------------
 	
-    Rect r;
-    r.bot = yres / 2.0;
-    r.left = xres / 2.0 - 50.0;
-    r.center = 0;
-    ggprint16(&r, 16, 0x00ff0000, "BattlePong");
+   
 
     //Draw the paddle
+    glColor3f(0.0, 0.5, 0.5);
     paddle1.render();
+    glColor3f(0.7, 0.5, 0.0);
     paddle2.render();
-
+    glEnd();
     //Draw the ball
     ball.render();
 
