@@ -1,15 +1,19 @@
+#ifndef _brianC_H_
+#define _brianC_H_
+
+
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include </usr/include/AL/alut.h>
-
+#include "brianC.h"
+#include <stdlib.h>
+#include <AL/alut.h>
 
 ALuint alSource;
 ALuint alBuffer;
-
 void createSound(int trackNo)
 {
     //Get started right here.
@@ -36,7 +40,7 @@ void createSound(int trackNo)
             alBuffer = alutCreateBufferFromFile("./boing.wav");
             break;
         case 2:
-            alBuffer = alutCreateBufferFromFile("./paddle1.wav");
+            alBuffer = alutCreateBufferFromFile("./boing.wav");
             break;
         case 3:
             alBuffer = alutCreateBufferFromFile("./score.wav");
@@ -56,18 +60,19 @@ void createSound(int trackNo)
     // // Set volume and pitch to normal, no looping of sound.
     alSourcef(alSource, AL_GAIN, 1.0f);
     alSourcef(alSource, AL_PITCH, 1.0f);
-    alSourcei(alSource, AL_LOOPING, AL_TRUE);
+    alSourcei(alSource, AL_LOOPING, AL_FALSE);
     if (alGetError() != AL_NO_ERROR) {
         printf("ERROR: setting source\n");
     }
     for (int i=0; i<4; i++) {
         while(true){
             alSourcePlay(alSource);
-            usleep(900000000);
+           // usleep(900000000);
         }
     }
 }
-void cleanupSound()
+
+void cleanSound()
 {
     // // }
     // // Cleanup.
@@ -88,3 +93,5 @@ alcDestroyContext(Context);
 alcCloseDevice(Device);
 
 }
+
+#endif

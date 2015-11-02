@@ -23,7 +23,6 @@
 #include "coryK.h"
 #include "player.h"
 #include "keithH.h"
-#include "brianC.h"
 
 #include "paddle.h"
 extern "C" {
@@ -71,7 +70,7 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 
 //screen width and height
 int xres=1250, yres=900;
-
+int intro = 0;
 //instance variables
 Ball ball(xres,yres);
 float ballXPos;
@@ -92,11 +91,23 @@ struct Game {
     }
 };
 
-string BG_IMAGE_PATH = "./images/pipboy.ppm";
+string BG_IMAGE_PATH = "./images/titlescreen.ppm";
+string MAINBG_IMAGE_PATH = "./images/mainBG.ppm";
 string ATOM_IMAGE_PATH = "./images/atom.ppm";
 
-Ppmimage *bgImage = NULL;
-GLuint bgTexture;
+Ppmimage *introBG = NULL;
+GLuint introTexture;
+
+Ppmimage *mainBG = NULL;
+GLuint mainTexture;
+string BG_IMAGE_PATH1 = "./images/pipboy.ppm";
+string BG_IMAGE_PATH2 = "./images/ninja_robot.ppm";
+string BG_IMAGE_PATH3 = "./images/pong.ppm";
+
+Ppmimage *bgImage1 = NULL;
+Ppmimage *bgImage2 = NULL;
+Ppmimage *bgImage3 = NULL;
+GLuint bgStartTexture, bgTexture, bgTexture1, bgTexture2;
 
 int keys[65536];
 
@@ -120,7 +131,11 @@ void render(Game *game);
 Hud *hud;
 Player p1;
 Player p2;
+
+
 time_t timeBegin;
+enum BG_Screen {LEFT,RIGHT};
+BG_Screen selected_screen;
 //-----------------
 
 int main(void)
@@ -139,8 +154,11 @@ int main(void)
     ball.setXPos(xres/2);
     ball.setYPos(yres/2);
     ball.setRadius(15.0f);
-    ballYVel = 8.0f;
-    ballXVel = 8.0f;
+    
+    //ball velocity
+    ballXVel = 8.0f * cos(30);
+    ballYVel = 8.0f * sin(90);
+
     ball.setYVel(ballXVel);
     ball.setXVel(ballYVel);
 
@@ -151,7 +169,7 @@ int main(void)
     paddle1.setWidth(15.0f);
 
     //init paddle2
-    paddle2.setXPos((float)xres - 50.0f);
+    paddle2.setXPos((float)xres - 65.0f);
     paddle2.setYPos((float)yres/2);
     paddle2.setHeight(120.0f);
     paddle2.setWidth(15.0f);
@@ -159,8 +177,22 @@ int main(void)
         //KEITHS ADDITION:
     hud = new Hud(xres ,yres);
     timeBegin = time(NULL);
+    selected_screen = LEFT;
     //-----------------------------
 
+    //MAIN MENU LOOP 
+    while(intro != 0) {
+        while (XPending(dpy)) {
+            XEvent e;
+            XNextEvent(dpy, &e);
+            check_resize(&e);
+            intro = check_keys(&e, &game);
+        }
+        render(&game);
+        glXSwapBuffers(dpy, win);
+    }
+
+    //BEGIN MAIN GAME LOOP
     int done=0;
       while (!done) {        
         while (XPending(dpy)) {
@@ -252,7 +284,7 @@ void reshape_window(int width, int height)
     //RESET THE TWO PADDLES POSITION AND BALL RESOLUTION:
     paddle1.setXPos(50.0f);
     paddle1.setYPos((float)yres/2);
-    paddle2.setXPos((float)xres - 50.0f);
+    paddle2.setXPos((float)xres - 65.0f);
     paddle2.setYPos((float)yres/2);
     paddle1.setWindowHeight(yres);
     paddle2.setWindowHeight(yres);
@@ -290,9 +322,19 @@ void init_opengl(void)
     initialize_fonts();
     
     //Load image
-    bgImage = loadImage(BG_IMAGE_PATH.c_str());
+    introBG = loadImage(BG_IMAGE_PATH.c_str());
+    mainBG = loadImage(MAINBG_IMAGE_PATH.c_str());
     //Create OpenGL texture element
-    bgTexture = generateTexture(bgTexture, bgImage);
+    introTexture = generateTexture(introTexture, introBG);
+    mainTexture = generateTexture(mainTexture, mainBG);
+    bgImage1 = loadImage(BG_IMAGE_PATH1.c_str());
+    bgImage2 = loadImage(BG_IMAGE_PATH2.c_str());
+    bgImage3 = loadImage(BG_IMAGE_PATH3.c_str());
+    //Create OpenGL texture element
+    bgTexture = generateTexture(bgTexture, bgImage1);
+    bgTexture1 = generateTexture(bgTexture1, bgImage1);
+    bgTexture2 = generateTexture(bgTexture2, bgImage2);
+    bgStartTexture = generateTexture(bgStartTexture, bgImage3);
 }
 
 void check_resize(XEvent *e)
@@ -355,6 +397,7 @@ int check_keys(XEvent *e, Game *g){
             paddle2.setYPos(paddle2.getYPos());
         }
 
+
         return 0;
     }
 
@@ -364,15 +407,30 @@ int check_keys(XEvent *e, Game *g){
             shift=1;
             return 0;
         }
+        if(key == XK_b) {
+            printf("Enter pressed\n");
+            intro = 1;
+        }
+
         if (hud->is_show_welcome == true){
+            if (key == XK_Left) {
+            bgTexture = generateTexture(bgTexture, bgImage1);
+            selected_screen = LEFT;
+            }
+            else if (key == XK_Right) {
+            bgTexture = generateTexture(bgTexture, bgImage2);            
+            selected_screen = RIGHT;
+            }
+            else{
             hud->is_show_welcome = false;
+            }
         }
     }
     else {
         return 0;
     }
 
-    float paddleSpeed = 10.0f;
+    float paddleSpeed = 20.0f;
     if (shift){}
     switch(key) {
         case XK_Escape:
@@ -428,42 +486,73 @@ void physics(Game *g)
 
 void render(Game *g)
 {    
+    if(intro < 1) {
+        glClear(GL_COLOR_BUFFER_BIT);
+        renderTexture(introTexture, xres, yres);
+        Rect r;
+        r.bot = (yres / 2.0) - 150;
+        r.left = xres / 2.0 - 50.0;
+        r.center = 0;
+        ggprint16(&r, 16, 0xffffff, "Press 'B' to start");
+        return;
+    }
     g->mouseThrustOn=false;
 
     //Draw the background
-    glClear(GL_COLOR_BUFFER_BIT);
-    
-    renderTexture(bgTexture, xres, yres);
-    /*glColor3f(1.0, 1.0, 1.0);
-	glBindTexture(GL_TEXTURE_2D, bgTexture);
-	glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(0, yres);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i(xres, yres);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(xres, 0);
+    glClear(GL_COLOR_BUFFER_BIT);    
+    renderTexture(mainTexture, xres, yres);
 	glEnd();
-    */
+
         //KEITHS ADDITIONS:------------------
     if (hud->is_show_welcome == true){
+        renderTexture(bgStartTexture, xres, yres);
         //PASS showWelcome the high score:
-        hud->showWelcome(0);        
+        hud->showWelcome(0);
+        switch(selected_screen){
+            case LEFT:
+            hud->selectLeftScreen();
+            break;
+            case RIGHT:
+            hud->selectRightScreen();
+            break;
+            default:
+            break;
+        }
+        glColor3f(1.0, 0.0, 1.0);
+        //RENDER OPTION BG1:
+        glBindTexture(GL_TEXTURE_2D, bgTexture1);
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 1.0f); glVertex2i(xres/2 - 275, yres/2 - 200);
+            glTexCoord2f(0.0f, 0.0f); glVertex2i(xres/2 - 275, yres/2);
+            glTexCoord2f(1.0f, 0.0f); glVertex2i(xres/2 -25 , yres/2);
+            glTexCoord2f(1.0f, 1.0f); glVertex2i(xres/2 - 25, yres/2 - 200);
+        glEnd();
+        //RENDER OPTION BG2:
+        glBindTexture(GL_TEXTURE_2D, bgTexture2);
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 1.0f); glVertex2i(xres/2 + 275, yres/2 - 200);
+            glTexCoord2f(0.0f, 0.0f); glVertex2i(xres/2 + 275, yres/2);
+            glTexCoord2f(1.0f, 0.0f); glVertex2i(xres/2 + 25 , yres/2);
+            glTexCoord2f(1.0f, 1.0f); glVertex2i(xres/2 + 25, yres/2 - 200);
+        glEnd();
         return;
-    }    
-    hud->showScore(p1.getScore(), p2.getScore());
-    hud->showHealth(50, 70);
+    }
+    else{
+        renderTexture(bgTexture, xres, yres);
+    }
+    hud->showScore(ball.getPlayer1Score(), ball.getPlayer2Score());
+    hud->showHealth(100, 70);
     hud->showCourtYard();
     //------------------------------------
 	
-    Rect r;
-    r.bot = yres / 2.0;
-    r.left = xres / 2.0 - 50.0;
-    r.center = 0;
-    ggprint16(&r, 16, 0x00ff0000, "BattlePong");
+   
 
     //Draw the paddle
+    glColor3f(0.0, 0.5, 0.5);
     paddle1.render();
+    glColor3f(0.7, 0.5, 0.0);
     paddle2.render();
-
+    glEnd();
     //Draw the ball
     ball.render();
 

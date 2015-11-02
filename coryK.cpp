@@ -66,3 +66,56 @@ void renderTexture(GLuint texture, int width, int height)
 		glTexCoord2f(1.0f, 1.0f); glVertex2i(width, 0);
 	glEnd();
 }
+
+/*======
+Class: Obstacle
+Purpose: This class is a blueprint for
+creating various obstacles in the game world
+
+Examples :
+	Moving Platforms
+
+
+=======*/
+class Obstacle {
+ private:
+ 	float xPos;
+ 	float yPos;
+ 	float width;
+ 	float height;
+ 	int yres;
+ public:
+ 	Obstacle();
+ 	~Obstacle();
+ 	void render();
+};
+
+Obstacle::Obstacle() {
+	//TODO
+}
+
+void Obstacle::render() {
+	glPushMatrix();
+	glTranslatef(xPos, yPos, 0);
+	glRectf(0.0f, 0.0f, width, height);
+	glEnd();
+	glColor3f(1.0f, 1.0f, 0.0f);
+	glBegin(GL_POINTS);
+	glVertex2f(0.0f, 0.0f);
+	glEnd();
+	glPopMatrix();
+}
+
+/*======
+PowerUps
+=======*/
+struct test {
+ int a;
+ int b;
+};
+
+
+
+/*===================
+Sockets/Multiplayer?
+===================*/

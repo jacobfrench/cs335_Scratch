@@ -4,8 +4,8 @@ LFLAGS = -lrt -lX11 -lGLU -lGL -pthread -lm #-lXrandr
 
 all:	battlepong fonts.o fonttex.o libggfonts.a
 
-battlepong:	battlepong.cpp ppm.cpp log.c mytime.cpp paddle.cpp player.cpp libggfonts.a
-	g++ $(CFLAGS) battlepong.cpp  ppm.cpp log.c mytime.cpp jacobF.cpp  coryK.cpp brianC.cpp keithH.cpp paddle.cpp player.cpp libggfonts.a -Wall -Wextra $(LFLAGS) -lalut -lopenal   -obattlepong
+battlepong:	battlepong.cpp ppm.cpp log.c mytime.cpp player.cpp libggfonts.a
+	g++ $(CFLAGS) battlepong.cpp  ppm.cpp log.c mytime.cpp jacobF.cpp  coryK.cpp brianC.cpp keithH.cpp player.cpp libggfonts.a -Wall -Wextra $(LFLAGS) -lalut -lopenal   -obattlepong
 
 cory: coryK.cpp ppm.cpp
 	g++ -c $(CFLAGS) coryK.cpp ppm.cpp $(LFLAGS)

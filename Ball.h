@@ -5,6 +5,7 @@
 #include <GL/glx.h>
 #include <stdlib.h>
 
+
 class Ball{
 
 private:
@@ -23,7 +24,7 @@ public:
     void render();
 	void setXVel(float xVel);
 	float getXVel();
-
+    
 	void setYVel(float yVel);
 	float getYVel();
 
