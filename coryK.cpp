@@ -119,29 +119,34 @@ void GameObject::render() {
 
 /*======
 PowerUps
+
 =======*/
 
 
 
 /*======
-PowerUps
+Obstacles
+Obstacles can be 2d polygons that
+have collision detection
+
+Examples 
+ Moving platforms
+
 =======*/
 Obstacle::Obstacle(int numOfPoints):GameObject() {
 	this->numOfPoints = numOfPoints;
 }
 
 void Obstacle::render() {
-	glPushMatrix();
-	glTranslatef( 50.0f, 50.0f, 0.0f);
-	glBegin(GL_TRIANGLES);
-		glColor3f(1.0f,0.0f,0.0f);
-		glVertex3f( 0.0f, 1.0f, 0.0f);
-		glColor3f(0.0f,1.0f,0.0f);
-		glVertex3f( 1.0f,-1.0f, 0.0f);
-		glColor3f(0.0f,0.0f,1.0f);
-		glVertex3f(-1.0f,-1.0f, 0.0f);
-	glEnd();
-	glPopMatrix();
+    glColor3ub(50,50,50);
+    glPushMatrix();
+    glTranslatef(this->getXPos(), this->getYPos(), 0);
+    glRectf(0.0f, 0.0f, this->getWidth(), this->getHeight());
+    glEnd();
+    glBegin(GL_POINTS);
+    glVertex2f(0.0f, 0.0f);
+    glEnd();
+    glPopMatrix();
 }
 
 /*===================

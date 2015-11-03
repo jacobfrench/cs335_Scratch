@@ -43,6 +43,10 @@ class GameObject {
 
 };
 
+//Obstacle
+//TODO
+//Set shape type based on number of points
+//i.e. triangle=3, cube/rectangle
 class Obstacle: public GameObject {
 	private:
 		int numOfPoints;
