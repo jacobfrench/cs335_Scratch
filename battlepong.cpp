@@ -34,6 +34,9 @@ typedef float Flt;
 typedef float Vec[3];
 typedef Flt	Matrix[4][4];
 
+
+
+
 //macros
 #define rnd() (((double)rand())/(double)RAND_MAX)
 #define random(a) (rand()%a)
@@ -111,6 +114,9 @@ int keys[65536];
 
 Game g;
 
+
+
+
 //function prototypes
 void initXWindows(void);
 void init_opengl(void);
@@ -126,6 +132,17 @@ void render(Game *game);
 Hud *hud;
 Player p1;
 Player p2;
+
+
+//Variable for declaring which level
+//is selected
+int level;
+
+/* Test - Create Base Class - Game Object */
+GameObject* obj = new GameObject(xres / 2.0, yres / 2.0, 50.0f, 50.0f);
+/* Test - Create Derivd Class - Obstacle */
+Obstacle *obstacle = new Obstacle(3);
+
 
 
 time_t timeBegin;
@@ -408,10 +425,13 @@ int check_keys(XEvent *e, Game *g){
 			if (key == XK_Left) {
 				bgTexture = generateTexture(bgTexture, bgImage1);
 				selected_screen = LEFT;
+				level = 1;
 			}
 			else if (key == XK_Right) {
 				bgTexture = generateTexture(bgTexture, bgImage2);            
 				selected_screen = RIGHT;
+				level = 2;
+
 			}			
 		}
 	}
@@ -528,8 +548,6 @@ void render(Game *g)
 	hud->showHealth(100, 70);
 	hud->showCourtYard();    
 
-
-
 	//Draw the paddle
 	glColor3f(0.0, 0.5, 0.5);
 	paddle1.render();
@@ -539,5 +557,12 @@ void render(Game *g)
 	//Draw the ball
 	ball.render();
 
+	//TODO
+	//If option 2 is selected i.e. ninja_robot.ppm is the background
+	//Level 2 selected
+	//Draw some obstacles to showcase a difference between level 1 and level2
+	if(level == 2) {
+		obstacle->render();
+	}
 
 }
