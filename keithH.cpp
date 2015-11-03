@@ -57,41 +57,17 @@ void Hud::showCourtYard(){
 
 
 void Hud::showWelcome(int in_high_score){
-    glColor3ub(0,255,255);
-    unsigned int cref = 0x0000ffff;
+    glColor3ub(0,255,255);    
     glEnable(GL_TEXTURE_2D);
-    //glBindTexture(GL_TEXTURE_2D, 0);
-    //PRINT WELCOME MESSAGE:    
-    Rect r0;
-    r0.bot = yres/2.0 + 300;
-    r0.left = xres/2.0 - 50.0;
-    r0.center = 0;
-    ggprint16(&r0, 70, cref, "Welcome to Pong!");
     char buf[50];
 
     //PRINT HIGH SCORE:
     Rect r1;
-    r1.bot = yres/2.0 + 200.0;
-    r1.left = xres/2.0 - 50.0;
+    r1.bot = yres - 100.0;
+    r1.left = xres/2.0 - 100.0;
     r1.center = 0;    
-    sprintf(buf,"Current high score is:%d",in_high_score);
-    ggprint12(&r1, 70, cref, buf);
-    //--------------------------------------------------------
-
-    //PRINT CHOOSE BACKGROUND SCREEN:
-    Rect r2;
-    r2.bot = yres/2.0 + 100.0;
-    r2.left = xres/2.0 - 50.0;
-    r2.center = 0;
-    ggprint12(&r2, 70, cref, "Press <- -> to choose background:");
-    //--------------------------------------------------------
-
-    //PRINT GAME START PROMPT:
-    Rect r3;
-    r3.bot = yres/2.0 - 300.0;
-    r3.left = xres/2.0 - 50.0;
-    r3.center = 0;
-    ggprint12(&r3, 70, cref, "Press any key to begin.");
+    sprintf(buf,"Current high score is: %d",in_high_score);
+    ggprint16(&r1, 16, 0x00ffffff, buf);
     //--------------------------------------------------------
 }
 
@@ -154,7 +130,7 @@ void Hud::showScore(int in_score1, int in_score2){
     r0.bot = yres - 33.0;
     r0.left = 40.0,
     r0.center = 0;
-    sprintf(buf,"Player 1 Score:%d",in_score1);
+    sprintf(buf,"Player 1 Score: %d",in_score1);
     ggprint16(&r0, 70, cref, buf);
     //--------------------------------------------------------
 
@@ -163,30 +139,30 @@ void Hud::showScore(int in_score1, int in_score2){
     r1.bot = yres - 33.0;
     r1.left = xres/2,
     r1.center = 0;
-    sprintf(buf,"Player 2 Score:%d",in_score2);
+    sprintf(buf,"Player 2 Score: %d",in_score2);
     ggprint16(&r1, 70, cref, buf);
     //--------------------------------------------------------
 
 }
 
 void Hud::selectLeftScreen(){
-    glColor3ub( 255, 0, 255 );
+    glColor3ub( 0, 255, 0);
     glBegin(GL_QUADS);
     glLineWidth(10);
-    glVertex2f( xres/2 - 285, yres/2 + 10 );
-    glVertex2f( xres/2 -285, yres/2 - 210 );
-    glVertex2f( xres/2 - 15, yres/2 - 210);
-    glVertex2f( xres/2 - 15, yres/2 + 10);
+    glVertex2f( xres/2 - 360, yres/2 - 150 + 10 );
+    glVertex2f( xres/2 -360, yres/2 - 350 - 10 );
+    glVertex2f( xres/2 - 90, yres/2 - 350 - 10);
+    glVertex2f( xres/2 - 90, yres/2 - 150 + 10);
     glEnd();
 }
 
 void Hud::selectRightScreen(){
-    glColor3ub( 255, 0, 255 );
+    glColor3ub( 0, 255, 0 );
     glBegin(GL_QUADS);
     glLineWidth(10);
-    glVertex2f( xres/2 + 285, yres/2 + 10 );
-    glVertex2f( xres/2 + 285, yres/2 - 210 );
-    glVertex2f( xres/2 + 15, yres/2 - 210);
-    glVertex2f( xres/2 + 15, yres/2 + 10);
+    glVertex2f( xres/2 + 360, yres/2 -150 + 10 );
+    glVertex2f( xres/2 + 360, yres/2 - 350 - 10 );
+    glVertex2f( xres/2 + 90, yres/2 - 350 - 10);
+    glVertex2f( xres/2 + 90, yres/2 -150 + 10);
     glEnd();
 }
