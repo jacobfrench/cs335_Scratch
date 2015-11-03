@@ -48,7 +48,8 @@ class Obstacle: public GameObject {
 		int numOfPoints;
 	public:
 		Obstacle(int numOfPoints);
-
+		void checkCollision(int xres, int yres, Ball &ball, Player &player);
+		void render();
 
 };
 

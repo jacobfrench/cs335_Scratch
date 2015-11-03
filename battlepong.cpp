@@ -131,7 +131,13 @@ void render(Game *game);
 Hud *hud;
 Player p1;
 Player p2;
-Obstacle* ob = new Obstacle(3);
+
+/* Test - Create Base Class - Game Object */
+GameObject* obj = new GameObject(xres / 2.0, yres / 2.0, 50.0f, 50.0f);
+/* Test - Create Derivd Class - Obstacle */
+Obstacle *obstacle = new Obstacle(3);
+
+
 
 time_t timeBegin;
 enum BG_Screen {LEFT,RIGHT};
@@ -555,13 +561,17 @@ void render(Game *g)
 	
    
 
-    //Draw the paddle
-    glColor3f(0.0, 0.5, 0.5);
-    paddle1.render();
-    glColor3f(0.7, 0.5, 0.0);
-    paddle2.render();
-    glEnd();
-    //Draw the ball
-    ball.render();
+    obstacle->render();    
+    // obj->render();
+
+    // //Draw the paddle
+    // glColor3f(0.0, 0.5, 0.5);
+    // paddle1.render();
+    // glColor3f(0.7, 0.5, 0.0);
+    // paddle2.render();
+    // glEnd();
+    // //Draw the ball
+    // ball.render();
+
 
 }

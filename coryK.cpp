@@ -66,10 +66,10 @@ GameObject::GameObject(float xPos, float yPos, float width, float height) {
 
 //TEMP, will remove
 GameObject::GameObject() {
-	this->xPos = 1.0f;
-	this->yPos = 1.0f;
-	this->width = 1.0f;
-	this->height = 1.0f;
+	this->xPos = 1250 / 2.0;
+	this->yPos = 900 / 2.0;
+	this->width = 50.f;
+	this->height = 50.f;
 }
 
 void GameObject::setXPos(float xPos) {
@@ -104,6 +104,16 @@ float GameObject::getHeight() {
 	return this->height;
 }
 
+void GameObject::render() {
+	glPushMatrix();
+	glTranslatef(this->xPos, this->yPos, 0);
+	glRectf(0.0f, 0.0f, width, height);
+	glEnd();
+	glBegin(GL_POINTS);
+	glVertex2f(0.0f, 0.0f);
+	glEnd();
+	glPopMatrix();
+}
 
 
 
@@ -117,6 +127,19 @@ Obstacle::Obstacle(int numOfPoints):GameObject() {
 	this->numOfPoints = numOfPoints;
 }
 
+void Obstacle::render() {
+	glPushMatrix();
+	glTranslatef( 50.0f, 50.0f, 0.0f);
+	glBegin(GL_TRIANGLES);
+		glColor3f(1.0f,0.0f,0.0f);
+		glVertex3f( 0.0f, 1.0f, 0.0f);
+		glColor3f(0.0f,1.0f,0.0f);
+		glVertex3f( 1.0f,-1.0f, 0.0f);
+		glColor3f(0.0f,0.0f,1.0f);
+		glVertex3f(-1.0f,-1.0f, 0.0f);
+	glEnd();
+	glPopMatrix();
+}
 
 /*===================
 Sockets/Multiplayer?
