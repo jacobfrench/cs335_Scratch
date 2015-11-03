@@ -477,11 +477,6 @@ void physics(Game *g)
     //paddle2 movement
     paddle2.setYVel(paddle2YVel);
 
-    //temporary. delete this later.
-    std::cout << "player1: " << ball.getPlayer1Score() << " player2: " << ball.getPlayer2Score() << std::endl;
-
-
-
 }
 
 void render(Game *g)
@@ -547,12 +542,13 @@ void render(Game *g)
 	
    
 
-    //Draw the paddle
+    //Draw the paddles
     glColor3f(0.0, 0.5, 0.5);
     paddle1.render();
     glColor3f(0.7, 0.5, 0.0);
     paddle2.render();
     glEnd();
+    
     //Draw the ball
     ball.render();
 
