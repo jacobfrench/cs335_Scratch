@@ -25,7 +25,7 @@ void Ball::render(){
 
     glBegin(GL_TRIANGLE_FAN);
 
-    glColor3f(1.0f,1.0f,10.0f);
+    glColor3f(1.0f,1.0f,1.0f);
         glVertex2f(xPos, yPos); // center of circle
         for(i = 0; i <= triangleAmount;i++) {
             glVertex2f(
@@ -33,13 +33,12 @@ void Ball::render(){
                 yPos + (radius * sin(i * twicePi / triangleAmount))
             );
         }
-    //glTranslatef(xPos, yPos, 0);
     glEnd();
 }
 
 void Ball::checkCollision(float xres, float yres){
     
-    float ballspeed = 15.0f;
+    float ballspeed = 10.0f;
     float ballXVel = ballspeed * cos(0) + 10;
     float ballYVel = ballspeed * -sin(35);
     
@@ -184,16 +183,20 @@ float Paddle::getWidth(){
 }
 
 void Paddle::checkCollision(int yres, Ball &ball){
-    float ballSpeed = 15.0f;
-    float maxBounceAngle = 75;
-    float relativeIntersectY = (this->getYPos()+(this->getHeight()/2));
-    float normalizedTelativeIntersectionY = (relativeIntersectY/(this->getHeight()/2));
-    float bounceAngle = normalizedTelativeIntersectionY + maxBounceAngle;
-    
-    
-    
-    float ballXVel = cos(bounceAngle) * ballSpeed;
-    float ballYVel = -sin(bounceAngle) * ballSpeed;
+//    float ballSpeed = 15.0f;
+//    float maxBounceAngle = 75;
+//    float relativeIntersectY = (this->getYPos()+(this->getHeight()/2));
+//    float normalizedTelativeIntersectionY = (relativeIntersectY/(this->getHeight()/2));
+//    float bounceAngle = normalizedTelativeIntersectionY + maxBounceAngle;
+//    
+//    
+//    
+//    float ballXVel = cos(bounceAngle) * ballSpeed;
+//    float ballYVel = -sin(bounceAngle) * ballSpeed;
+
+    float ballspeed = 15.0f;
+    float ballXVel = ballspeed * cos(0)+10;
+    float ballYVel = ballspeed * -sin(35);
 
     
     
@@ -218,11 +221,11 @@ void Paddle::checkCollision(int yres, Ball &ball){
         //moving up
         if(yVel > 0){
             ball.setYVel(ballYVel);
-            ball.setXVel(-ballXVel);
+            ball.setXVel(ballXVel);
         }
         //moving down
         else if(yVel < 0)
-            ball.setYVel(ballYVel);
+            ball.setYVel(-ballYVel);
             ball.setXVel(ballXVel);
     }
     else if(onRightSide && hitRightPaddle){

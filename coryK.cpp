@@ -120,9 +120,12 @@ void GameObject::render() {
 /*======
 PowerUps
 =======*/
-// Obstacle::Obstacle(int numOfPoints):GameObject(float xPos, float yPos, float width, float height) {
-// 	this->numOfPoints = numOfPoints;
-// }
+
+
+
+/*======
+PowerUps
+=======*/
 Obstacle::Obstacle(int numOfPoints):GameObject() {
 	this->numOfPoints = numOfPoints;
 }
