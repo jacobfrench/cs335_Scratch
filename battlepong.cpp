@@ -466,11 +466,6 @@ void physics(Game *g)
 	//paddle2 movement
 	paddle2.setYVel(paddle2YVel);
 
-	//temporary. delete this later.
-	std::cout << "player1: " << ball.getPlayer1Score() << " player2: " << ball.getPlayer2Score() << std::endl;
-
-
-
 }
 
 void render(Game *g)
@@ -496,6 +491,7 @@ void render(Game *g)
 
         //PASS showWelcome the high score(0):
         hud->showWelcome(0);
+<<<<<<< HEAD
 		switch(selected_screen){
 			case LEFT:
 				hud->selectLeftScreen();
@@ -543,5 +539,55 @@ void render(Game *g)
 	glEnd();
 	//Draw the ball
 	ball.render();
+=======
+        switch(selected_screen){
+            case LEFT:
+            hud->selectLeftScreen();
+            break;
+            case RIGHT:
+            hud->selectRightScreen();
+            break;
+            default:
+            break;
+        }
+        glColor3f(1.0, 0.0, 1.0);
+        //RENDER OPTION BG1:
+        glBindTexture(GL_TEXTURE_2D, bgTexture1);
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 1.0f); glVertex2i(xres/2 - 275, yres/2 - 200);
+            glTexCoord2f(0.0f, 0.0f); glVertex2i(xres/2 - 275, yres/2);
+            glTexCoord2f(1.0f, 0.0f); glVertex2i(xres/2 -25 , yres/2);
+            glTexCoord2f(1.0f, 1.0f); glVertex2i(xres/2 - 25, yres/2 - 200);
+        glEnd();
+        //RENDER OPTION BG2:
+        glBindTexture(GL_TEXTURE_2D, bgTexture2);
+        glBegin(GL_QUADS);
+            glTexCoord2f(0.0f, 1.0f); glVertex2i(xres/2 + 275, yres/2 - 200);
+            glTexCoord2f(0.0f, 0.0f); glVertex2i(xres/2 + 275, yres/2);
+            glTexCoord2f(1.0f, 0.0f); glVertex2i(xres/2 + 25 , yres/2);
+            glTexCoord2f(1.0f, 1.0f); glVertex2i(xres/2 + 25, yres/2 - 200);
+        glEnd();
+        return;
+    }
+    else{
+        renderTexture(bgTexture, xres, yres);
+    }
+    hud->showScore(ball.getPlayer1Score(), ball.getPlayer2Score());
+    hud->showHealth(100, 70);
+    hud->showCourtYard();
+    //------------------------------------
+	
+   
+
+    //Draw the paddles
+    glColor3f(0.0, 0.5, 0.5);
+    paddle1.render();
+    glColor3f(0.7, 0.5, 0.0);
+    paddle2.render();
+    glEnd();
+    
+    //Draw the ball
+    ball.render();
+>>>>>>> upstream/master
 
 }
