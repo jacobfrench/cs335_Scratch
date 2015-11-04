@@ -9,25 +9,11 @@
 #include <stdlib.h>
 #include "coryK.h"
 #include "ppm.h"
+#include "Ball.h"
+#include "player.h"
 #include <GL/glx.h>
 
 using namespace std;
-
-
-
-//TODO
-//Create class that holds constant strings
-//to paths to images
-/*class ImageContainer {
-public:
-	static string BG_IMAGE_PATH = "./images/pipboy.ppm";
-	static string ATOM_IMAGE_PATH = "./images/atom.ppm";
-
-	ImageContainer();
-	~ImageContainer();
-};
-*/
-
 void submitScore() 
 {
   char postToWeb[] = "curl --data param1=5 http://cs.csubak.edu/~ckitchens/cs335/finalproject/index.php";
@@ -67,54 +53,101 @@ void renderTexture(GLuint texture, int width, int height)
 	glEnd();
 }
 
+
 /*======
-Class: Obstacle
-Purpose: This class is a blueprint for
-creating various obstacles in the game world
-
-Examples :
-	Moving Platforms
-
-
-=======*/
-class Obstacle {
- private:
- 	float xPos;
- 	float yPos;
- 	float width;
- 	float height;
- 	int yres;
- public:
- 	Obstacle();
- 	~Obstacle();
- 	void render();
-};
-
-Obstacle::Obstacle() {
-	//TODO
+GameObject
+========*/
+GameObject::GameObject(float xPos, float yPos, float width, float height) {
+	this->xPos = xPos;
+	this->yPos = yPos;
+	this->width = width;
+	this->height = height;
 }
 
-void Obstacle::render() {
+//TEMP, will remove
+GameObject::GameObject() {
+	this->xPos = 1250 / 2.0;
+	this->yPos = 900 / 2.0;
+	this->width = 50.f;
+	this->height = 50.f;
+}
+
+void GameObject::setXPos(float xPos) {
+	this->xPos = xPos;
+}
+
+void GameObject::setYPos(float yPos) {
+	this->yPos = yPos;
+}
+
+void GameObject::setWidth(float width) {
+	this->width = width;
+}
+
+void GameObject::setHeight(float height) {
+	this->height = height;
+}
+
+float GameObject::getXPos() {
+	return this->xPos; 
+}
+
+float GameObject::getYPos() {
+	return this->yPos;
+}
+
+float GameObject::getWidth() {
+	return this->width;
+}
+
+float GameObject::getHeight() {
+	return this->height;
+}
+
+void GameObject::render() {
 	glPushMatrix();
-	glTranslatef(xPos, yPos, 0);
+	glTranslatef(this->xPos, this->yPos, 0);
 	glRectf(0.0f, 0.0f, width, height);
 	glEnd();
-	glColor3f(1.0f, 1.0f, 0.0f);
 	glBegin(GL_POINTS);
 	glVertex2f(0.0f, 0.0f);
 	glEnd();
 	glPopMatrix();
 }
 
+
+
 /*======
 PowerUps
+
 =======*/
-struct test {
- int a;
- int b;
-};
 
 
+
+/*======
+Obstacles
+Obstacles can be 2d polygons that
+have collision detection
+
+Examples 
+ Moving platforms
+
+=======*/
+Obstacle::Obstacle(int numOfPoints):GameObject() {
+	this->numOfPoints = numOfPoints;
+}
+
+void Obstacle::render() {
+    glColor3ub(50,50,50);
+    glPushMatrix();
+    glTranslatef(this->getXPos(), this->getYPos(), 0);
+    glRectf(0.0f, 0.0f, this->getWidth(), this->getHeight());
+    glEnd();
+    glBegin(GL_POINTS);
+    glVertex2f(0.0f, 0.0f);
+    glEnd();
+    glPopMatrix();
+}
 
 /*===================
 Sockets/Multiplayer?
