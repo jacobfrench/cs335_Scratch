@@ -1,6 +1,6 @@
 #include "Ball.h"
 #include "paddle.h"
-
+#include "brianC.h"
 Ball::Ball(const int in_xres, const int in_yres){
     this->player1Score = 0;
     this->player2Score = 0;
@@ -25,7 +25,7 @@ void Ball::render(){
 
     glBegin(GL_TRIANGLE_FAN);
 
-    glColor3f(1.0f,1.0f,1.0f);
+    glColor3f(1.0f,1.0f,10.0f);
         glVertex2f(xPos, yPos); // center of circle
         for(i = 0; i <= triangleAmount;i++) {
             glVertex2f(
@@ -33,12 +33,13 @@ void Ball::render(){
                 yPos + (radius * sin(i * twicePi / triangleAmount))
             );
         }
+    //glTranslatef(xPos, yPos, 0);
     glEnd();
 }
 
 void Ball::checkCollision(float xres, float yres){
     
-    float ballspeed = 10.0f;
+    float ballspeed = 15.0f;
     float ballXVel = ballspeed * cos(0) + 10;
     float ballYVel = ballspeed * -sin(35);
     
@@ -47,20 +48,26 @@ void Ball::checkCollision(float xres, float yres){
     //check collision with screen edges
     //y-axis
     if(yPos >= yres && yVel > 0){
-        yVel = -ballYVel;
-       
+	createSound(2);
+	yVel = -ballYVel;
+	      
     }
     else if(yPos <= 0 && yVel < 0){
-        yVel = ballYVel;
+        createSound(2);
+	yVel = ballYVel;
     }
     //x-axis
     else if(xPos >= xres && xVel > 0){
         xVel = -ballXVel;
         player1Score++;
+	createSound(3);
+//	cleanSound();
     }
     else if(xPos <= 0 && xVel < 0){
         xVel = ballXVel;
         player2Score++;
+	createSound(4);
+//	cleanSound();
     }
 
 }
@@ -183,20 +190,16 @@ float Paddle::getWidth(){
 }
 
 void Paddle::checkCollision(int yres, Ball &ball){
-//    float ballSpeed = 15.0f;
-//    float maxBounceAngle = 75;
-//    float relativeIntersectY = (this->getYPos()+(this->getHeight()/2));
-//    float normalizedTelativeIntersectionY = (relativeIntersectY/(this->getHeight()/2));
-//    float bounceAngle = normalizedTelativeIntersectionY + maxBounceAngle;
-//    
-//    
-//    
-//    float ballXVel = cos(bounceAngle) * ballSpeed;
-//    float ballYVel = -sin(bounceAngle) * ballSpeed;
-
-    float ballspeed = 15.0f;
-    float ballXVel = ballspeed * cos(0)+10;
-    float ballYVel = ballspeed * -sin(35);
+    float ballSpeed = 15.0f;
+    float maxBounceAngle = 75;
+    float relativeIntersectY = (this->getYPos()+(this->getHeight()/2));
+    float normalizedTelativeIntersectionY = (relativeIntersectY/(this->getHeight()/2));
+    float bounceAngle = normalizedTelativeIntersectionY + maxBounceAngle;
+    
+    
+    
+    float ballXVel = cos(bounceAngle) * ballSpeed;
+    float ballYVel = -sin(bounceAngle) * ballSpeed;
 
     
     
@@ -210,6 +213,7 @@ void Paddle::checkCollision(int yres, Ball &ball){
     //collision with edges of screen
     if(yPos + height >= yres && yVel > 0){
         yPos = yres - height;
+
     }
     else if(yPos <= 0 && yVel < 0){
         yPos = 0;
@@ -218,24 +222,30 @@ void Paddle::checkCollision(int yres, Ball &ball){
     //collision with ball
     if(onLeftSide && hitLeftPaddle){
         ball.setXVel(ballXVel);
+	createSound(1);
         //moving up
         if(yVel > 0){
             ball.setYVel(ballYVel);
-            ball.setXVel(ballXVel);
+            ball.setXVel(-ballXVel);
+	//    createSound(1);
         }
         //moving down
         else if(yVel < 0)
-            ball.setYVel(-ballYVel);
+            ball.setYVel(ballYVel);
             ball.setXVel(ballXVel);
+	  //  createSound(1);
     }
     else if(onRightSide && hitRightPaddle){
         ball.setXVel(-ballXVel);
+	    createSound(1);
         if(yVel > 0){
             ball.setYVel(ballYVel);
             ball.setXVel(-ballXVel);
+	    //createSound(1);
         }
         else if(yVel < 0)
             ball.setYVel(-ballYVel);
+	    //createSound(1);
     }
 
 }
