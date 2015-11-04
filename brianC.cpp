@@ -21,7 +21,7 @@ void createSound(int trackNo)
     if (alGetError() != AL_NO_ERROR) {
         printf("ERROR: alutInit()\n");
     }
-    // // Clear error state.
+     // Clear error state.
     alGetError();
 
     // // Setup the listener.
