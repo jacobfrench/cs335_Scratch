@@ -76,15 +76,15 @@ int xres=1250, yres=900;
 int intro = 0;
 //instance variables
 Ball ball(xres,yres);
+Paddle paddle1(yres);
+Paddle paddle2(yres);
+
 float ballXPos;
 float ballYPos;
 float ballXVel;
 float ballYVel;
 
-Paddle paddle1(yres);
 float paddle1YVel;
-
-Paddle paddle2(yres);
 float paddle2YVel;
 
 struct Game {
@@ -108,7 +108,10 @@ string BG_IMAGE_PATH2 = "./images/ninja_robot.ppm";
 
 Ppmimage *bgImage1 = NULL;
 Ppmimage *bgImage2 = NULL;
-GLuint bgStartTexture, bgTexture, bgTexture1, bgTexture2;
+
+Ppmimage *atomImage = NULL;
+
+GLuint bgStartTexture, bgTexture, bgTexture1, bgTexture2, atomTexture;
 
 int keys[65536];
 
@@ -125,8 +128,14 @@ void check_resize(XEvent *e);
 int check_keys(XEvent *e, Game *g);
 void init(Game *g);
 void init_sounds(void);
+void init_ball_paddles(void);
 void physics(Game *game);
 void render(Game *game);
+void init_powerup_x_y(void);
+
+int powerup_posx, powerup_posy, powerup_width = 50, powerup_height = 50;
+//offset is margin around retro background(courtyard):
+int offset = 40;
 
 
 Hud *hud;
@@ -145,9 +154,11 @@ Obstacle *obstacle = new Obstacle(3);
 
 
 
-time_t timeBegin;
+time_t timeBegin, timeSpawn, timeRandom;
 enum BG_Screen {LEFT,RIGHT};
 BG_Screen selected_screen;
+
+bool is_render_powerup;
 //-----------------
 
 int main(void)
@@ -160,34 +171,9 @@ int main(void)
 	init(&game);
 	srand(time(NULL));
 	clock_gettime(CLOCK_REALTIME, &timePause);
-	clock_gettime(CLOCK_REALTIME, &timeStart);
+	clock_gettime(CLOCK_REALTIME, &timeStart);	
 
-	//init ball variables
-	ball.setXPos(xres/2);
-	ball.setYPos(yres/2);
-	ball.setRadius(15.0f);
-
-	//ball velocity
-	ballXVel = 8.0f * cos(30);
-	ballYVel = 8.0f * sin(90);
-
-	ball.setYVel(ballXVel);
-	ball.setXVel(ballYVel);
-
-	//init paddle1
-	paddle1.setXPos(50.0f);
-	paddle1.setYPos((float)yres/2);
-	paddle1.setHeight(120.0f);
-	paddle1.setWidth(15.0f);
-
-	//init paddle2
-	paddle2.setXPos((float)xres - 65.0f);
-	paddle2.setYPos((float)yres/2);
-	paddle2.setHeight(120.0f);
-	paddle2.setWidth(15.0f);    
-
-	hud = new Hud(xres ,yres);
-	timeBegin = time(NULL);
+	hud = new Hud(xres ,yres);	
 	selected_screen = LEFT;    
 
 	//MAIN MENU LOOP 
@@ -200,7 +186,11 @@ int main(void)
 		}
 		render(&game);
 		glXSwapBuffers(dpy, win);
-	}
+    }
+
+    timeBegin = time(NULL);
+    timeRandom = random(5);
+    is_render_powerup = false;
 
 	//BEGIN MAIN GAME LOOP
 	int done=0;
@@ -219,6 +209,10 @@ int main(void)
 			physics(&game);
 			physicsCountdown -= physicsRate;
 		}
+        if (is_render_powerup == false && (timeBegin + timeRandom < time(NULL))){
+            init_powerup_x_y();
+            is_render_powerup = true;
+        }
 		render(&game);
 		glXSwapBuffers(dpy, win);
 	}
@@ -227,6 +221,32 @@ int main(void)
 	logClose();
 
 	return 0;
+}
+
+void init_ball_paddles(){
+//init ball variables
+ball.setXPos(xres/2);
+ball.setYPos(yres/2);
+ball.setRadius(15.0f);
+
+//ball velocity
+ballXVel = 8.0f * cos(30);
+ballYVel = 8.0f * sin(90);
+
+ball.setYVel(ballXVel);
+ball.setXVel(ballYVel);
+
+//init paddle1
+paddle1.setXPos(50.0f);
+paddle1.setYPos((float)yres/2);
+paddle1.setHeight(120.0f);
+paddle1.setWidth(15.0f);
+
+//init paddle2
+paddle2.setXPos((float)xres - 65.0f);
+paddle2.setYPos((float)yres/2);
+paddle2.setHeight(120.0f);
+paddle2.setWidth(15.0f);
 }
 
 void cleanupXWindows(void)
@@ -287,9 +307,11 @@ void reshape_window(int width, int height)
 	setup_screen_res(width, height);
 	//
 
-	//KEITHS ADDITION:
+
 	hud->setResolution(xres,yres);
-	//----------------------
+
+    //RE-INITIATE POWERUP POSITIONS:
+    init_powerup_x_y();
 
 	//RESET THE TWO PADDLES POSITION AND BALL RESOLUTION:
 	paddle1.setXPos(50.0f);
@@ -331,17 +353,19 @@ void init_opengl(void)
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
 
-	//Load image
-	introBG = loadImage(BG_IMAGE_PATH.c_str());
-	mainBG = loadImage(MAINBG_IMAGE_PATH.c_str());
-	//Create OpenGL texture element
-	introTexture = generateTexture(introTexture, introBG);
-	mainTexture = generateTexture(mainTexture, mainBG);
-	bgImage1 = loadImage(BG_IMAGE_PATH1.c_str());
-	bgImage2 = loadImage(BG_IMAGE_PATH2.c_str());    
-	//Create OpenGL texture element
-	bgTexture = generateTexture(bgTexture, bgImage1);
-	bgTexture1 = generateTexture(bgTexture1, bgImage1);
+    //Load powerup image(s):
+    atomImage = loadImage(ATOM_IMAGE_PATH.c_str());
+    atomTexture = generateTexture(atomTexture, atomImage);
+
+    //Create background texture elements
+    introBG = loadImage(BG_IMAGE_PATH.c_str());
+    introTexture = generateTexture(introTexture, introBG);
+    mainBG = loadImage(MAINBG_IMAGE_PATH.c_str());
+    mainTexture = generateTexture(mainTexture, mainBG);
+    bgImage1 = loadImage(BG_IMAGE_PATH1.c_str());
+    bgTexture = generateTexture(bgTexture, bgImage1);
+    bgTexture1 = generateTexture(bgTexture1, bgImage1);
+    bgImage2 = loadImage(BG_IMAGE_PATH2.c_str());
 	bgTexture2 = generateTexture(bgTexture2, bgImage2);
 }
 
@@ -419,6 +443,7 @@ int check_keys(XEvent *e, Game *g){
 			printf("Enter pressed\n");
 			intro = 1;
             hud->is_show_welcome = false;
+            init_ball_paddles();
 		}
 
 		if (hud->is_show_welcome == true){
@@ -488,6 +513,12 @@ void physics(Game *g)
 
 }
 
+void init_powerup_x_y(){
+    int y_range = yres - (2*offset) - (powerup_height);
+    powerup_posx = (int)(random(xres/2) + (xres/4) - (powerup_width/2));
+    powerup_posy = (int)(random(y_range) + (offset));
+}
+
 void render(Game *g)
 {    
 	g->mouseThrustOn=false;
@@ -546,7 +577,19 @@ void render(Game *g)
 
 	hud->showScore(ball.getPlayer1Score(), ball.getPlayer2Score());
 	hud->showHealth(100, 70);
-	hud->showCourtYard();    
+    hud->showCourtYard();
+
+    if (is_render_powerup == true){
+        //DRAW ATOM(RANDOMLY):
+        //init_powerup_x_y();
+        glBindTexture(GL_TEXTURE_2D, atomTexture);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(powerup_posx + powerup_width, powerup_posy + powerup_height);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(powerup_posx + powerup_width, powerup_posy);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(powerup_posx, powerup_posy);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(powerup_posx, powerup_posy + powerup_height);
+        glEnd();
+    }
 
 	//Draw the paddle
 	glColor3f(0.0, 0.5, 0.5);
