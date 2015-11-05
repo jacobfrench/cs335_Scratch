@@ -158,7 +158,7 @@ time_t timeBegin, timeSpawn, timeRandom;
 enum BG_Screen {LEFT,RIGHT};
 BG_Screen selected_screen;
 
-bool is_render_powerup;
+int is_render_powerup;
 //-----------------
 
 int main(void)
@@ -189,8 +189,8 @@ int main(void)
     }
 
     timeBegin = time(NULL);
-    timeRandom = random(5);
-    is_render_powerup = false;
+    timeRandom = random(7);
+    is_render_powerup = 0;
 
 	//BEGIN MAIN GAME LOOP
 	int done=0;
@@ -209,9 +209,16 @@ int main(void)
 			physics(&game);
 			physicsCountdown -= physicsRate;
 		}
-        if (is_render_powerup == false && (timeBegin + timeRandom < time(NULL))){
+        if (timeBegin + timeRandom < time(NULL)){
             init_powerup_x_y();
-            is_render_powerup = true;
+            timeBegin = time(NULL);
+            is_render_powerup = is_render_powerup^1;
+            if (is_render_powerup){
+            timeRandom = random(10);
+            }
+            else{
+            timeRandom = random(4);
+            }
         }
 		render(&game);
 		glXSwapBuffers(dpy, win);
@@ -355,7 +362,7 @@ void init_opengl(void)
 
     //Load powerup image(s):
     atomImage = loadImage(ATOM_IMAGE_PATH.c_str());
-    atomTexture = generateTexture(atomTexture, atomImage);
+    atomTexture = generateTransparentTexture(atomTexture, atomImage);
 
     //Create background texture elements
     introBG = loadImage(BG_IMAGE_PATH.c_str());
@@ -521,7 +528,7 @@ void init_powerup_x_y(){
 
 void render(Game *g)
 {    
-	g->mouseThrustOn=false;
+	g->mouseThrustOn=false;    
 	glClear(GL_COLOR_BUFFER_BIT);
 	if(intro < 1) {
 		//DRAW titlescreen.ppm:
@@ -579,19 +586,25 @@ void render(Game *g)
 	hud->showHealth(100, 70);
     hud->showCourtYard();
 
-    if (is_render_powerup == true){
-        //DRAW ATOM(RANDOMLY):
-        //init_powerup_x_y();
+    if (is_render_powerup){
+        //DRAW ATOM(RANDOMLY):        
+        //init_powerup_x_y();                
+        glPushMatrix();
         glBindTexture(GL_TEXTURE_2D, atomTexture);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
         glBegin(GL_QUADS);
         glTexCoord2f(0.0f, 1.0f); glVertex2i(powerup_posx + powerup_width, powerup_posy + powerup_height);
         glTexCoord2f(0.0f, 0.0f); glVertex2i(powerup_posx + powerup_width, powerup_posy);
         glTexCoord2f(1.0f, 0.0f); glVertex2i(powerup_posx, powerup_posy);
         glTexCoord2f(1.0f, 1.0f); glVertex2i(powerup_posx, powerup_posy + powerup_height);
-        glEnd();
+        glEnd();                
+        glDisable(GL_BLEND);
+        glPopMatrix();
     }
+    glBindTexture(GL_TEXTURE_2D, 0);
 
-	//Draw the paddle
+	//Draw the paddle    
 	glColor3f(0.0, 0.5, 0.5);
 	paddle1.render();
 	glColor3f(0.7, 0.5, 0.0);
