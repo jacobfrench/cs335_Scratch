@@ -1,6 +1,6 @@
 #include "Ball.h"
 #include "paddle.h"
-
+#include "brianC.h"
 Ball::Ball(const int in_xres, const int in_yres){
     this->player1Score = 0;
     this->player2Score = 0;
@@ -47,20 +47,24 @@ void Ball::checkCollision(float xres, float yres){
     //check collision with screen edges
     //y-axis
     if(yPos >= yres && yVel > 0){
+	createSound(2);
         yVel = -ballYVel;
-       
+
     }
     else if(yPos <= 0 && yVel < 0){
-        yVel = ballYVel;
+        createSound(2);
+	yVel = ballYVel;
     }
     //x-axis
     else if(xPos >= xres && xVel > 0){
         xVel = -ballXVel;
         player1Score++;
+	createSound(3);
     }
     else if(xPos <= 0 && xVel < 0){
         xVel = ballXVel;
         player2Score++;
+	createSound(4);
     }
 
 }
@@ -218,6 +222,7 @@ void Paddle::checkCollision(int yres, Ball &ball){
     //collision with ball
     if(onLeftSide && hitLeftPaddle){
         ball.setXVel(ballXVel);
+	createSound(1);
         //moving up
         if(yVel > 0){
             ball.setYVel(ballYVel);
@@ -230,6 +235,7 @@ void Paddle::checkCollision(int yres, Ball &ball){
     }
     else if(onRightSide && hitRightPaddle){
         ball.setXVel(-ballXVel);
+	createSound(1);
         if(yVel > 0){
             ball.setYVel(ballYVel);
             ball.setXVel(-ballXVel);
