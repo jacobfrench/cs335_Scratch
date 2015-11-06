@@ -41,6 +41,52 @@ GLuint generateTexture(GLuint texture, Ppmimage * image)
 	return texture;
 }
 
+GLuint generateTransparentTexture(GLuint texture, Ppmimage * image)
+{
+
+    glEnable(GL_TEXTURE_2D);
+    glGenTextures(1, &texture);
+
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3,
+                            image->width, image->height,
+                            0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
+    GLuint silhouetteTexture;
+    glGenTextures(1, &silhouetteTexture);
+
+    glBindTexture(GL_TEXTURE_2D, silhouetteTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char *silhouetteData = buildAlphaData(image);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width, image->height, 0,
+                            GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+    delete [] silhouetteData;
+    return silhouetteTexture;
+}
+
+unsigned char *buildAlphaData(Ppmimage *img)
+{
+    int a,b,c;
+    unsigned char *newdata, *ptr;
+    unsigned char *data = (unsigned char *)img->data;
+    newdata = new unsigned char[img->width * img->height * 4];
+    ptr = newdata;
+    for (int i=0; i<img->width * img->height * 3; i+=3) {
+        a = *(data+0);
+        b = *(data+1);
+        c = *(data+2);
+        *(ptr+0) = a;
+        *(ptr+1) = b;
+        *(ptr+2) = c;
+        *(ptr+3) = (a|b|c);
+        ptr += 4;
+        data += 3;
+    }
+    return newdata;
+}
+
 void renderTexture(GLuint texture, int width, int height) 
 {
 	glColor3f(1.0, 1.0, 1.0);
