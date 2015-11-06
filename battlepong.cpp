@@ -481,6 +481,7 @@ int check_keys(XEvent *e, Game *g){
             gameStarted = true;
             if (is_gameover == true){
             hud->is_show_welcome = true;
+            gameStarted = false;
             intro = 0;
             }
             else{

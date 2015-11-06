@@ -251,23 +251,31 @@ void Paddle::checkCollision(int yres, Ball &ball){
 	createSound(1);
         //moving up
         if(yVel > 0){
+            ballYVel = ballspeed * -sin(55);
             ball.setYVel(ballYVel);
             ball.setXVel(ballXVel);
         }
         //moving down
-        else if(yVel < 0)
+        else if(yVel < 0){
+            ballYVel = ballspeed * -sin(55);
             ball.setYVel(-ballYVel);
             ball.setXVel(ballXVel);
+            
+        }
     }
     else if(onRightSide && hitRightPaddle){
         ball.setXVel(-ballXVel);
 	createSound(1);
         if(yVel > 0){
+            ballYVel = ballspeed * -sin(55);
             ball.setYVel(ballYVel);
             ball.setXVel(-ballXVel);
         }
-        else if(yVel < 0)
+        else if(yVel < 0){
+            ballYVel = ballspeed * -sin(55);
             ball.setYVel(-ballYVel);
+
+        }
     }
 
 }
