@@ -186,6 +186,9 @@ int main(void)
 	srand(time(NULL));
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);	
+    
+    ballXVel = 0;
+    ballYVel = 0;
 
 	hud = new Hud(xres ,yres);	
 	selected_screen = LEFT;    
