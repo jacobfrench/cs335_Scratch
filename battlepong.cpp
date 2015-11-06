@@ -8,6 +8,10 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
+#include <sstream>
+#include <string>
+#include <stdlib.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <ctime>
 #include <cmath>
@@ -23,6 +27,7 @@
 #include "coryK.h"
 #include "player.h"
 #include "keithH.h"
+#include "timer.h"
 
 #include "paddle.h"
 extern "C" {
@@ -87,6 +92,9 @@ float ballYVel;
 float paddle1YVel;
 float paddle2YVel;
 
+int startTime = 1800000; //3 minutes
+string timeStr;
+
 struct Game {
 	bool mouseThrustOn;
 	Game() {
@@ -116,7 +124,7 @@ GLuint bgStartTexture, bgTexture, bgTexture1, bgTexture2, atomTexture;
 int keys[65536];
 
 Game g;
-
+Timer timer;
 
 
 
@@ -132,7 +140,7 @@ void init_ball_paddles(void);
 void physics(Game *game);
 void render(Game *game);
 void init_powerup_x_y(void);
-
+int getTimer();
 int powerup_posx, powerup_posy, powerup_width = 50, powerup_height = 50;
 //offset is margin around retro background(courtyard):
 int offset = 40;
@@ -451,6 +459,7 @@ int check_keys(XEvent *e, Game *g){
 			intro = 1;
             hud->is_show_welcome = false;
             init_ball_paddles();
+            timer.start();
 		}
 
 		if (hud->is_show_welcome == true){
@@ -524,6 +533,16 @@ void init_powerup_x_y(){
     int y_range = yres - (2*offset) - (powerup_height);
     powerup_posx = (int)(random(xres/2) + (xres/4) - (powerup_width/2));
     powerup_posy = (int)(random(y_range) + (offset));
+}
+
+int getTimer(){    
+    int time = startTime - timer.getTicks();
+    string str;
+    stringstream ss;
+    stringstream ss2;
+    ss << time;
+    timeStr = ss.str();
+    return atoi(timeStr.c_str()) / 10000;
 }
 
 void render(Game *g)
@@ -620,5 +639,10 @@ void render(Game *g)
 	if(level == 2) {
 		obstacle->render();
 	}
+    
+    
+    
+    hud->showTimer(getTimer());
 
 }
+

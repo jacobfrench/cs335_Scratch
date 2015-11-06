@@ -9,7 +9,6 @@
 #include <cstring>
 #include "fonts.h"
 #include <string>
-using namespace std;
 
 class Hud{
 
@@ -26,7 +25,7 @@ public:
    void showHealth(int player1_health, int player2_health);
    void selectLeftScreen();
    void selectRightScreen();
-   void showTimer(int timer);
+   void showTimer(string timer);
 };
 
 

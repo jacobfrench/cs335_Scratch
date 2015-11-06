@@ -145,6 +145,20 @@ void Hud::showScore(int in_score1, int in_score2){
 
 }
 
+void Hud::showTimer(int timer){
+    glEnable(GL_TEXTURE_2D);
+    glColor3ub(255,255,255);
+    char buf[50];
+    unsigned int cref = 0x00ffffff;
+    
+    Rect r;
+    r.bot = (yres/10) - 80;
+    r.left = 100;
+    r.center = 0;
+    sprintf(buf, "Time: %d", timer);
+    ggprint16(&r, 70, cref, buf);
+}
+
 void Hud::selectLeftScreen(){
     glColor3ub( 0, 255, 0);
     glBegin(GL_QUADS);
