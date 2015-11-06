@@ -88,6 +88,7 @@ float ballXPos;
 float ballYPos;
 float ballXVel;
 float ballYVel;
+bool gameStarted;
 
 float paddle1YVel;
 float paddle2YVel;
@@ -186,15 +187,13 @@ int main(void)
 	srand(time(NULL));
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);	
-    
-    ballXVel = 0;
-    ballYVel = 0;
 
 	hud = new Hud(xres ,yres);	
 	selected_screen = LEFT;    
     is_gameover = false;
     high_score = 0;
     is_render_powerup = 0;
+    gameStarted = false;
 
 	//MAIN MENU LOOP 
 	while(intro != 0) {
@@ -478,7 +477,8 @@ int check_keys(XEvent *e, Game *g){
 			return 0;
 		}
 		if(key == XK_b) {
-			printf("Enter pressed\n");            			
+			printf("Enter pressed\n");
+            gameStarted = true;
             if (is_gameover == true){
             hud->is_show_welcome = true;
             intro = 0;
@@ -544,9 +544,12 @@ void physics(Game *g)
 	g->mouseThrustOn=false;
 
 	//ball collision
-	ball.setYVel(ball.getYVel());
-	ball.setXVel(ball.getXVel());
-	ball.checkCollision(xres, yres);
+    if(gameStarted){
+        ball.setYVel(ball.getYVel());
+        ball.setXVel(ball.getXVel());
+        ball.checkCollision(xres, yres);
+    }
+	
 
 	//paddle collision
 	paddle1.checkCollision(yres, ball);
