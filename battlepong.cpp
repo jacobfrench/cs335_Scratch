@@ -8,6 +8,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
+#include <sstream>
 #include <unistd.h>
 #include <ctime>
 #include <cmath>
@@ -23,6 +24,7 @@
 #include "coryK.h"
 #include "player.h"
 #include "keithH.h"
+#include "timer.h"
 
 #include "paddle.h"
 extern "C" {
@@ -87,6 +89,9 @@ float ballYVel;
 float paddle1YVel;
 float paddle2YVel;
 
+int startTime = 1800000; //3 minutes
+string timeStr;
+
 struct Game {
 	bool mouseThrustOn;
 	Game() {
@@ -116,7 +121,7 @@ GLuint bgStartTexture, bgTexture, bgTexture1, bgTexture2, atomTexture;
 int keys[65536];
 
 Game g;
-
+Timer timer;
 
 
 
@@ -621,4 +626,18 @@ void render(Game *g)
 		obstacle->render();
 	}
 
+}
+
+string getTimer(){    
+    int time = startTime - timer.getTicks();
+    string str;
+    stringstream ss;
+    ss << time;
+    timeStr = ss.str();
+    ss << timeStr[0] << timeStr[1] << timeStr[2];
+    str = ss.str();
+    cout << timeStr << endl;
+    return str;
+
+    
 }
