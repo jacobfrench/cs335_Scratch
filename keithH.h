@@ -27,6 +27,7 @@ public:
    void selectLeftScreen();
    void selectRightScreen();
    void showTimer(int timer);
+   void showGameOver(int in_high_score,int p1_score,int p2_score);
 };
 
 

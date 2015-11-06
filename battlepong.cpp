@@ -111,15 +111,18 @@ GLuint introTexture;
 
 Ppmimage *mainBG = NULL;
 GLuint mainTexture;
-string BG_IMAGE_PATH1 = "./images/pipboy.ppm";
-string BG_IMAGE_PATH2 = "./images/ninja_robot.ppm";
+string BG_IMAGE_PATH1 = "./images/ninja_robot.ppm";
+string BG_IMAGE_PATH2 = "./images/ninja_robot2.ppm";
 
 Ppmimage *bgImage1 = NULL;
 Ppmimage *bgImage2 = NULL;
 
 Ppmimage *atomImage = NULL;
 
-GLuint bgStartTexture, bgTexture, bgTexture1, bgTexture2, atomTexture;
+Ppmimage *gameOverImage = NULL;
+string GAMEOVER_IMAGE_PATH = "./images/game_over.ppm";
+
+GLuint bgStartTexture, bgTexture, bgTexture1, bgTexture2, atomTexture, gameOverTexture;
 
 int keys[65536];
 
@@ -141,6 +144,7 @@ void physics(Game *game);
 void render(Game *game);
 void init_powerup_x_y(void);
 int getTimer();
+void stopGame();
 int powerup_posx, powerup_posy, powerup_width = 50, powerup_height = 50;
 //offset is margin around retro background(courtyard):
 int offset = 40;
@@ -149,6 +153,7 @@ int offset = 40;
 Hud *hud;
 Player p1;
 Player p2;
+int high_score;
 
 
 //Variable for declaring which level
@@ -167,6 +172,7 @@ enum BG_Screen {LEFT,RIGHT};
 BG_Screen selected_screen;
 
 int is_render_powerup;
+bool is_gameover;
 //-----------------
 
 int main(void)
@@ -183,6 +189,9 @@ int main(void)
 
 	hud = new Hud(xres ,yres);	
 	selected_screen = LEFT;    
+    is_gameover = false;
+    high_score = 0;
+    is_render_powerup = 0;
 
 	//MAIN MENU LOOP 
 	while(intro != 0) {
@@ -197,8 +206,7 @@ int main(void)
     }
 
     timeBegin = time(NULL);
-    timeRandom = random(7);
-    is_render_powerup = 0;
+    timeRandom = random(7);    
 
 	//BEGIN MAIN GAME LOOP
 	int done=0;
@@ -240,6 +248,7 @@ int main(void)
 
 void init_ball_paddles(){
 //init ball variables
+ball.resetScore();
 ball.setXPos(xres/2);
 ball.setYPos(yres/2);
 ball.setRadius(15.0f);
@@ -262,6 +271,13 @@ paddle2.setXPos((float)xres - 65.0f);
 paddle2.setYPos((float)yres/2);
 paddle2.setHeight(120.0f);
 paddle2.setWidth(15.0f);
+}
+
+void stopGame(){
+ball.setXPos(xres/2);
+ball.setYPos(yres/2);
+ball.setXVel(0);
+ball.setYVel(0);;
 }
 
 void cleanupXWindows(void)
@@ -382,6 +398,10 @@ void init_opengl(void)
     bgTexture1 = generateTexture(bgTexture1, bgImage1);
     bgImage2 = loadImage(BG_IMAGE_PATH2.c_str());
 	bgTexture2 = generateTexture(bgTexture2, bgImage2);
+
+    //Create gameover texture:
+    gameOverImage = loadImage(GAMEOVER_IMAGE_PATH.c_str());
+    gameOverTexture = generateTexture(gameOverTexture, gameOverImage);
 }
 
 void check_resize(XEvent *e)
@@ -455,11 +475,19 @@ int check_keys(XEvent *e, Game *g){
 			return 0;
 		}
 		if(key == XK_b) {
-			printf("Enter pressed\n");
-			intro = 1;
+			printf("Enter pressed\n");            			
+            if (is_gameover == true){
+            hud->is_show_welcome = true;
+            intro = 0;
+            }
+            else{
             hud->is_show_welcome = false;
             init_ball_paddles();
-            timer.start();
+            intro = 1;
+            }
+            is_gameover = false;
+            timer.reset();
+            timer.start();            
 		}
 
 		if (hud->is_show_welcome == true){
@@ -525,7 +553,7 @@ void physics(Game *g)
 	paddle1.setYVel(paddle1YVel);
 
 	//paddle2 movement
-	paddle2.setYVel(paddle2YVel);
+	paddle2.setYVel(paddle2YVel);        
 
 }
 
@@ -542,7 +570,13 @@ int getTimer(){
     stringstream ss2;
     ss << time;
     timeStr = ss.str();
-    return atoi(timeStr.c_str()) / 10000;
+    int ret = atoi(timeStr.c_str()) / 10000;
+    if (ret < 0){
+        ret = 0;
+        is_gameover = true;
+        stopGame();
+    }
+    return ret;
 }
 
 void render(Game *g)
@@ -566,8 +600,8 @@ void render(Game *g)
 		r2.center = 0;
 		ggprint16(&r2, 16, 0xffffff, "Press 'B' to start");
 
-        //PASS showWelcome the high score(0):
-        hud->showWelcome(0);
+        //PASS showWelcome the high score:
+        hud->showWelcome(high_score);
         switch(selected_screen){
 			case LEFT:
 				hud->selectLeftScreen();
@@ -598,8 +632,17 @@ void render(Game *g)
 		return;
 	}
 	else{
-		renderTexture(bgTexture, xres, yres);
+        renderTexture(bgTexture, xres, yres);
 	}
+
+    if (is_gameover){
+        renderTexture(gameOverTexture, xres, yres);
+        hud->showGameOver(high_score,ball.getPlayer1Score(), ball.getPlayer2Score());
+        //NEED TO SAVE HIGH SCORE HERE:
+
+        return;
+    }
+
 
 	hud->showScore(ball.getPlayer1Score(), ball.getPlayer2Score());
 	hud->showHealth(100, 70);

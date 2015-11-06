@@ -17,6 +17,12 @@ void Ball::setResolution(int in_xres, int in_yres)
     yres = in_yres;
 }
 
+void Ball::resetScore()
+{
+    this->player1Score = 0;
+    this->player2Score = 0;
+}
+
 Ball::~Ball(){
 
 }
@@ -291,7 +297,7 @@ bool Timer::isPaused()
 
 bool Timer::isActive()
 {
-    return !paused & started;
+    return !paused && started;
 }
 
 void Timer::pause()

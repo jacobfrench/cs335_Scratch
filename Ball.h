@@ -42,6 +42,8 @@ public:
 	int getPlayer1Score();
 	int getPlayer2Score();
 
+    void resetScore();
+
     Ball(const int in_xres, const int yres);
     ~Ball();
 };
