@@ -92,7 +92,7 @@ float ballYVel;
 float paddle1YVel;
 float paddle2YVel;
 
-int startTime = 1800000; //3 minutes
+int startTime = 3000000; //3 minutes
 string timeStr;
 
 struct Game {
