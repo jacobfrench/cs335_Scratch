@@ -152,11 +152,61 @@ void Hud::showTimer(int timer){
     unsigned int cref = 0x00ffffff;
     
     Rect r;
-    r.bot = (yres/10) - 80;
-    r.left = 100;
+    r.bot = 10;
+    r.left = xres/2 - 25;
     r.center = 0;
     sprintf(buf, "Time: %d", timer);
     ggprint16(&r, 70, cref, buf);
+}
+
+void Hud::showGameOver(int high_score,int p1_score,int p2_score){
+    //PRINT HIGH SCORE:
+    Rect r0;
+    r0.bot = yres - 100.0;
+    r0.left = xres/2.0 - 100.0;
+    r0.center = 0;
+    char buf1[100];
+    char buf2[100];
+    sprintf(buf1,"Current high score is: %d",high_score);
+    ggprint16(&r0, 16, 0x00ffffff, buf1);
+    //--------------------------------------------------------
+
+    glEnable(GL_TEXTURE_2D);
+    glColor3ub(255,255,255);
+    unsigned int cref = 0x00ffffff;
+
+    if (p1_score >= p2_score){
+        sprintf(buf1,"Player 1 wins! %d points ", p1_score);
+        sprintf(buf2,"Player 2 loses! %d points ", p2_score);
+    }
+    else{
+        sprintf(buf1,"Player 2 wins! %d points ", p2_score);
+        sprintf(buf2,"Player 1 loses! %d points ", p1_score);
+    }
+
+    //PRINT FIRST SCORE:
+    Rect r1;
+    r1.bot = yres/2;
+    r1.left = xres/2.0 - 100.0,
+    r1.center = 0;
+    ggprint16(&r1, 70, cref, buf1);
+    //--------------------------------------------------------
+
+    //PRINT SECOND SCORE:
+    Rect r2;
+    r2.bot = yres/2 - 80.0;
+    r2.left = xres/2.0 - 100.0,
+    r2.center = 0;
+    ggprint16(&r2, 70, cref, buf2);
+    //--------------------------------------------------------
+
+    //PRINT RETURN TO MENU:
+    Rect r3;
+    r3.bot = yres/2 - 160.0;
+    r3.left = xres/2.0 - 100.0,
+    r3.center = 0;
+    ggprint16(&r3, 70, 0x00ff9999, "PRESS 'B' TO GO BACK TO MAIN MENU");
+    //--------------------------------------------------------
 }
 
 void Hud::selectLeftScreen(){
