@@ -555,6 +555,7 @@ void physics(Game *g)
 	//paddle collision
 	paddle1.checkCollision(yres, ball);
 	paddle2.checkCollision(yres, ball);
+	obstacle->checkCollision(xres, yres, ball, p1);
 
 	//paddle1 movement
 	paddle1.setYVel(paddle1YVel);
@@ -687,9 +688,10 @@ void render(Game *g)
 	//Level 2 selected
 	//Draw some obstacles to showcase a difference between level 1 and level2
 	if(level == 2) {
-		obstacle->render();
+		//obstacle->render();
+
 	}
-    
+    obstacle->render();
     
     
     hud->showTimer(getTimer());
