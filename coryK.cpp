@@ -262,9 +262,11 @@ void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player) {
 	//Obstacle movment
 	float obstacleSpeed = 5.0f;
 	
+	//if object hits bottom of screen
 	if(yPos <= 0.0f){
 		setYVel(obstacleSpeed);
 	}
+	//if object hits top of screen
 	else if(yPos + height >= yres){
 		setYVel(-obstacleSpeed);
 	}

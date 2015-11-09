@@ -584,8 +584,10 @@ int getTimer(){
     int ret = atoi(timeStr.c_str()) / 10000;
     if (ret < 0){
         ret = 0;
-        //is_gameover = true;
-        //stopGame();
+        is_gameover = true;
+		ball.setXVel(0.0f);
+		ball.setYVel(0.0f);
+        stopGame();
     }
     return ret;
 }
