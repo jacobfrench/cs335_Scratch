@@ -548,6 +548,7 @@ void physics(Game *g)
     if(gameStarted){
         ball.setYVel(ball.getYVel());
         ball.setXVel(ball.getXVel());
+		obstacle->setYVel(obstacle->getYVel());
         ball.checkCollision(xres, yres);
     }
 	
@@ -555,6 +556,7 @@ void physics(Game *g)
 	//paddle collision
 	paddle1.checkCollision(yres, ball);
 	paddle2.checkCollision(yres, ball);
+	
 	obstacle->checkCollision(xres, yres, ball, p1);
 
 	//paddle1 movement
@@ -562,6 +564,7 @@ void physics(Game *g)
 
 	//paddle2 movement
 	paddle2.setYVel(paddle2YVel);        
+	
 
 }
 

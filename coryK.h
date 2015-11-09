@@ -29,6 +29,7 @@ class GameObject {
 	private:
 		float xPos;
 		float yPos;
+		float yVel;
 		float width;
 		float height;
 	public:
@@ -43,6 +44,8 @@ class GameObject {
 		float getYPos();
 		float getWidth();
 		float getHeight();
+		void setYVel(float yVel);
+		float getYVel();
 		~GameObject();
 
 };

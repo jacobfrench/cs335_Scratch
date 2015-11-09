@@ -59,24 +59,24 @@ void Ball::checkCollision(float xres, float yres)
     //check collision with screen edges
     //y-axis
     if(yPos >= yres && yVel > 0){
-	createSound(2);
+		createSound(2);
         yVel = -ballYVel;
 
     }
     else if(yPos <= 0 && yVel < 0){
         createSound(2);
-	yVel = ballYVel;
+		yVel = ballYVel;
     }
     //x-axis
     else if(xPos >= xres && xVel > 0){
         xVel = -ballXVel;
         player1Score++;
-	createSound(3);
+		createSound(3);
     }
     else if(xPos <= 0 && xVel < 0){
         xVel = ballXVel;
         player2Score++;
-	createSound(4);
+		createSound(4);
     }
 
 }
