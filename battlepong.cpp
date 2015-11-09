@@ -129,7 +129,7 @@ int keys[65536];
 
 Game g;
 Timer timer;
-
+PowerUp *powerUp = new PowerUp();
 
 
 //function prototypes
@@ -561,7 +561,9 @@ void physics(Game *g)
 	paddle1.setYVel(paddle1YVel);
 
 	//paddle2 movement
-	paddle2.setYVel(paddle2YVel);        
+	paddle2.setYVel(paddle2YVel);
+
+	powerUp->checkCollision(powerup_posx, powerup_width, powerup_posy, powerup_height, ball, paddle1, paddle2);  
 
 }
 

@@ -11,6 +11,7 @@
 #include "ppm.h"
 #include "Ball.h"
 #include "player.h"
+#include "paddle.h"
 #include <GL/glx.h>
 
 using namespace std;
@@ -183,10 +184,7 @@ void GameObject::render() {
 
 
 
-/*======
-PowerUps
 
-=======*/
 
 
 
@@ -250,6 +248,36 @@ void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player) {
 
 }
 
-/*===================
-Sockets/Multiplayer?
-===================*/
+
+/*======
+PowerUps
+
+=======*/
+PowerUp::PowerUp():GameObject() {
+
+}
+
+void PowerUp::checkCollision(int xPos, int width, int yPos, int height, Ball &ball, Paddle &p1, Paddle &p2) {
+    
+    float ballspeed = 50.0f;
+    float ballXVel = ballspeed * cos(0)+10;
+    float ballYVel = ballspeed * -sin(35);
+
+    //Moving to the right
+    bool onLeftSide = (ball.getXPos() < 640/2);
+    bool onRightSide = (ball.getXPos() > 480/2);
+    
+    //Moving to the right
+    if(onLeftSide && ball.getXVel() > 0 && ball.getXPos() >= xPos && ball.getYPos() >= yPos && ball.getYPos() <= yPos + height){
+        int height = p1.getHeight();
+        p1.setHeight(height + 2.0);
+        cout << "Hit Right\n";
+    }
+    else if(onRightSide && ball.getXVel() < 0 && ball.getXPos() <= xPos+width && ball.getYPos() >= yPos && ball.getYPos() <= yPos+height){
+        int height = p2.getHeight();
+        p2.setHeight(height + 2.0);
+        cout << "Hit left\n";
+    }
+
+
+}

@@ -9,6 +9,7 @@
 #include <GL/glx.h>
 #include "Ball.h"
 #include "player.h"
+#include "paddle.h"
 
 using namespace std;
 
@@ -66,7 +67,8 @@ class PowerUp: GameObject {
 		Ppmimage* image;
 		GLuint textureId;
 	public:
-		PowerUp(Ppmimage *image, GLuint textureId);
+		PowerUp();
+		void checkCollision(int xPos, int width, int yPos, int height, Ball &ball, Paddle &p1, Paddle &p2);
 
 };
 
