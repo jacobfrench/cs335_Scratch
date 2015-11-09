@@ -132,7 +132,7 @@ GameObject::GameObject(float xPos, float yPos, float width, float height) {
 
 //TEMP, will remove
 GameObject::GameObject() {
-	this->xPos = 1250 / 2.0;
+	this->xPos = (1250 / 2.0) - 25;
 	this->yPos = 900 / 2.0;
 	this->width = 50.f;
 	this->height = 250.f;
@@ -232,12 +232,20 @@ void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player) {
     int rightWall = xPos + (width / 2);
     int topWall = yPos - (width / 2);
     int bottomWall = yPos + (width / 2);
-
+	
+		
+	bool onLeftSide = (ball.getXPos() < xres/2);
+	bool onRightSide = (ball.getXPos() > xres/2);
+	
     //Moving to the right
-    if((ball.getXPos()-ball.getRadius() <= xPos) &&
-            ball.getYPos() >= yPos && ball.getYPos() <= yPos + height) {
-        ball.setXVel(ballXVel);
-    }
+    if(onLeftSide && ball.getXVel() > 0 && ball.getXPos() >= xPos && ball.getYPos() >= yPos && ball.getYPos() <= yPos + height){
+		ball.setXVel(-ballXVel);
+	}
+	else if(onRightSide && ball.getXVel() < 0 && ball.getXPos() <= xPos+width && ball.getYPos() >= yPos && ball.getYPos() <= yPos+height){
+		ball.setXVel(ballXVel);
+	}
+	
+	
 
 
 }
