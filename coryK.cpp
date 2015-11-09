@@ -12,7 +12,7 @@
 #include "Ball.h"
 #include "player.h"
 #include <GL/glx.h>
-
+#include "brianC.h"
 using namespace std;
 void submitScore() 
 {
@@ -252,11 +252,13 @@ void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player) {
 	
     //Ball moving to the right
     if(onLeftSide && ball.getXVel() > 0 && ball.getXPos() >= xPos && ball.getYPos() >= yPos && ball.getYPos() <= yPos + height){
-		ball.setXVel(-ballXVel);
+	createSound(5);	
+	ball.setXVel(-ballXVel);
 	}
 	//Ball moving to the left
 	else if(onRightSide && ball.getXVel() < 0 && ball.getXPos() <= xPos+width && ball.getYPos() >= yPos && ball.getYPos() <= yPos+height){
-		ball.setXVel(ballXVel);
+	    createSound(6);	
+	    ball.setXVel(ballXVel);
 	}
 	
 	//Obstacle movment
