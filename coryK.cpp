@@ -252,7 +252,7 @@ void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player) {
 	
     //Ball moving to the right
     if(onLeftSide && ball.getXVel() > 0 && ball.getXPos() >= xPos && ball.getYPos() >= yPos && ball.getYPos() <= yPos + height){
-	createSound(5);	
+	createSound(6);	
 	ball.setXVel(-ballXVel);
 	}
 	//Ball moving to the left
