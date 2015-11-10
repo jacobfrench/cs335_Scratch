@@ -1,9 +1,6 @@
-//cs335 Spring 2015
-//
-//program: asteroids.cpp
-//author:  Gordon Griesel
-//date:    2014
-//mod spring 2015: added constructors
+//program: battlepong.cpp
+//authors: Jacob F., Cory K., Keith H., Brian C.
+//date:    2015
 
 #include <iostream>
 #include <cstdlib>
@@ -16,9 +13,6 @@
 #include <ctime>
 #include <cmath>
 #include <X11/Xlib.h>
-//#include <X11/Xutil.h>
-//#include <GL/gl.h>
-//#include <GL/glu.h>
 #include <X11/keysym.h>
 #include <GL/glx.h>
 #include "ppm.h"
@@ -30,6 +24,7 @@
 #include "timer.h"
 #include "brianC.h"
 #include "paddle.h"
+
 extern "C" {
 #include "fonts.h"
 }
@@ -38,9 +33,6 @@ extern "C" {
 typedef float Flt;
 typedef float Vec[3];
 typedef Flt	Matrix[4][4];
-
-
-
 
 //macros
 #define rnd() (((double)rand())/(double)RAND_MAX)
@@ -147,6 +139,7 @@ void init_powerup_x_y(void);
 int getTimer();
 void stopGame();
 int powerup_posx, powerup_posy, powerup_width = 50, powerup_height = 50;
+
 //offset is margin around retro background(courtyard):
 int offset = 40;
 
@@ -165,7 +158,6 @@ int level;
 GameObject* obj = new GameObject(xres / 2.0, yres / 2.0, 50.0f, 50.0f);
 /* Test - Create Derivd Class - Obstacle */
 Obstacle *obstacle = new Obstacle(3);
-
 
 
 time_t timeBegin, timeSpawn, timeRandom;
@@ -258,7 +250,6 @@ ball.setRadius(15.0f);
 //ball velocity
 ballXVel = 8.0f * cos(30);
 ballYVel = 8.0f * sin(90);
-
 ball.setYVel(ballXVel);
 ball.setXVel(ballYVel);
 
@@ -276,10 +267,10 @@ paddle2.setWidth(15.0f);
 }
 
 void stopGame(){
-ball.setXPos(xres/2);
-ball.setYPos(yres/2);
-ball.setXVel(0);
-ball.setYVel(0);;
+    ball.setXPos(xres/2);
+    ball.setYPos(yres/2);
+    ball.setXVel(0);
+    ball.setYVel(0);;
 }
 
 void cleanupXWindows(void)
@@ -477,8 +468,9 @@ int check_keys(XEvent *e, Game *g){
 			return 0;
 		}
 		if(key == XK_b) {
-			printf("Enter pressed\n");
+            printf("Enter pressed\n");
             gameStarted = true;
+            
             if (is_gameover == true){
             hud->is_show_welcome = true;
             gameStarted = false;
@@ -489,23 +481,24 @@ int check_keys(XEvent *e, Game *g){
             init_ball_paddles();
             intro = 1;
             }
+            
             is_gameover = false;
             timer.reset();
             timer.start();            
 		}
 
-		if (hud->is_show_welcome == true){
-			if (key == XK_Left) {
-				bgTexture = generateTexture(bgTexture, bgImage1);
-				selected_screen = LEFT;
-				level = 1;
+        if (hud->is_show_welcome == true){
+            if (key == XK_Left) {
+                bgTexture = generateTexture(bgTexture, bgImage1);
+                selected_screen = LEFT;
+                level = 1;
 			}
-			else if (key == XK_Right) {
-				bgTexture = generateTexture(bgTexture, bgImage2);            
-				selected_screen = RIGHT;
-				level = 2;
+            else if (key == XK_Right) {
+                bgTexture = generateTexture(bgTexture, bgImage2);            
+                selected_screen = RIGHT;
+                level = 2;
 
-			}			
+			}
 		}
 	}
 	else {
@@ -548,7 +541,7 @@ void physics(Game *g)
     if(gameStarted){
         ball.setYVel(ball.getYVel());
         ball.setXVel(ball.getXVel());
-		obstacle->setYVel(obstacle->getYVel());
+        obstacle->setYVel(obstacle->getYVel());
         ball.checkCollision(xres, yres);
     }
 	
@@ -563,8 +556,7 @@ void physics(Game *g)
 	paddle1.setYVel(paddle1YVel);
 
 	//paddle2 movement
-	paddle2.setYVel(paddle2YVel);        
-	
+	paddle2.setYVel(paddle2YVel);
 
 }
 
@@ -584,10 +576,10 @@ int getTimer(){
     int ret = atoi(timeStr.c_str()) / 10000;
     if (ret < 0){
         createSound(5);
-    	ret = 0;
+        ret = 0;
         is_gameover = true;
-		ball.setXVel(0.0f);
-		ball.setYVel(0.0f);
+        ball.setXVel(0.0f);
+        ball.setYVel(0.0f);
         stopGame();
     }
     return ret;
@@ -659,8 +651,8 @@ void render(Game *g)
     }
 
 
-	hud->showScore(ball.getPlayer1Score(), ball.getPlayer2Score());
-	hud->showHealth(100, 70);
+    hud->showScore(ball.getPlayer1Score(), ball.getPlayer2Score());
+    hud->showHealth(100, 70);
     hud->showCourtYard();
 
     if (is_render_powerup){
@@ -695,11 +687,9 @@ void render(Game *g)
 	//Level 2 selected
 	//Draw some obstacles to showcase a difference between level 1 and level2
 	if(level == 2) {
-		//obstacle->render();
+		obstacle->render();
 
 	}
-    obstacle->render();
-    
     
     hud->showTimer(getTimer());
     
