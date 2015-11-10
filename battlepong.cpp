@@ -650,6 +650,8 @@ void render(Game *g)
 
     if (is_gameover){
         renderTexture(gameOverTexture, xres, yres);
+        int finalScore = setHighScore(ball.getPlayer1Score(), ball.getPlayer2Score());
+        cout << "Final Score : " << finalScore << "\n";
         hud->showGameOver(high_score,ball.getPlayer1Score(), ball.getPlayer2Score());
         //NEED TO SAVE HIGH SCORE HERE:
 
