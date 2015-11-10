@@ -15,7 +15,7 @@
 #include "fonts.h"
 #include "keithH.h"
 #include <string>
-
+#include "brianC.h"
 
 using namespace std;
 
@@ -180,7 +180,8 @@ void Hud::showGameOver(int high_score,int p1_score,int p2_score){
         sprintf(buf2,"Player 2 loses! %d points ", p2_score);
     }
     else{
-        sprintf(buf1,"Player 2 wins! %d points ", p2_score);
+	
+	sprintf(buf1,"Player 2 wins! %d points ", p2_score);
         sprintf(buf2,"Player 1 loses! %d points ", p1_score);
     }
 

@@ -28,7 +28,7 @@
 #include "player.h"
 #include "keithH.h"
 #include "timer.h"
-
+#include "brianC.h"
 #include "paddle.h"
 extern "C" {
 #include "fonts.h"
@@ -548,6 +548,7 @@ void physics(Game *g)
     if(gameStarted){
         ball.setYVel(ball.getYVel());
         ball.setXVel(ball.getXVel());
+		obstacle->setYVel(obstacle->getYVel());
         ball.checkCollision(xres, yres);
     }
 	
@@ -555,15 +556,16 @@ void physics(Game *g)
 	//paddle collision
 	paddle1.checkCollision(yres, ball);
 	paddle2.checkCollision(yres, ball);
+	
 	obstacle->checkCollision(xres, yres, ball, p1);
 
 	//paddle1 movement
 	paddle1.setYVel(paddle1YVel);
 
 	//paddle2 movement
-	paddle2.setYVel(paddle2YVel);
+	paddle2.setYVel(paddle2YVel);        
+	
 
-	powerUp->checkCollision(powerup_posx, powerup_width, powerup_posy, powerup_height, ball, paddle1, paddle2);  
 
 }
 
@@ -582,21 +584,23 @@ int getTimer(){
     timeStr = ss.str();
     int ret = atoi(timeStr.c_str()) / 10000;
     if (ret < 0){
-        ret = 0;
-        //is_gameover = true;
-        //stopGame();
+        createSound(5);
+    	ret = 0;
+        is_gameover = true;
+		ball.setXVel(0.0f);
+		ball.setYVel(0.0f);
+        stopGame();
     }
     return ret;
 }
 
 void render(Game *g)
-{    
+{        
 	g->mouseThrustOn=false;    
 	glClear(GL_COLOR_BUFFER_BIT);
 	if(intro < 1) {
 		//DRAW titlescreen.ppm:
 		renderTexture(introTexture, xres, yres);
-
 		//PRINT CHOOSE BACKGROUND SCREEN:
 		Rect r1;
 		r1.bot = yres/2.0 - 110.0;
@@ -697,6 +701,8 @@ void render(Game *g)
     
     
     hud->showTimer(getTimer());
+    
+
 
 }
 

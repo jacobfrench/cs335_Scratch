@@ -13,7 +13,7 @@
 #include "player.h"
 #include "paddle.h"
 #include <GL/glx.h>
-
+#include "brianC.h"
 using namespace std;
 void submitScore() 
 {
@@ -129,6 +129,7 @@ GameObject::GameObject(float xPos, float yPos, float width, float height) {
 	this->yPos = yPos;
 	this->width = width;
 	this->height = height;
+	
 }
 
 //TEMP, will remove
@@ -137,6 +138,7 @@ GameObject::GameObject() {
 	this->yPos = 900 / 2.0;
 	this->width = 50.f;
 	this->height = 250.f;
+	setYVel(-5.0f);
 }
 
 void GameObject::setXPos(float xPos) {
@@ -169,6 +171,17 @@ float GameObject::getWidth() {
 
 float GameObject::getHeight() {
 	return this->height;
+}
+
+void GameObject::setYVel(float yVel){
+	this->yVel = yVel;
+	this->yPos += yVel;
+	
+}
+
+
+float GameObject::getYVel(){
+	return yVel;
 }
 
 void GameObject::render() {
@@ -235,14 +248,29 @@ void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player) {
 	bool onLeftSide = (ball.getXPos() < xres/2);
 	bool onRightSide = (ball.getXPos() > xres/2);
 	
-    //Moving to the right
+    //Ball moving to the right
     if(onLeftSide && ball.getXVel() > 0 && ball.getXPos() >= xPos && ball.getYPos() >= yPos && ball.getYPos() <= yPos + height){
-		ball.setXVel(-ballXVel);
+	createSound(6);	
+	ball.setXVel(-ballXVel);
 	}
+	//Ball moving to the left
 	else if(onRightSide && ball.getXVel() < 0 && ball.getXPos() <= xPos+width && ball.getYPos() >= yPos && ball.getYPos() <= yPos+height){
-		ball.setXVel(ballXVel);
+	    createSound(6);	
+	    ball.setXVel(ballXVel);
 	}
 	
+	//Obstacle movment
+	float obstacleSpeed = 5.0f;
+	
+	//if object hits bottom of screen
+	if(yPos <= 0.0f){
+		setYVel(obstacleSpeed);
+	}
+	//if object hits top of screen
+	else if(yPos + height >= yres){
+		setYVel(-obstacleSpeed);
+	}
+
 	
 
 
