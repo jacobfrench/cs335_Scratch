@@ -9,7 +9,6 @@
 #include <GL/glx.h>
 #include "Ball.h"
 #include "player.h"
-#include "paddle.h"
 
 using namespace std;
 
@@ -21,7 +20,7 @@ extern GLuint generateTransparentTexture(GLuint texture, Ppmimage * image);
 extern unsigned char *buildAlphaData(Ppmimage *img);
 extern void renderTexture(GLuint texture, int width, int height);
 extern void convertToRGBA(Ppmimage *picture);
-
+extern int setHighScore(int p1Score, int p2Score);
 
 //Base Game Object class
 //This class can be used to derive from
@@ -70,8 +69,7 @@ class PowerUp: GameObject {
 		Ppmimage* image;
 		GLuint textureId;
 	public:
-		PowerUp();
-		void checkCollision(int xPos, int width, int yPos, int height, Ball &ball, Paddle &p1, Paddle &p2);
+		PowerUp(Ppmimage *image, GLuint textureId);
 
 };
 

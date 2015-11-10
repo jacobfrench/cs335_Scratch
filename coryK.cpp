@@ -7,11 +7,12 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include <fstream>
+
 #include "coryK.h"
 #include "ppm.h"
 #include "Ball.h"
 #include "player.h"
-#include "paddle.h"
 #include <GL/glx.h>
 #include "brianC.h"
 using namespace std;
@@ -24,22 +25,22 @@ void submitScore()
 
 Ppmimage *loadImage(const char* filename)
 {
-	return ppm6GetImage(filename);
+    return ppm6GetImage(filename);
 }
 
 GLuint generateTexture(GLuint texture, Ppmimage * image)
 {
 
-	glEnable(GL_TEXTURE_2D);
-	glGenTextures(1, &texture);
+    glEnable(GL_TEXTURE_2D);
+    glGenTextures(1, &texture);
 
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3,
-							image->width, image->height,
-							0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
-	return texture;
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3,
+                            image->width, image->height,
+                            0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
+    return texture;
 }
 
 GLuint generateTransparentTexture(GLuint texture, Ppmimage * image)
@@ -71,14 +72,14 @@ GLuint generateTransparentTexture(GLuint texture, Ppmimage * image)
 
 void renderTexture(GLuint texture, int width, int height) 
 {
-	glColor3f(1.0, 1.0, 1.0);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(0, height);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i(width, height);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(width, 0);
-	glEnd();
+    glColor3f(1.0, 1.0, 1.0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(0, height);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(width, height);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(width, 0);
+    glEnd();
 }
 
 void convertToRGBA(Ppmimage *picture)
@@ -125,79 +126,82 @@ unsigned char *buildAlphaData(Ppmimage *img)
 GameObject
 ========*/
 GameObject::GameObject(float xPos, float yPos, float width, float height) {
-	this->xPos = xPos;
-	this->yPos = yPos;
-	this->width = width;
-	this->height = height;
-	
+    this->xPos = xPos;
+    this->yPos = yPos;
+    this->width = width;
+    this->height = height;
+    
 }
 
 //TEMP, will remove
 GameObject::GameObject() {
-	this->xPos = (1250 / 2.0) - 25;
-	this->yPos = 900 / 2.0;
-	this->width = 50.f;
-	this->height = 250.f;
-	setYVel(-5.0f);
+    this->xPos = (1250 / 2.0) - 25;
+    this->yPos = 900 / 2.0;
+    this->width = 50.f;
+    this->height = 250.f;
+    setYVel(-5.0f);
 }
 
 void GameObject::setXPos(float xPos) {
-	this->xPos = xPos;
+    this->xPos = xPos;
 }
 
 void GameObject::setYPos(float yPos) {
-	this->yPos = yPos;
+    this->yPos = yPos;
 }
 
 void GameObject::setWidth(float width) {
-	this->width = width;
+    this->width = width;
 }
 
 void GameObject::setHeight(float height) {
-	this->height = height;
+    this->height = height;
 }
 
 float GameObject::getXPos() {
-	return this->xPos; 
+    return this->xPos; 
 }
 
 float GameObject::getYPos() {
-	return this->yPos;
+    return this->yPos;
 }
 
 float GameObject::getWidth() {
-	return this->width;
+    return this->width;
 }
 
 float GameObject::getHeight() {
-	return this->height;
+    return this->height;
 }
 
 void GameObject::setYVel(float yVel){
-	this->yVel = yVel;
-	this->yPos += yVel;
-	
+    this->yVel = yVel;
+    this->yPos += yVel;
+    
 }
 
 
 float GameObject::getYVel(){
-	return yVel;
+    return yVel;
 }
 
 void GameObject::render() {
-	glPushMatrix();
-	glTranslatef(this->xPos, this->yPos, 0);
-	glRectf(0.0f, 0.0f, width, height);
-	glEnd();
-	glBegin(GL_POINTS);
-	glVertex2f(0.0f, 0.0f);
-	glEnd();
-	glPopMatrix();
+    glPushMatrix();
+    glTranslatef(this->xPos, this->yPos, 0);
+    glRectf(0.0f, 0.0f, width, height);
+    glEnd();
+    glBegin(GL_POINTS);
+    glVertex2f(0.0f, 0.0f);
+    glEnd();
+    glPopMatrix();
 }
 
 
 
+/*======
+PowerUps
 
+=======*/
 
 
 
@@ -211,7 +215,7 @@ Examples
 
 =======*/
 Obstacle::Obstacle(int numOfPoints):GameObject() {
-	this->numOfPoints = numOfPoints;
+    this->numOfPoints = numOfPoints;
 }
 
 void Obstacle::render() {
@@ -231,81 +235,83 @@ void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player) {
     //the obstacle
     float ballspeed = 15.0f;
     float ballXVel = ballspeed * cos(0)+10;
-    float ballYVel = ballspeed * -sin(35);
 
     int xPos = this->getXPos();
     int yPos = this->getYPos();
     int width = this->getWidth();
     int height = this->getHeight();
 
-    //Boundries
-    int leftWall = xPos - (width / 2);
-    int rightWall = xPos + (width / 2);
-    int topWall = yPos - (width / 2);
-    int bottomWall = yPos + (width / 2);
-	
-		
-	bool onLeftSide = (ball.getXPos() < xres/2);
-	bool onRightSide = (ball.getXPos() > xres/2);
-	
+        
+    bool onLeftSide = (ball.getXPos() < xres/2);
+    bool onRightSide = (ball.getXPos() > xres/2);
+    
     //Ball moving to the right
     if(onLeftSide && ball.getXVel() > 0 && ball.getXPos() >= xPos && ball.getYPos() >= yPos && ball.getYPos() <= yPos + height){
-	createSound(6);	
-	ball.setXVel(-ballXVel);
-	}
-	//Ball moving to the left
-	else if(onRightSide && ball.getXVel() < 0 && ball.getXPos() <= xPos+width && ball.getYPos() >= yPos && ball.getYPos() <= yPos+height){
-	    createSound(6);	
-	    ball.setXVel(ballXVel);
-	}
-	
-	//Obstacle movment
-	float obstacleSpeed = 5.0f;
-	
-	//if object hits bottom of screen
-	if(yPos <= 0.0f){
-		setYVel(obstacleSpeed);
-	}
-	//if object hits top of screen
-	else if(yPos + height >= yres){
-		setYVel(-obstacleSpeed);
-	}
+    createSound(6); 
+    ball.setXVel(-ballXVel);
+    }
+    //Ball moving to the left
+    else if(onRightSide && ball.getXVel() < 0 && ball.getXPos() <= xPos+width && ball.getYPos() >= yPos && ball.getYPos() <= yPos+height){
+        createSound(6); 
+        ball.setXVel(ballXVel);
+    }
+    
+    //Obstacle movment
+    float obstacleSpeed = 5.0f;
+    
+    //if object hits bottom of screen
+    if(yPos <= 0.0f){
+        setYVel(obstacleSpeed);
+    }
+    //if object hits top of screen
+    else if(yPos + height >= yres){
+        setYVel(-obstacleSpeed);
+    }
 
-	
+    
 
 
 }
-
 
 /*======
-PowerUps
-
+High score
 =======*/
-PowerUp::PowerUp():GameObject() {
 
-}
+/**
+TODO:
+ refactor function into multiple functions
+**/
 
-void PowerUp::checkCollision(int xPos, int width, int yPos, int height, Ball &ball, Paddle &p1, Paddle &p2) {
-    
-    float ballspeed = 50.0f;
-    float ballXVel = ballspeed * cos(0)+10;
-    float ballYVel = ballspeed * -sin(35);
+int setHighScore(int p1Score, int p2Score)
+{
+    //test if scores are actually there
+    if(p1Score > 0 || p2Score > 0)
+    {
+        ifstream highScoreFile;
+        ofstream finalScoreFile;
+        string line;
+        int finalHighScore;
+        highScoreFile.open("highscores.txt");
+        
+        if(highScoreFile.is_open()) {
+            cout << "File opened\n";
+            int currentLocalScore = (p1Score > p2Score) ? p1Score : p2Score;
+            cout << "Score " << currentLocalScore << "\n";
+            while(!highScoreFile.eof()) {
+                while(getline(highScoreFile, line)) {
+                    int scoreFromFile = atoi(line.c_str());
+                    finalHighScore = (scoreFromFile > currentLocalScore) ? scoreFromFile : currentLocalScore;
+                }
+            }
+            highScoreFile.close();
 
-    //Moving to the right
-    bool onLeftSide = (ball.getXPos() < 640/2);
-    bool onRightSide = (ball.getXPos() > 480/2);
-    
-    //Moving to the right
-    if(onLeftSide && ball.getXVel() > 0 && ball.getXPos() >= xPos && ball.getYPos() >= yPos && ball.getYPos() <= yPos + height){
-        int height = p1.getHeight();
-        p1.setHeight(height + 2.0);
-        cout << "Hit Right\n";
+            finalScoreFile.open("highscores.txt");
+            finalScoreFile << finalHighScore;
+            finalScoreFile.close();
+        } else {
+            cout << "Error";
+        }
+        return finalHighScore;
     }
-    else if(onRightSide && ball.getXVel() < 0 && ball.getXPos() <= xPos+width && ball.getYPos() >= yPos && ball.getYPos() <= yPos+height){
-        int height = p2.getHeight();
-        p2.setHeight(height + 2.0);
-        cout << "Hit left\n";
-    }
-
 
 }

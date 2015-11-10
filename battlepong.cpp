@@ -129,7 +129,7 @@ int keys[65536];
 
 Game g;
 Timer timer;
-PowerUp *powerUp = new PowerUp();
+
 
 
 //function prototypes
@@ -566,7 +566,6 @@ void physics(Game *g)
 	paddle2.setYVel(paddle2YVel);        
 	
 
-
 }
 
 void init_powerup_x_y(){
@@ -651,6 +650,8 @@ void render(Game *g)
 
     if (is_gameover){
         renderTexture(gameOverTexture, xres, yres);
+        int finalScore = setHighScore(ball.getPlayer1Score(), ball.getPlayer2Score());
+        cout << "Final Score : " << finalScore << "\n";
         hud->showGameOver(high_score,ball.getPlayer1Score(), ball.getPlayer2Score());
         //NEED TO SAVE HIGH SCORE HERE:
 
