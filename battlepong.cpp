@@ -28,7 +28,7 @@
 #include "player.h"
 #include "keithH.h"
 #include "timer.h"
-
+#include "brianC.h"
 #include "paddle.h"
 extern "C" {
 #include "fonts.h"
@@ -588,6 +588,7 @@ int getTimer(){
 		ball.setXVel(0.0f);
 		ball.setYVel(0.0f);
         stopGame();
+	//createSound(5);
     }
     return ret;
 }
@@ -700,6 +701,8 @@ void render(Game *g)
     
     
     hud->showTimer(getTimer());
+    
+
 
 }
 
