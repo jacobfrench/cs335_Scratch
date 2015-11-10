@@ -28,7 +28,7 @@
 #include "player.h"
 #include "keithH.h"
 #include "timer.h"
-
+#include "brianC.h"
 #include "paddle.h"
 extern "C" {
 #include "fonts.h"
@@ -583,7 +583,8 @@ int getTimer(){
     timeStr = ss.str();
     int ret = atoi(timeStr.c_str()) / 10000;
     if (ret < 0){
-        ret = 0;
+        createSound(5);
+    	ret = 0;
         is_gameover = true;
 		ball.setXVel(0.0f);
 		ball.setYVel(0.0f);
@@ -593,13 +594,12 @@ int getTimer(){
 }
 
 void render(Game *g)
-{    
+{        
 	g->mouseThrustOn=false;    
 	glClear(GL_COLOR_BUFFER_BIT);
 	if(intro < 1) {
 		//DRAW titlescreen.ppm:
 		renderTexture(introTexture, xres, yres);
-
 		//PRINT CHOOSE BACKGROUND SCREEN:
 		Rect r1;
 		r1.bot = yres/2.0 - 110.0;
@@ -700,6 +700,8 @@ void render(Game *g)
     
     
     hud->showTimer(getTimer());
+    
+
 
 }
 
