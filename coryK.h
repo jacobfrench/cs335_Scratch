@@ -20,7 +20,7 @@ extern GLuint generateTransparentTexture(GLuint texture, Ppmimage * image);
 extern unsigned char *buildAlphaData(Ppmimage *img);
 extern void renderTexture(GLuint texture, int width, int height);
 extern void convertToRGBA(Ppmimage *picture);
-
+extern int setHighScore(int p1Score, int p2Score);
 
 //Base Game Object class
 //This class can be used to derive from
