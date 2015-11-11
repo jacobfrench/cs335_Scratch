@@ -187,7 +187,6 @@ int main(void)
 	srand(time(NULL));
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);	
-
 	hud = new Hud(xres ,yres);	
 	selected_screen = LEFT;    
     is_gameover = false;
@@ -235,7 +234,6 @@ int main(void)
             timeRandom = random(10);
             }
             else{
-            timeRandom = random(4);
             }
         }
 		render(&game);
@@ -477,10 +475,11 @@ int check_keys(XEvent *e, Game *g){
 			return 0;
 		}
 		if(key == XK_b) {
+            createSound2();
 			printf("Enter pressed\n");
             gameStarted = true;
             if (is_gameover == true){
-            hud->is_show_welcome = true;
+	    hud->is_show_welcome = true;
             gameStarted = false;
             intro = 0;
             }
@@ -583,18 +582,19 @@ int getTimer(){
     timeStr = ss.str();
     int ret = atoi(timeStr.c_str()) / 10000;
     if (ret < 0){
-        createSound(5);
+        //createSound(5);
     	ret = 0;
         is_gameover = true;
 		ball.setXVel(0.0f);
 		ball.setYVel(0.0f);
         stopGame();
+	createSound(5);
     }
     return ret;
 }
 
 void render(Game *g)
-{        
+{       
 	g->mouseThrustOn=false;    
 	glClear(GL_COLOR_BUFFER_BIT);
 	if(intro < 1) {

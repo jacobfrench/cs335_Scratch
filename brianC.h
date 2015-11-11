@@ -15,6 +15,7 @@ using namespace std;
 
 
 extern void createSound(int trackNo);
+extern void createSound2();
 extern void cleanSound();
-
+//extern void gameMusic();
 #endif
