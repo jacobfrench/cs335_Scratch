@@ -233,6 +233,8 @@ void Obstacle::render() {
 void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player) {
     //This function will check if the ball collides with
     //the obstacle
+    int player_score = player.getScore();
+    player_score--;
     float ballspeed = 15.0f;
     float ballXVel = ballspeed * cos(0)+10;
 
@@ -267,10 +269,6 @@ void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player) {
     else if(yPos + height >= yres){
         setYVel(-obstacleSpeed);
     }
-
-    
-
-
 }
 
 /*======
@@ -284,19 +282,19 @@ TODO:
 
 int setHighScore(int p1Score, int p2Score)
 {
+int finalHighScore = 0;
     //test if scores are actually there
-    if(p1Score > 0 || p2Score > 0)
+    if(p1Score >= 0 || p2Score >= 0)
     {
         ifstream highScoreFile;
         ofstream finalScoreFile;
-        string line;
-        int finalHighScore;
+        string line;        
         highScoreFile.open("highscores.txt");
         
         if(highScoreFile.is_open()) {
-            cout << "File opened\n";
+            //cout << "File opened\n";
             int currentLocalScore = (p1Score > p2Score) ? p1Score : p2Score;
-            cout << "Score " << currentLocalScore << "\n";
+            //cout << "Score " << currentLocalScore << "\n";
             while(!highScoreFile.eof()) {
                 while(getline(highScoreFile, line)) {
                     int scoreFromFile = atoi(line.c_str());
@@ -313,5 +311,5 @@ int setHighScore(int p1Score, int p2Score)
         }
         return finalHighScore;
     }
-
+return finalHighScore;
 }

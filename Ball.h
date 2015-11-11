@@ -37,7 +37,8 @@ public:
 	void setRadius(float radius);
 	float getRadius();
 
-	void checkCollision(float xres, float yres);
+	//returns true if ball hits left or right edge of screen:
+	    bool checkCollision(float xres, float yres);
 
 	int getPlayer1Score();
 	int getPlayer2Score();

@@ -71,6 +71,53 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 //screen width and height
 int xres=1250, yres=900;
 int intro = 0;
+//offset is margin around retro background(courtyard):
+int offset = 40;
+
+struct Game {
+	bool mouseThrustOn;
+	Game() {
+		mouseThrustOn = false;
+	}
+};
+
+//SET IMAGES
+string BG_IMAGE_PATH = "./images/titlescreen.ppm";
+string MAINBG_IMAGE_PATH = "./images/mainBG.ppm";
+string BOMB_IMAGE_PATH = "./images/bomb.ppm";
+string GAMEOVER_IMAGE_PATH = "./images/game_over.ppm";
+string BG_IMAGE_PATH1 = "./images/ninja_robot.ppm";
+string BG_IMAGE_PATH2 = "./images/ninja_robot2.ppm";
+string EXPLODE_IMAGE_PATH = "./images/explode.ppm";
+Ppmimage *introBG = NULL;
+Ppmimage *mainBG = NULL;
+Ppmimage *bgImage1 = NULL;
+Ppmimage *bgImage2 = NULL;
+Ppmimage *bombImage = NULL;
+Ppmimage *gameOverImage = NULL;
+Ppmimage *explodeImage = NULL;
+GLuint introTexture,mainTexture,bgStartTexture, bgTexture, bgTexture1, bgTexture2, bombTexture, gameOverTexture, explodeTexture;
+//-------------
+
+int keys[65536];
+
+Game g;
+Timer timer;
+
+//function prototypes
+void initXWindows(void);
+void init_opengl(void);
+void cleanupXWindows(void);
+void check_resize(XEvent *e);
+int check_keys(XEvent *e, Game *g);
+void init(Game *g);
+void init_sounds(void);
+void init_ball_paddles(void);
+void physics(Game *game);
+void render(Game *game);
+int getTimer();
+void stopGame();
+
 //instance variables
 Ball ball(xres,yres);
 Paddle paddle1(yres);
@@ -85,70 +132,15 @@ bool gameStarted;
 float paddle1YVel;
 float paddle2YVel;
 
-int startTime = 3000000; //3 minutes
+int startTime = 5000000; //3 minutes
 string timeStr;
-
-struct Game {
-	bool mouseThrustOn;
-	Game() {
-		mouseThrustOn = false;
-	}
-};
-
-string BG_IMAGE_PATH = "./images/titlescreen.ppm";
-string MAINBG_IMAGE_PATH = "./images/mainBG.ppm";
-string ATOM_IMAGE_PATH = "./images/atom.ppm";
-
-Ppmimage *introBG = NULL;
-GLuint introTexture;
-
-Ppmimage *mainBG = NULL;
-GLuint mainTexture;
-string BG_IMAGE_PATH1 = "./images/ninja_robot.ppm";
-string BG_IMAGE_PATH2 = "./images/ninja_robot2.ppm";
-
-Ppmimage *bgImage1 = NULL;
-Ppmimage *bgImage2 = NULL;
-
-Ppmimage *atomImage = NULL;
-
-Ppmimage *gameOverImage = NULL;
-string GAMEOVER_IMAGE_PATH = "./images/game_over.ppm";
-
-GLuint bgStartTexture, bgTexture, bgTexture1, bgTexture2, atomTexture, gameOverTexture;
-
-int keys[65536];
-
-Game g;
-Timer timer;
-
-
-
-//function prototypes
-void initXWindows(void);
-void init_opengl(void);
-void cleanupXWindows(void);
-void check_resize(XEvent *e);
-int check_keys(XEvent *e, Game *g);
-void init(Game *g);
-void init_sounds(void);
-void init_ball_paddles(void);
-void physics(Game *game);
-void render(Game *game);
-void init_powerup_x_y(void);
-int getTimer();
-void stopGame();
-int powerup_posx, powerup_posy, powerup_width = 50, powerup_height = 50;
-
-//offset is margin around retro background(courtyard):
-int offset = 40;
-
 
 Hud *hud;
 Player p1;
 Player p2;
 int high_score;
 
+int bomb_posx, bomb_posy, bomb_width = 150, bomb_height = 150;
 
 //Variable for declaring which level
 //is selected
@@ -159,13 +151,20 @@ GameObject* obj = new GameObject(xres / 2.0, yres / 2.0, 50.0f, 50.0f);
 /* Test - Create Derivd Class - Obstacle */
 Obstacle *obstacle = new Obstacle(3);
 
-
-time_t timeBegin, timeSpawn, timeRandom;
+time_t bombBegin, bombRandom, beginSmallLeftPaddle, smallLeftPaddleTime, beginSmallRightPaddle, smallRightPaddleTime;
+time_t beginExplode;
 enum BG_Screen {LEFT,RIGHT};
 BG_Screen selected_screen;
 
+char lastPaddleHit;
+
 int is_render_powerup;
 bool is_gameover;
+
+//BOMB variables:
+float bomb_theta= 0;
+int bomb_radius;
+float speed_theta=1/(10*PI);
 //-----------------
 
 int main(void)
@@ -184,8 +183,25 @@ int main(void)
 	selected_screen = LEFT;    
     is_gameover = false;
     high_score = 0;
-    is_render_powerup = 0;
     gameStarted = false;
+    lastPaddleHit = 'N';//'N' means no paddle hit
+
+    bombBegin = time(NULL);
+    bombRandom = random(7);
+
+    beginSmallLeftPaddle = time(NULL);
+    smallLeftPaddleTime = 7;
+    beginSmallRightPaddle = time(NULL);
+    smallRightPaddleTime = 7;
+
+    int min;
+    if (xres<yres){
+        min=xres;
+    }
+    else{
+        min=yres;
+    }
+    bomb_radius = ((int)(3*min)/10);
 
 	//MAIN MENU LOOP 
 	while(intro != 0) {
@@ -199,8 +215,6 @@ int main(void)
 		glXSwapBuffers(dpy, win);
     }
 
-    timeBegin = time(NULL);
-    timeRandom = random(7);    
 
 	//BEGIN MAIN GAME LOOP
 	int done=0;
@@ -218,18 +232,7 @@ int main(void)
 		while (physicsCountdown >= physicsRate) {
 			physics(&game);
 			physicsCountdown -= physicsRate;
-		}
-        if (timeBegin + timeRandom < time(NULL)){
-            init_powerup_x_y();
-            timeBegin = time(NULL);
-            is_render_powerup = is_render_powerup^1;
-            if (is_render_powerup){
-            timeRandom = random(10);
-            }
-            else{
-            timeRandom = random(4);
-            }
-        }
+		}        
 		render(&game);
 		glXSwapBuffers(dpy, win);
 	}
@@ -334,8 +337,17 @@ void reshape_window(int width, int height)
 
 	hud->setResolution(xres,yres);
 
-    //RE-INITIATE POWERUP POSITIONS:
-    init_powerup_x_y();
+	//RESET BOMB RADIUS:
+    	int min;
+	    if (xres<yres){
+	        min=xres;
+	    }
+	    else{
+        	min=yres;
+	    }
+	    bomb_radius = ((int)(3*min)/10);
+
+
 
 	//RESET THE TWO PADDLES POSITION AND BALL RESOLUTION:
 	paddle1.setXPos(50.0f);
@@ -376,9 +388,11 @@ void init_opengl(void)
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
 
-    //Load powerup image(s):
-    atomImage = loadImage(ATOM_IMAGE_PATH.c_str());
-    atomTexture = generateTransparentTexture(atomTexture, atomImage);
+      //Load bomb image(s):
+    bombImage = loadImage(BOMB_IMAGE_PATH.c_str());
+    bombTexture = generateTransparentTexture(bombTexture, bombImage);
+    explodeImage = loadImage(EXPLODE_IMAGE_PATH.c_str());
+    explodeTexture = generateTransparentTexture(explodeTexture, explodeImage);
 
     //Create background texture elements
     introBG = loadImage(BG_IMAGE_PATH.c_str());
@@ -467,9 +481,10 @@ int check_keys(XEvent *e, Game *g){
 			return 0;
 		}
 		if(key == XK_b) {
-            printf("Enter pressed\n");
+            //printf("Enter pressed\n");
             gameStarted = true;
-            
+            hud->setPlayer1Health(100);
+            hud->setPlayer2Health(100);
             if (is_gameover == true){
             hud->is_show_welcome = true;
             gameStarted = false;
@@ -541,13 +556,22 @@ void physics(Game *g)
         ball.setYVel(ball.getYVel());
         ball.setXVel(ball.getXVel());
         obstacle->setYVel(obstacle->getYVel());
-        ball.checkCollision(xres, yres);
+        bool is_ball_hit_edge = ball.checkCollision(xres, yres);
+        if (is_ball_hit_edge){
+            lastPaddleHit = 'N';
+        }
     }
 	
 
-	//paddle collision
-	paddle1.checkCollision(yres, ball);
-	paddle2.checkCollision(yres, ball);
+//paddle collision
+    bool isLeftHit = paddle1.checkCollision(yres, ball);
+    if (isLeftHit){
+        lastPaddleHit = 'L';        
+    }
+    bool isRightHit = paddle2.checkCollision(yres, ball);
+    if (isRightHit){
+        lastPaddleHit = 'R';        
+    }
 	
     if(level == 2){
         obstacle->checkCollision(xres, yres, ball, p1);
@@ -560,13 +584,77 @@ void physics(Game *g)
 	//paddle2 movement
 	paddle2.setYVel(paddle2YVel);
 
+    //SET BOMBS POSITION:
+    bomb_theta = bomb_theta + speed_theta;
+       if (fabs(bomb_theta) >= 2*PI){
+           bomb_theta=0;
+           speed_theta *= -1;
+       }
+
+    bomb_posx=(int)(xres/2 + bomb_radius*cos(bomb_theta - PI/2) - bomb_width/2);
+    bomb_posy=(int)(yres/2 + bomb_radius*sin(bomb_theta - PI/2) - bomb_height/2);
+
+
+
+    //CHECK LEFT COLLISION WITH BOMB:
+
+    if ((beginSmallLeftPaddle + smallLeftPaddleTime) < time(NULL)){
+        paddle1.setHeight(120.0f);
+    bool isBallBetweenX = (ball.getXPos() > bomb_posx) && (ball.getXPos() < (bomb_posx + bomb_width));
+    bool isBallBetweenY = (ball.getYPos() > bomb_posy) && (ball.getYPos() < (bomb_posy + bomb_height));
+
+    if (lastPaddleHit == 'L' && (isBallBetweenX && isBallBetweenY)){
+        bombBegin = time(NULL);
+        createSound(8);
+            //set to half normal height:            
+            paddle1.setHeight(60.0f);
+            if (hud->getPlayer1Health()>0){
+            hud->setPlayer1Health(hud->getPlayer1Health()-10*(1+random(8)));
+            //GAMEOVER:
+            if (hud->getPlayer1Health() <= 0){
+                createSound(5);
+                is_gameover = true;
+                ball.setXVel(0.0f);
+                ball.setYVel(0.0f);
+                stopGame();
+            }
+            }
+            beginSmallLeftPaddle = time(NULL);
+    }
+    }
+
+
+    //CHECK RIGHT COLLISION WITH BOMB:
+    if ((beginSmallRightPaddle + smallRightPaddleTime) < time(NULL)){
+        paddle2.setHeight(120.0f);
+        //is_bomb_visible = true;
+        bool isBallBetweenX = (ball.getXPos() > bomb_posx) && (ball.getXPos() < (bomb_posx + bomb_width));
+        bool isBallBetweenY = (ball.getYPos() > bomb_posy) && (ball.getYPos() < (bomb_posy + bomb_height));
+
+        if (lastPaddleHit == 'R' && (isBallBetweenX && isBallBetweenY)){
+        bombBegin = time(NULL);
+        createSound(8);
+        //is_bomb_visible = false;
+            //set to half normal height:
+            paddle2.setHeight(60.0f);
+            if (hud->getPlayer2Health()>0){
+            hud->setPlayer2Health(hud->getPlayer2Health()- 10*(1+random(8)));
+            //GAMEOVER:
+            if (hud->getPlayer2Health() <= 0){
+                createSound(5);
+                is_gameover = true;
+                ball.setXVel(0.0f);
+                ball.setYVel(0.0f);
+                stopGame();
+            }
+            }
+            beginSmallRightPaddle = time(NULL);
+
+    }
+    }
+
 }
 
-void init_powerup_x_y(){
-    int y_range = yres - (2*offset) - (powerup_height);
-    powerup_posx = (int)(random(xres/2) + (xres/4) - (powerup_width/2));
-    powerup_posy = (int)(random(y_range) + (offset));
-}
 
 int getTimer(){    
     int time = startTime - timer.getTicks();
@@ -608,6 +696,7 @@ void render(Game *g)
 		ggprint16(&r2, 16, 0xffffff, "Press 'B' to start");
 
         //PASS showWelcome the high score:
+        high_score = setHighScore(0, 0);
         hud->showWelcome(high_score);
         switch(selected_screen){
 			case LEFT:
@@ -644,35 +733,40 @@ void render(Game *g)
 
     if (is_gameover){
         renderTexture(gameOverTexture, xres, yres);
-        int finalScore = setHighScore(ball.getPlayer1Score(), ball.getPlayer2Score());
-        cout << "Final Score : " << finalScore << "\n";
+        high_score = setHighScore(ball.getPlayer1Score(), ball.getPlayer2Score());
+        //cout << "Final Score : " << high_score << "\n";
         hud->showGameOver(high_score,ball.getPlayer1Score(), ball.getPlayer2Score());
-        //NEED TO SAVE HIGH SCORE HERE:
-
         return;
     }
 
 
     hud->showScore(ball.getPlayer1Score(), ball.getPlayer2Score());
-    hud->showHealth(100, 70);
+    hud->showHealth(hud->getPlayer1Health(), hud->getPlayer2Health());
     hud->showCourtYard();
 
-    if (is_render_powerup){
-        //DRAW ATOM(RANDOMLY):        
-        //init_powerup_x_y();                
+//DRAW BOMB:
+    glColor3f(1.0, 1.0, 1.0);        
         glPushMatrix();
-        glBindTexture(GL_TEXTURE_2D, atomTexture);
+        GLuint which_bomb_texture;
+        if ((bombBegin + 2) > time(NULL)){
+            which_bomb_texture = explodeTexture;
+        }
+        else{
+            which_bomb_texture = bombTexture;
+        }
+
+        glBindTexture(GL_TEXTURE_2D, which_bomb_texture);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
         glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 1.0f); glVertex2i(powerup_posx + powerup_width, powerup_posy + powerup_height);
-        glTexCoord2f(0.0f, 0.0f); glVertex2i(powerup_posx + powerup_width, powerup_posy);
-        glTexCoord2f(1.0f, 0.0f); glVertex2i(powerup_posx, powerup_posy);
-        glTexCoord2f(1.0f, 1.0f); glVertex2i(powerup_posx, powerup_posy + powerup_height);
-        glEnd();                
+
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(bomb_posx + bomb_width, bomb_posy + bomb_height);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(bomb_posx + bomb_width, bomb_posy);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i(bomb_posx, bomb_posy);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i(bomb_posx, bomb_posy + bomb_height);
+        glEnd();
         glDisable(GL_BLEND);
         glPopMatrix();
-    }
     glBindTexture(GL_TEXTURE_2D, 0);
 
 	//Draw the paddle    
