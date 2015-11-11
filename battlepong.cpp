@@ -358,14 +358,13 @@ void init_opengl(void)
 {
 
 
-	//OpenGL initialization
-	glViewport(0, 0, xres, yres);
-	//Initialize matrices
-	glMatrixMode(GL_PROJECTION); glLoadIdentity();
-	glMatrixMode(GL_MODELVIEW); glLoadIdentity();
-	//This sets 2D mode (no perspective)
-	glOrtho(0, xres, 0, yres, -1, 1);
-	//
+    //OpenGL initialization
+    glViewport(0, 0, xres, yres);
+    //Initialize matrices
+    glMatrixMode(GL_PROJECTION); glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW); glLoadIdentity();
+    //This sets 2D mode (no perspective)
+    glOrtho(0, xres, 0, yres, -1, 1);
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_FOG);
@@ -390,7 +389,7 @@ void init_opengl(void)
     bgTexture = generateTexture(bgTexture, bgImage1);
     bgTexture1 = generateTexture(bgTexture1, bgImage1);
     bgImage2 = loadImage(BG_IMAGE_PATH2.c_str());
-	bgTexture2 = generateTexture(bgTexture2, bgImage2);
+    bgTexture2 = generateTexture(bgTexture2, bgImage2);
 
     //Create gameover texture:
     gameOverImage = loadImage(GAMEOVER_IMAGE_PATH.c_str());
@@ -399,15 +398,15 @@ void init_opengl(void)
 
 void check_resize(XEvent *e)
 {
-	//The ConfigureNotify is sent by the
-	//server if the window is resized.
-	if (e->type != ConfigureNotify)
-		return;
-	XConfigureEvent xce = e->xconfigure;
-	if (xce.width != xres || xce.height != yres) {
-		//Window size did change.        
-		reshape_window(xce.width, xce.height);
-	}
+    //The ConfigureNotify is sent by the
+    //server if the window is resized.
+    if (e->type != ConfigureNotify)
+        return;
+    XConfigureEvent xce = e->xconfigure;
+    if (xce.width != xres || xce.height != yres) {
+        //Window size did change.        
+        reshape_window(xce.width, xce.height);
+    }
 }
 
 void init(Game *g) {
@@ -550,7 +549,10 @@ void physics(Game *g)
 	paddle1.checkCollision(yres, ball);
 	paddle2.checkCollision(yres, ball);
 	
-	obstacle->checkCollision(xres, yres, ball, p1);
+    if(level == 2){
+        obstacle->checkCollision(xres, yres, ball, p1);
+    }
+	
 
 	//paddle1 movement
 	paddle1.setYVel(paddle1YVel);
