@@ -12,7 +12,7 @@
 #include "Ball.h"
 #include "player.h"
 #include <GL/glx.h>
-#include "brianC.h"
+
 using namespace std;
 void submitScore() 
 {
@@ -66,7 +66,26 @@ GLuint generateTransparentTexture(GLuint texture, Ppmimage * image)
     return silhouetteTexture;
 }
 
-
+unsigned char *buildAlphaData(Ppmimage *img)
+{
+    int a,b,c;
+    unsigned char *newdata, *ptr;
+    unsigned char *data = (unsigned char *)img->data;
+    newdata = new unsigned char[img->width * img->height * 4];
+    ptr = newdata;
+    for (int i=0; i<img->width * img->height * 3; i+=3) {
+        a = *(data+0);
+        b = *(data+1);
+        c = *(data+2);
+        *(ptr+0) = a;
+        *(ptr+1) = b;
+        *(ptr+2) = c;
+        *(ptr+3) = (a|b|c);
+        ptr += 4;
+        data += 3;
+    }
+    return newdata;
+}
 
 void renderTexture(GLuint texture, int width, int height) 
 {
@@ -80,45 +99,6 @@ void renderTexture(GLuint texture, int width, int height)
 	glEnd();
 }
 
-void convertToRGBA(Ppmimage *picture)
-{
-    int w = picture->width;
-    int y = picture->height;
-
-    unsigned char *silhouetteData = buildAlphaData(picture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, y, 0,
-            GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
-    delete [] silhouetteData;
-}
-
-unsigned char *buildAlphaData(Ppmimage *img)
-{
-    //add 4th component to RGB stream...
-    int a,b,c;
-    unsigned char *newdata, *ptr;
-    unsigned char *data = (unsigned char *)img->data;
-    //newdata = (unsigned char *)malloc(img->width * img->height * 4);
-    newdata = new unsigned char[img->width * img->height * 4];
-    ptr = newdata;
-    for (int i=0; i<img->width * img->height * 3; i+=3) {
-        a = *(data+0);
-        b = *(data+1);
-        c = *(data+2);
-        *(ptr+0) = a;
-        *(ptr+1) = b;
-        *(ptr+2) = c;
-        //
-        //get the alpha value
-        //
-
-        *(ptr+3) = (a|b|c);
-        //
-        ptr += 4;
-        data += 3;
-    }
-    return newdata;
-}
-
 
 /*======
 GameObject
@@ -128,16 +108,14 @@ GameObject::GameObject(float xPos, float yPos, float width, float height) {
 	this->yPos = yPos;
 	this->width = width;
 	this->height = height;
-	
 }
 
 //TEMP, will remove
 GameObject::GameObject() {
-	this->xPos = (1250 / 2.0) - 25;
+	this->xPos = 1250 / 2.0;
 	this->yPos = 900 / 2.0;
 	this->width = 50.f;
-	this->height = 250.f;
-	setYVel(-5.0f);
+	this->height = 50.f;
 }
 
 void GameObject::setXPos(float xPos) {
@@ -170,17 +148,6 @@ float GameObject::getWidth() {
 
 float GameObject::getHeight() {
 	return this->height;
-}
-
-void GameObject::setYVel(float yVel){
-	this->yVel = yVel;
-	this->yPos += yVel;
-	
-}
-
-
-float GameObject::getYVel(){
-	return yVel;
 }
 
 void GameObject::render() {
@@ -226,56 +193,6 @@ void Obstacle::render() {
     glVertex2f(0.0f, 0.0f);
     glEnd();
     glPopMatrix();
-}
-
-void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player) {
-    //This function will check if the ball collides with
-    //the obstacle
-    float ballspeed = 15.0f;
-    float ballXVel = ballspeed * cos(0)+10;
-    float ballYVel = ballspeed * -sin(35);
-
-    int xPos = this->getXPos();
-    int yPos = this->getYPos();
-    int width = this->getWidth();
-    int height = this->getHeight();
-
-    //Boundries
-    int leftWall = xPos - (width / 2);
-    int rightWall = xPos + (width / 2);
-    int topWall = yPos - (width / 2);
-    int bottomWall = yPos + (width / 2);
-	
-		
-	bool onLeftSide = (ball.getXPos() < xres/2);
-	bool onRightSide = (ball.getXPos() > xres/2);
-	
-    //Ball moving to the right
-    if(onLeftSide && ball.getXVel() > 0 && ball.getXPos() >= xPos && ball.getYPos() >= yPos && ball.getYPos() <= yPos + height){
-	createSound(5);	
-	ball.setXVel(-ballXVel);
-	}
-	//Ball moving to the left
-	else if(onRightSide && ball.getXVel() < 0 && ball.getXPos() <= xPos+width && ball.getYPos() >= yPos && ball.getYPos() <= yPos+height){
-	    createSound(6);	
-	    ball.setXVel(ballXVel);
-	}
-	
-	//Obstacle movment
-	float obstacleSpeed = 5.0f;
-	
-	//if object hits bottom of screen
-	if(yPos <= 0.0f){
-		setYVel(obstacleSpeed);
-	}
-	//if object hits top of screen
-	else if(yPos + height >= yres){
-		setYVel(-obstacleSpeed);
-	}
-
-	
-
-
 }
 
 /*===================

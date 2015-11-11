@@ -88,12 +88,11 @@ float ballXPos;
 float ballYPos;
 float ballXVel;
 float ballYVel;
-bool gameStarted;
 
 float paddle1YVel;
 float paddle2YVel;
 
-int startTime = 3000000; //3 minutes
+int startTime = 1800000; //3 minutes
 string timeStr;
 
 struct Game {
@@ -193,7 +192,6 @@ int main(void)
     is_gameover = false;
     high_score = 0;
     is_render_powerup = 0;
-    gameStarted = false;
 
 	//MAIN MENU LOOP 
 	while(intro != 0) {
@@ -477,11 +475,9 @@ int check_keys(XEvent *e, Game *g){
 			return 0;
 		}
 		if(key == XK_b) {
-			printf("Enter pressed\n");
-            gameStarted = true;
+			printf("Enter pressed\n");            			
             if (is_gameover == true){
             hud->is_show_welcome = true;
-            gameStarted = false;
             intro = 0;
             }
             else{
@@ -545,26 +541,19 @@ void physics(Game *g)
 	g->mouseThrustOn=false;
 
 	//ball collision
-    if(gameStarted){
-        ball.setYVel(ball.getYVel());
-        ball.setXVel(ball.getXVel());
-		obstacle->setYVel(obstacle->getYVel());
-        ball.checkCollision(xres, yres);
-    }
-	
+	ball.setYVel(ball.getYVel());
+	ball.setXVel(ball.getXVel());
+	ball.checkCollision(xres, yres);
 
 	//paddle collision
 	paddle1.checkCollision(yres, ball);
 	paddle2.checkCollision(yres, ball);
-	
-	obstacle->checkCollision(xres, yres, ball, p1);
 
 	//paddle1 movement
 	paddle1.setYVel(paddle1YVel);
 
 	//paddle2 movement
 	paddle2.setYVel(paddle2YVel);        
-	
 
 }
 
@@ -585,8 +574,6 @@ int getTimer(){
     if (ret < 0){
         ret = 0;
         is_gameover = true;
-		ball.setXVel(0.0f);
-		ball.setYVel(0.0f);
         stopGame();
     }
     return ret;
@@ -693,10 +680,9 @@ void render(Game *g)
 	//Level 2 selected
 	//Draw some obstacles to showcase a difference between level 1 and level2
 	if(level == 2) {
-		//obstacle->render();
-
+		obstacle->render();
 	}
-    obstacle->render();
+    
     
     
     hud->showTimer(getTimer());

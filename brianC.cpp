@@ -48,12 +48,6 @@ void createSound(int trackNo)
        case 4:
             alBuffer = alutCreateBufferFromFile("./pad2.wav");
             break;
-       case 5:
-            alBuffer = alutCreateBufferFromFile("./bubble1.wav");
-            break;
-        case 6:
-            alBuffer = alutCreateBufferFromFile("./bubble2.wav");
-            break;
      
     }
 
