@@ -45,7 +45,7 @@ void Ball::render()
 
 
 
-bool Ball::checkCollision(float xres, float yres)
+void Ball::checkCollision(float xres, float yres)
 {
     
     float ballspeed = 10.0f;
@@ -71,15 +71,13 @@ bool Ball::checkCollision(float xres, float yres)
         this->xVel = -ballXVel;
         player1Score++;
         createSound(3);
-	return true;
     }
     else if(hitLeftSide){
         xVel = ballXVel;
         player2Score++;
         createSound(4);
-	return true;
     }
-    return false;
+
 }
 
 void Ball::setXVel(float xVel)
@@ -224,7 +222,7 @@ float Paddle::getWidth()
     return width;
 }
 
-bool Paddle::checkCollision(int yres, Ball &ball)
+void Paddle::checkCollision(int yres, Ball &ball)
 {
     float ballspeed = 15.0f;
     float ballXVel = ballspeed * cos(0)+10;
@@ -267,7 +265,6 @@ bool Paddle::checkCollision(int yres, Ball &ball)
             ball.setXVel(ballXVel);
             
         }
-	return true;
     }
     else if(onRightSide && hitRightPaddle){
         ball.setXVel(-ballXVel);
@@ -282,9 +279,8 @@ bool Paddle::checkCollision(int yres, Ball &ball)
             ball.setYVel(-ballYVel);
             ball.setXVel(-ballXVel);
         }
-	return true;
     }
-	return false;
+
 }
 
 Timer::Timer()
