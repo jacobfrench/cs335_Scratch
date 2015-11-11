@@ -19,6 +19,8 @@ extern GLuint generateTexture(GLuint texture, Ppmimage * image);
 extern GLuint generateTransparentTexture(GLuint texture, Ppmimage * image);
 extern unsigned char *buildAlphaData(Ppmimage *img);
 extern void renderTexture(GLuint texture, int width, int height);
+extern void convertToRGBA(Ppmimage *picture);
+extern int setHighScore(int p1Score, int p2Score);
 
 //Base Game Object class
 //This class can be used to derive from
@@ -27,6 +29,7 @@ class GameObject {
 	private:
 		float xPos;
 		float yPos;
+		float yVel;
 		float width;
 		float height;
 	public:
@@ -41,6 +44,8 @@ class GameObject {
 		float getYPos();
 		float getWidth();
 		float getHeight();
+		void setYVel(float yVel);
+		float getYVel();
 		~GameObject();
 
 };

@@ -15,6 +15,8 @@
 #include "fonts.h"
 #include "keithH.h"
 #include <string>
+#include <fstream>
+#include <cstdlib>
 
 
 using namespace std;
@@ -23,6 +25,8 @@ Hud::Hud(const int in_xres, const int in_yres){
     xres = in_xres;
     yres = in_yres;
     is_show_welcome=true;
+    player1_health = 100;
+    player2_health = 100;
 }
 
 void Hud::setResolution(const int in_xres, const int in_yres){
@@ -56,17 +60,16 @@ void Hud::showCourtYard(){
 }
 
 
-void Hud::showWelcome(int in_high_score){
+void Hud::showWelcome(int in_highscore){
     glColor3ub(0,255,255);    
     glEnable(GL_TEXTURE_2D);
-    char buf[50];
-
+    char buf[50];    
     //PRINT HIGH SCORE:
     Rect r1;
     r1.bot = yres - 100.0;
     r1.left = xres/2.0 - 100.0;
     r1.center = 0;    
-    sprintf(buf,"Current high score is: %d",in_high_score);
+    sprintf(buf,"Current high score is: %d",in_highscore);
     ggprint16(&r1, 16, 0x00ffffff, buf);
     //--------------------------------------------------------
 }
@@ -125,7 +128,6 @@ void Hud::showScore(int in_score1, int in_score2){
     //glBindTexture(GL_TEXTURE_2D, 0);
 
     //PRINT PLAYER 1'S SCORE:
-    //PRINT HIGH SCORE:
     Rect r0;
     r0.bot = yres - 33.0;
     r0.left = 40.0,
@@ -159,15 +161,15 @@ void Hud::showTimer(int timer){
     ggprint16(&r, 70, cref, buf);
 }
 
-void Hud::showGameOver(int high_score,int p1_score,int p2_score){
+void Hud::showGameOver(int in_highscore,int p1_score,int p2_score){
     //PRINT HIGH SCORE:
     Rect r0;
     r0.bot = yres - 100.0;
     r0.left = xres/2.0 - 100.0;
     r0.center = 0;
     char buf1[100];
-    char buf2[100];
-    sprintf(buf1,"Current high score is: %d",high_score);
+    char buf2[100];    
+    sprintf(buf1,"Current high score is: %d",in_highscore);
     ggprint16(&r0, 16, 0x00ffffff, buf1);
     //--------------------------------------------------------
 
@@ -175,11 +177,11 @@ void Hud::showGameOver(int high_score,int p1_score,int p2_score){
     glColor3ub(255,255,255);
     unsigned int cref = 0x00ffffff;
 
-    if (p1_score >= p2_score){
+    if (p1_score >= p2_score){        
         sprintf(buf1,"Player 1 wins! %d points ", p1_score);
         sprintf(buf2,"Player 2 loses! %d points ", p2_score);
     }
-    else{
+    else{        
         sprintf(buf1,"Player 2 wins! %d points ", p2_score);
         sprintf(buf2,"Player 1 loses! %d points ", p1_score);
     }
@@ -230,3 +232,21 @@ void Hud::selectRightScreen(){
     glVertex2f( xres/2 + 90, yres/2 -150 + 10);
     glEnd();
 }
+
+void Hud::setPlayer1Health(int in_player1_health){
+    player1_health = in_player1_health;
+}
+
+void Hud::setPlayer2Health(int in_player2_health){
+    player2_health = in_player2_health;
+}
+
+int Hud::getPlayer1Health(){
+    return player1_health;
+}
+
+int Hud::getPlayer2Health(){
+    return player2_health;
+}
+
+

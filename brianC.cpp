@@ -48,6 +48,18 @@ void createSound(int trackNo)
        case 4:
             alBuffer = alutCreateBufferFromFile("./pad2.wav");
             break;
+       case 5:
+            alBuffer = alutCreateBufferFromFile("./win1.wav");
+            break;
+        case 6:
+            alBuffer = alutCreateBufferFromFile("./bubble2.wav");
+            break;
+         case 7:
+            alBuffer = alutCreateBufferFromFile("./gameMusic.wav");
+            break;
+         case 8:
+            alBuffer = alutCreateBufferFromFile("./explode.wav");
+            break;
      
     }
 

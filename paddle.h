@@ -31,7 +31,7 @@ public:
     float getHeight();
     void setYVel(float yVel);
     float getYVel();
-    void checkCollision(int yres, Ball &ball);
+    bool checkCollision(int yres, Ball &ball);
     Paddle(const int yres);
     ~Paddle();
 };

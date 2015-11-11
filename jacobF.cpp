@@ -13,8 +13,8 @@ Ball::Ball(const int in_xres, const int in_yres)
 
 void Ball::setResolution(int in_xres, int in_yres)
 {
-    xres = in_xres;
-    yres = in_yres;
+    this->xres = in_xres;
+    this->yres = in_yres;
 }
 
 void Ball::resetScore()
@@ -31,54 +31,55 @@ void Ball::render()
 {
     int i;
     int triangleAmount = 20;
-
     float twicePi = 2.0f * 3.14159265358979f;
-
     glBegin(GL_TRIANGLE_FAN);
-
     glColor3f(1.0f,1.0f,1.0f);
-        glVertex2f(xPos, yPos); // center of circle
+        glVertex2f(xPos, yPos);
         for(i = 0; i <= triangleAmount;i++) {
-            glVertex2f(
-                    xPos + (radius * cos(i *  twicePi / triangleAmount)),
+            glVertex2f(xPos + (radius * cos(i *  twicePi / triangleAmount)),
                 yPos + (radius * sin(i * twicePi / triangleAmount))
             );
         }
     glEnd();
 }
 
-void Ball::checkCollision(float xres, float yres)
+
+
+bool Ball::checkCollision(float xres, float yres)
 {
     
     float ballspeed = 10.0f;
     float ballXVel = ballspeed * cos(0) + 10;
     float ballYVel = ballspeed * -sin(35);
     
+    bool hitTopOfScreen = yPos >= yres && yVel > 0;
+    bool hitBottomOfScreen = yPos <= 0 && yVel < 0;
+    bool hitRightSide = xPos >= xres && xVel > 0;
+    bool hitLeftSide = xPos <= 0 && xVel < 0;
     
-
+    
     //check collision with screen edges
-    //y-axis
-    if(yPos >= yres && yVel > 0){
-	createSound(2);
-        yVel = -ballYVel;
-
-    }
-    else if(yPos <= 0 && yVel < 0){
+    if(hitTopOfScreen){
         createSound(2);
-	yVel = ballYVel;
+        yVel = -ballYVel;
     }
-    //x-axis
-    else if(xPos >= xres && xVel > 0){
-        xVel = -ballXVel;
+    else if(hitBottomOfScreen){
+        createSound(2);
+        yVel = ballYVel;
+    }
+    else if(hitRightSide){
+        this->xVel = -ballXVel;
         player1Score++;
-	createSound(3);
+        createSound(3);
+	return true;
     }
-    else if(xPos <= 0 && xVel < 0){
+    else if(hitLeftSide){
         xVel = ballXVel;
         player2Score++;
-	createSound(4);
+        createSound(4);
+	return true;
     }
-
+    return false;
 }
 
 void Ball::setXVel(float xVel)
@@ -145,12 +146,12 @@ int Ball::getPlayer2Score()
 
 Paddle::Paddle(const int in_yres)
 {
-yres = in_yres;
+    this->yres = in_yres;
 }
 
 void Paddle::setWindowHeight(int in_yres)
 {
-    yres = in_yres;
+    this->yres = in_yres;
 }
 
 Paddle::~Paddle()
@@ -223,13 +224,14 @@ float Paddle::getWidth()
     return width;
 }
 
-void Paddle::checkCollision(int yres, Ball &ball){
+bool Paddle::checkCollision(int yres, Ball &ball)
+{
     float ballspeed = 15.0f;
     float ballXVel = ballspeed * cos(0)+10;
     float ballYVel = ballspeed * -sin(35);
 
     
-    
+    //ball collision with paddles
     bool onLeftSide = ball.getXPos() < 150 && xPos < 150;
     bool onRightSide = ball.getXPos() > 150 && xPos > 150;
     bool hitLeftPaddle = (ball.getXPos()-ball.getRadius() <= xPos) &&
@@ -237,39 +239,52 @@ void Paddle::checkCollision(int yres, Ball &ball){
     bool hitRightPaddle  = (ball.getXPos() >= xPos)
             && ball.getYPos() >= yPos && ball.getYPos() <= yPos + height;
 
-    //collision with edges of screen
-    if(yPos + height >= yres && yVel > 0){
+    //paddle collision with edges of screen
+    bool hitTop = yPos + height >= yres && yVel > 0;
+    bool hitBottom = yPos <= 0 && yVel < 0;
+    bool paddleMovingUp = yVel > 0;
+    bool paddleMovingDown = yVel < 0;
+    if(hitTop){
         yPos = yres - height;
     }
-    else if(yPos <= 0 && yVel < 0){
+    else if(hitBottom){
         yPos = 0;
     }
 
     //collision with ball
     if(onLeftSide && hitLeftPaddle){
         ball.setXVel(ballXVel);
-	createSound(1);
-        //moving up
-        if(yVel > 0){
+        createSound(1);
+        
+        if(paddleMovingUp){
+            ballYVel = ballspeed * -sin(55);
             ball.setYVel(ballYVel);
             ball.setXVel(ballXVel);
         }
-        //moving down
-        else if(yVel < 0)
+        else if(paddleMovingDown){
+            ballYVel = ballspeed * -sin(55);
             ball.setYVel(-ballYVel);
             ball.setXVel(ballXVel);
+            
+        }
+	return true;
     }
     else if(onRightSide && hitRightPaddle){
         ball.setXVel(-ballXVel);
-	createSound(1);
-        if(yVel > 0){
+        createSound(1);
+        if(paddleMovingUp){
+            ballYVel = ballspeed * -sin(55);
             ball.setYVel(ballYVel);
             ball.setXVel(-ballXVel);
         }
-        else if(yVel < 0)
+        else if(paddleMovingDown){
+            ballYVel = ballspeed * -sin(55);
             ball.setYVel(-ballYVel);
+            ball.setXVel(-ballXVel);
+        }
+	return true;
     }
-
+	return false;
 }
 
 Timer::Timer()
@@ -304,6 +319,7 @@ void Timer::pause()
 {
     if( paused || !started )
         return;
+        
     paused = true;
     pausedAt = clock();
 }
@@ -312,6 +328,7 @@ void Timer::resume()
 {
     if( !paused )
         return;
+        
     paused = false;
     startedAt += clock() - pausedAt;
 }
@@ -325,6 +342,7 @@ void Timer::start()
 {
     if( started )
         return;
+        
     started = true;
     paused = false;
     startedAt = clock();
@@ -342,5 +360,6 @@ clock_t Timer::getTicks()
         return 0;
     if( paused )
         return pausedAt - startedAt;
+        
     return clock() - startedAt;
 }
