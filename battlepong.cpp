@@ -484,6 +484,10 @@ int check_keys(XEvent *e, Game *g){
 			else{
 				hud->is_show_welcome = false;
 				init_ball_paddles();
+				//REINITIALIZE OBSTACLE POSITION AND VELIOCITY:
+			        obstacle->setXPos((1250 / 2.0) - 25);
+				obstacle->setYPos(900 / 2.0);	
+				obstacle->setYVel(-5.0f);	
 				intro = 1;
 			}
 			is_gameover = false;
