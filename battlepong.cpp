@@ -470,7 +470,7 @@ int check_keys(XEvent *e, Game *g){
 			shift=1;
 			return 0;
 		}
-		if(key == XK_b) {
+		if(key == XK_Return) {
 			//printf("Enter pressed\n");
 			createSound2();
 			gameStarted = true;
@@ -673,7 +673,7 @@ void render(Game *g)
 		r2.bot = (yres / 2.0) - 150;
 		r2.left = xres / 2.0 - 70.0;
 		r2.center = 0;
-		ggprint16(&r2, 16, 0xffffff, "Press 'B' to start");
+		ggprint16(&r2, 16, 0xffffff, "Press 'Enter' to start");
 
 		//PASS showWelcome the high score:
 		high_score = setHighScore(0, 0);
