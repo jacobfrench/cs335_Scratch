@@ -57,6 +57,9 @@ void createSound(int trackNo)
          case 7:
             alBuffer = alutCreateBufferFromFile("./gameMusic.wav");
             break;
+         case 8:
+            alBuffer = alutCreateBufferFromFile("./explode.wav");
+            break;
      
     }
 
