@@ -47,7 +47,8 @@ class GameObject {
 
 };
 
-class Obstacle: public GameObject {
+class Obstacle: public GameObject 
+{
 	private:
 		int numOfPoints;
 	public:
@@ -56,7 +57,8 @@ class Obstacle: public GameObject {
 		void render();
 };
 
-class PowerUp: GameObject {
+class PowerUp: GameObject 
+{
 	private:
 		Ppmimage* image;
 		GLuint textureId;

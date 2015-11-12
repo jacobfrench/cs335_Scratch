@@ -1,9 +1,6 @@
 /*Author: Cory Kitchens
- * Programe Name: coryK.cpp
- * Purpose: Submits score to a php file
- * that reads through submitted scores and displays high scores
- *
- * */
+* Program Name: coryK.cpp
+*/
 
 #include <iostream>
 #include <stdlib.h>
@@ -15,8 +12,8 @@
 #include "player.h"
 #include <GL/glx.h>
 #include "brianC.h"
-using namespace std;
 
+using namespace std;
 
 void submitScore() 
 {
@@ -123,14 +120,16 @@ unsigned char *buildAlphaData(Ppmimage *img)
 /*======
 GameObject
 ========*/
-GameObject::GameObject(float xPos, float yPos, float width, float height) {
+GameObject::GameObject(float xPos, float yPos, float width, float height)
+{
 	this->xPos = xPos;
 	this->yPos = yPos;
 	this->width = width;
 	this->height = height;
 }
 
-GameObject::GameObject() {
+GameObject::GameObject() 
+{
 	this->xPos = (1250 / 2.0) - 25;
 	this->yPos = 900 / 2.0;
 	this->width = 50.f;
@@ -138,31 +137,38 @@ GameObject::GameObject() {
 	setYVel(-5.0f);
 }
 
-void GameObject::setXPos(float xPos) {
+void GameObject::setXPos(float xPos) 
+{
 	this->xPos = xPos;
 }
 
-void GameObject::setYPos(float yPos) {
+void GameObject::setYPos(float yPos) 
+{
 	this->yPos = yPos;
 }
 
-void GameObject::setWidth(float width) {
+void GameObject::setWidth(float width) 
+{
 	this->width = width;
 }
 
-void GameObject::setHeight(float height) {
+void GameObject::setHeight(float height) 
+{
 	this->height = height;
 }
 
-float GameObject::getXPos() {
+float GameObject::getXPos() 
+{
 	return this->xPos; 
 }
 
-float GameObject::getYPos() {
+float GameObject::getYPos() 
+{
 	return this->yPos;
 }
 
-float GameObject::getWidth() {
+float GameObject::getWidth() 
+{
 	return this->width;
 }
 
@@ -177,11 +183,13 @@ void GameObject::setYVel(float yVel)
 	this->yPos += yVel;
 }
 
-float GameObject::getYVel(){
+float GameObject::getYVel()
+{
 	return yVel;
 }
 
-void GameObject::render() {
+void GameObject::render() 
+{
 	glPushMatrix();
 	glTranslatef(this->xPos, this->yPos, 0);
 	glRectf(0.0f, 0.0f, width, height);
@@ -192,11 +200,13 @@ void GameObject::render() {
 	glPopMatrix();
 }
 
-Obstacle::Obstacle(int numOfPoints):GameObject(){
+Obstacle::Obstacle(int numOfPoints):GameObject()
+{
 	this->numOfPoints = numOfPoints;
 }
 
-void Obstacle::render() {
+void Obstacle::render() 
+{
 	glColor3ub(50,50,50);
 	glPushMatrix();
 	glTranslatef(this->getXPos(), this->getYPos(), 0);
@@ -209,7 +219,8 @@ void Obstacle::render() {
 }
 
 
-void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player) {
+void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player) 
+{
 	int player_score = player.getScore();
 	player_score--;
 	float ballspeed = 15.0f;
@@ -256,7 +267,6 @@ TODO:
 **/
 int setHighScore(int p1Score, int p2Score)
 {
-
 	int finalHighScore = 0;
 	//test if scores are actually there
 	if(p1Score >= 0 || p2Score >= 0){
