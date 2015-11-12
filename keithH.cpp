@@ -174,13 +174,27 @@ void Hud::showGameOver(int in_highscore,int p1_score,int p2_score){
 	glColor3ub(255,255,255);
 	unsigned int cref = 0x00ffffff;
 
-	if (p1_score >= p2_score){        
+	//FOR TIME OUT:
+	if (getPlayer1Health()>0 && getPlayer2Health()>0){
+	  if (p1_score >= p2_score && getPlayer1Health()>0){        
 		sprintf(buf1,"Player 1 wins! %d points ", p1_score);
 		sprintf(buf2,"Player 2 loses! %d points ", p2_score);
-	}
-	else{        
+	  }
+	  else{        
 		sprintf(buf1,"Player 2 wins! %d points ", p2_score);
 		sprintf(buf2,"Player 1 loses! %d points ", p1_score);
+	  }
+	}
+	else{
+	  if (getPlayer1Health()>0){        
+		sprintf(buf1,"Player 1 wins! %d points ", p1_score);
+		sprintf(buf2,"Player 2 loses! %d points ->DEAD", p2_score);
+	  }
+	  else{        
+		sprintf(buf1,"Player 2 wins! %d points ", p2_score);
+		sprintf(buf2,"Player 1 loses! %d points ->DEAD", p1_score);
+	  }
+	  
 	}
 
 	//PRINT FIRST SCORE:
