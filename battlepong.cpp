@@ -482,6 +482,7 @@ int check_keys(XEvent *e, Game *g){
 		}
 		if(key == XK_b) {
             //printf("Enter pressed\n");
+            createSound2();
             gameStarted = true;
             hud->setPlayer1Health(100);
             hud->setPlayer2Health(100);
@@ -606,6 +607,7 @@ void physics(Game *g)
     if (lastPaddleHit == 'L' && (isBallBetweenX && isBallBetweenY)){
         bombBegin = time(NULL);
         createSound(8);
+        createSound(9);
             //set to half normal height:            
             paddle1.setHeight(60.0f);
             if (hud->getPlayer1Health()>0){
@@ -671,6 +673,7 @@ int getTimer(){
         ball.setXVel(0.0f);
         ball.setYVel(0.0f);
         stopGame();
+        //createSound(5);
     }
     return ret;
 }

@@ -16,5 +16,5 @@ using namespace std;
 
 extern void createSound(int trackNo);
 extern void cleanSound();
-
+extern void createSound2();
 #endif
