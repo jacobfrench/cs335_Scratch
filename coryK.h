@@ -22,9 +22,6 @@ extern void renderTexture(GLuint texture, int width, int height);
 extern void convertToRGBA(Ppmimage *picture);
 extern int setHighScore(int p1Score, int p2Score);
 
-//Base Game Object class
-//This class can be used to derive from
-//i.e. x and y coordinates, and size
 class GameObject {
 	private:
 		float xPos;
@@ -50,10 +47,6 @@ class GameObject {
 
 };
 
-//Obstacle
-//TODO
-//Set shape type based on number of points
-//i.e. triangle=3, cube/rectangle
 class Obstacle: public GameObject {
 	private:
 		int numOfPoints;
@@ -61,7 +54,6 @@ class Obstacle: public GameObject {
 		Obstacle(int numOfPoints);
 		void checkCollision(int xres, int yres, Ball &ball, Player &player);
 		void render();
-
 };
 
 class PowerUp: GameObject {
@@ -70,9 +62,6 @@ class PowerUp: GameObject {
 		GLuint textureId;
 	public:
 		PowerUp(Ppmimage *image, GLuint textureId);
-
 };
-
-
 
 #endif

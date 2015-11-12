@@ -132,7 +132,7 @@ bool gameStarted;
 float paddle1YVel;
 float paddle2YVel;
 
-int startTime = 5000000; //3 minutes
+int startTime = 5000000; //5 minutes
 string timeStr;
 
 Hud *hud;
@@ -169,7 +169,6 @@ float speed_theta=1/(10*PI);
 
 int main(void)
 {
-
 	logOpen();
 	initXWindows();
 	init_opengl();
@@ -181,27 +180,27 @@ int main(void)
 
 	hud = new Hud(xres ,yres);	
 	selected_screen = LEFT;    
-    is_gameover = false;
-    high_score = 0;
-    gameStarted = false;
-    lastPaddleHit = 'N';//'N' means no paddle hit
+	is_gameover = false;
+	high_score = 0;
+	gameStarted = false;
+	lastPaddleHit = 'N';//'N' means no paddle hit
 
-    bombBegin = time(NULL);
-    bombRandom = random(7);
+	bombBegin = time(NULL);
+	bombRandom = random(7);
 
-    beginSmallLeftPaddle = time(NULL);
-    smallLeftPaddleTime = 7;
-    beginSmallRightPaddle = time(NULL);
-    smallRightPaddleTime = 7;
+	beginSmallLeftPaddle = time(NULL);
+	smallLeftPaddleTime = 7;
+	beginSmallRightPaddle = time(NULL);
+	smallRightPaddleTime = 7;
 
-    int min;
-    if (xres<yres){
-        min=xres;
-    }
-    else{
-        min=yres;
-    }
-    bomb_radius = ((int)(3*min)/10);
+	int min;
+	if (xres<yres){
+		min=xres;
+  }
+	else{
+		min=yres;
+	}
+	bomb_radius = ((int)(3*min)/10);
 
 	//MAIN MENU LOOP 
 	while(intro != 0) {
@@ -213,7 +212,7 @@ int main(void)
 		}
 		render(&game);
 		glXSwapBuffers(dpy, win);
-    }
+	}
 
 
 	//BEGIN MAIN GAME LOOP
@@ -244,36 +243,36 @@ int main(void)
 }
 
 void init_ball_paddles(){
-//init ball variables
-ball.resetScore();
-ball.setXPos(xres/2);
-ball.setYPos(yres/2);
-ball.setRadius(15.0f);
-
-//ball velocity
-ballXVel = 8.0f * cos(30);
-ballYVel = 8.0f * sin(90);
-ball.setYVel(ballXVel);
-ball.setXVel(ballYVel);
-
-//init paddle1
-paddle1.setXPos(50.0f);
-paddle1.setYPos((float)yres/2);
-paddle1.setHeight(120.0f);
-paddle1.setWidth(15.0f);
-
-//init paddle2
-paddle2.setXPos((float)xres - 65.0f);
-paddle2.setYPos((float)yres/2);
-paddle2.setHeight(120.0f);
-paddle2.setWidth(15.0f);
+	//init ball variables
+	ball.resetScore();
+	ball.setXPos(xres/2);
+	ball.setYPos(yres/2);
+	ball.setRadius(15.0f);
+	
+	//ball velocity
+	ballXVel = 8.0f * cos(30);
+	ballYVel = 8.0f * sin(90);
+	ball.setYVel(ballXVel);
+	ball.setXVel(ballYVel);
+	
+	//init paddle1
+	paddle1.setXPos(50.0f);
+	paddle1.setYPos((float)yres/2);
+	paddle1.setHeight(120.0f);
+	paddle1.setWidth(15.0f);
+	
+	//init paddle2
+	paddle2.setXPos((float)xres - 65.0f);
+	paddle2.setYPos((float)yres/2);
+	paddle2.setHeight(120.0f);
+	paddle2.setWidth(15.0f);
 }
 
 void stopGame(){
-    ball.setXPos(xres/2);
-    ball.setYPos(yres/2);
-    ball.setXVel(0);
-    ball.setYVel(0);;
+	ball.setXPos(xres/2);
+	ball.setYPos(yres/2);
+	ball.setXVel(0);
+	ball.setYVel(0);;
 }
 
 void cleanupXWindows(void)
@@ -332,22 +331,19 @@ void reshape_window(int width, int height)
 
 	//window has been resized.
 	setup_screen_res(width, height);
-	//
 
-
+	//SET HUD RESOLUTION:
 	hud->setResolution(xres,yres);
 
 	//RESET BOMB RADIUS:
-    	int min;
-	    if (xres<yres){
-	        min=xres;
-	    }
-	    else{
-        	min=yres;
-	    }
-	    bomb_radius = ((int)(3*min)/10);
-
-
+	int min;
+	if (xres<yres){
+		min=xres;
+	}
+	else{
+		min=yres;
+	}
+	bomb_radius = ((int)(3*min)/10);
 
 	//RESET THE TWO PADDLES POSITION AND BALL RESOLUTION:
 	paddle1.setXPos(50.0f);
@@ -368,15 +364,13 @@ void reshape_window(int width, int height)
 
 void init_opengl(void)
 {
-
-
-    //OpenGL initialization
-    glViewport(0, 0, xres, yres);
-    //Initialize matrices
-    glMatrixMode(GL_PROJECTION); glLoadIdentity();
-    glMatrixMode(GL_MODELVIEW); glLoadIdentity();
-    //This sets 2D mode (no perspective)
-    glOrtho(0, xres, 0, yres, -1, 1);
+	//OpenGL initialization
+	glViewport(0, 0, xres, yres);
+	//Initialize matrices
+	glMatrixMode(GL_PROJECTION); glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW); glLoadIdentity();
+	//This sets 2D mode (no perspective)
+	glOrtho(0, xres, 0, yres, -1, 1);
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_FOG);
@@ -388,39 +382,38 @@ void init_opengl(void)
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
 
-      //Load bomb image(s):
-    bombImage = loadImage(BOMB_IMAGE_PATH.c_str());
-    bombTexture = generateTransparentTexture(bombTexture, bombImage);
-    explodeImage = loadImage(EXPLODE_IMAGE_PATH.c_str());
-    explodeTexture = generateTransparentTexture(explodeTexture, explodeImage);
+	//Load bomb image(s):
+	bombImage = loadImage(BOMB_IMAGE_PATH.c_str());
+	bombTexture = generateTransparentTexture(bombTexture, bombImage);
+	explodeImage = loadImage(EXPLODE_IMAGE_PATH.c_str());
+	explodeTexture = generateTransparentTexture(explodeTexture, explodeImage);
 
-    //Create background texture elements
-    introBG = loadImage(BG_IMAGE_PATH.c_str());
-    introTexture = generateTexture(introTexture, introBG);
-    mainBG = loadImage(MAINBG_IMAGE_PATH.c_str());
-    mainTexture = generateTexture(mainTexture, mainBG);
-    bgImage1 = loadImage(BG_IMAGE_PATH1.c_str());
-    bgTexture = generateTexture(bgTexture, bgImage1);
-    bgTexture1 = generateTexture(bgTexture1, bgImage1);
-    bgImage2 = loadImage(BG_IMAGE_PATH2.c_str());
-    bgTexture2 = generateTexture(bgTexture2, bgImage2);
-
-    //Create gameover texture:
-    gameOverImage = loadImage(GAMEOVER_IMAGE_PATH.c_str());
-    gameOverTexture = generateTexture(gameOverTexture, gameOverImage);
+	//Create background texture elements
+	introBG = loadImage(BG_IMAGE_PATH.c_str());
+	introTexture = generateTexture(introTexture, introBG);
+	mainBG = loadImage(MAINBG_IMAGE_PATH.c_str());
+	mainTexture = generateTexture(mainTexture, mainBG);
+	bgImage1 = loadImage(BG_IMAGE_PATH1.c_str());
+	bgTexture = generateTexture(bgTexture, bgImage1);
+	bgTexture1 = generateTexture(bgTexture1, bgImage1);
+	bgImage2 = loadImage(BG_IMAGE_PATH2.c_str());
+	bgTexture2 = generateTexture(bgTexture2, bgImage2);
+	//Create gameover texture:
+	gameOverImage = loadImage(GAMEOVER_IMAGE_PATH.c_str());
+	gameOverTexture = generateTexture(gameOverTexture, gameOverImage);
 }
 
 void check_resize(XEvent *e)
 {
-    //The ConfigureNotify is sent by the
-    //server if the window is resized.
-    if (e->type != ConfigureNotify)
-        return;
-    XConfigureEvent xce = e->xconfigure;
-    if (xce.width != xres || xce.height != yres) {
-        //Window size did change.        
-        reshape_window(xce.width, xce.height);
-    }
+	//The ConfigureNotify is sent by the
+	//server if the window is resized.
+	if (e->type != ConfigureNotify)
+		return;
+	XConfigureEvent xce = e->xconfigure;
+	if (xce.width != xres || xce.height != yres) {
+		//Window size did change.        
+		reshape_window(xce.width, xce.height);
+	}
 }
 
 void init(Game *g) {
@@ -454,7 +447,6 @@ int check_keys(XEvent *e, Game *g){
 		if(key == XK_w){
 			paddle1YVel = 0;
 			paddle1.setYPos(paddle1.getYPos());
-
 		}
 		if(key == XK_s){
 			paddle1YVel = 0;
@@ -469,8 +461,6 @@ int check_keys(XEvent *e, Game *g){
 			paddle2YVel = 0;
 			paddle2.setYPos(paddle2.getYPos());
 		}
-
-
 		return 0;
 	}
 
@@ -480,39 +470,36 @@ int check_keys(XEvent *e, Game *g){
 			shift=1;
 			return 0;
 		}
-		if(key == XK_b) {
-            //printf("Enter pressed\n");
-            createSound2();
-            gameStarted = true;
-            hud->setPlayer1Health(100);
-            hud->setPlayer2Health(100);
-            if (is_gameover == true){
-            hud->is_show_welcome = true;
-            gameStarted = false;
-            intro = 0;
-            }
-            else{
-            hud->is_show_welcome = false;
-            init_ball_paddles();
-            intro = 1;
-            }
-            
-            is_gameover = false;
-            timer.reset();
-            timer.start();            
-		}
-
-        if (hud->is_show_welcome == true){
-            if (key == XK_Left) {
-                bgTexture = generateTexture(bgTexture, bgImage1);
-                selected_screen = LEFT;
-                level = 1;
+		if(key == XK_Return) {
+			//printf("Enter pressed\n");
+			createSound2();
+			gameStarted = true;
+			hud->setPlayer1Health(100);
+			hud->setPlayer2Health(100);
+			if (is_gameover == true){
+				hud->is_show_welcome = true;
+				gameStarted = false;
+				intro = 0;
 			}
-            else if (key == XK_Right) {
-                bgTexture = generateTexture(bgTexture, bgImage2);            
-                selected_screen = RIGHT;
-                level = 2;
-
+			else{
+				hud->is_show_welcome = false;
+				init_ball_paddles();
+				intro = 1;
+			}
+			is_gameover = false;
+			timer.reset();
+			timer.start();            
+		}
+		if (hud->is_show_welcome == true){
+			if (key == XK_Left) {
+				bgTexture = generateTexture(bgTexture, bgImage1);
+				selected_screen = LEFT;
+				level = 1;
+			}
+			else if (key == XK_Right) {
+				bgTexture = generateTexture(bgTexture, bgImage2);            
+				selected_screen = RIGHT;
+				level = 2;
 			}
 		}
 	}
@@ -541,9 +528,7 @@ int check_keys(XEvent *e, Game *g){
 		case XK_l:
 			paddle2YVel = -paddleSpeed;
 			break;
-
 	}
-
 	return 0;
 
 }
@@ -553,30 +538,30 @@ void physics(Game *g)
 	g->mouseThrustOn=false;
 
 	//ball collision
-    if(gameStarted){
-        ball.setYVel(ball.getYVel());
-        ball.setXVel(ball.getXVel());
-        obstacle->setYVel(obstacle->getYVel());
-        bool is_ball_hit_edge = ball.checkCollision(xres, yres);
-        if (is_ball_hit_edge){
-            lastPaddleHit = 'N';
-        }
-    }
+	if(gameStarted){
+  	ball.setYVel(ball.getYVel());
+		ball.setXVel(ball.getXVel());
+		obstacle->setYVel(obstacle->getYVel());
+		bool is_ball_hit_edge = ball.checkCollision(xres, yres);
+		if (is_ball_hit_edge){
+			lastPaddleHit = 'N';
+		}
+	}
 	
 
-//paddle collision
-    bool isLeftHit = paddle1.checkCollision(yres, ball);
-    if (isLeftHit){
-        lastPaddleHit = 'L';        
-    }
-    bool isRightHit = paddle2.checkCollision(yres, ball);
-    if (isRightHit){
-        lastPaddleHit = 'R';        
-    }
-	
-    if(level == 2){
-        obstacle->checkCollision(xres, yres, ball, p1);
-    }
+	//paddle collision
+	bool isLeftHit = paddle1.checkCollision(yres, ball);
+	if (isLeftHit){
+		lastPaddleHit = 'L';        
+	}
+	bool isRightHit = paddle2.checkCollision(yres, ball);
+	if (isRightHit){
+		lastPaddleHit = 'R';        
+	}
+
+	if(level == 2){
+		obstacle->checkCollision(xres, yres, ball, p1);
+	}
 	
 
 	//paddle1 movement
@@ -585,97 +570,89 @@ void physics(Game *g)
 	//paddle2 movement
 	paddle2.setYVel(paddle2YVel);
 
-    //SET BOMBS POSITION:
-    bomb_theta = bomb_theta + speed_theta;
-       if (fabs(bomb_theta) >= 2*PI){
-           bomb_theta=0;
-           speed_theta *= -1;
-       }
+	//SET BOMBS POSITION:
+	bomb_theta = bomb_theta + speed_theta;
+	if (fabs(bomb_theta) >= 2*PI){
+		bomb_theta=0;
+		speed_theta *= -1;
+	}
+	bomb_posx=(int)(xres/2 + bomb_radius*cos(bomb_theta - PI/2) - bomb_width/2);
+	bomb_posy=(int)(yres/2 + bomb_radius*sin(bomb_theta - PI/2) - bomb_height/2);
 
-    bomb_posx=(int)(xres/2 + bomb_radius*cos(bomb_theta - PI/2) - bomb_width/2);
-    bomb_posy=(int)(yres/2 + bomb_radius*sin(bomb_theta - PI/2) - bomb_height/2);
-
-
-
-    //CHECK LEFT COLLISION WITH BOMB:
-
-    if ((beginSmallLeftPaddle + smallLeftPaddleTime) < time(NULL)){
-        paddle1.setHeight(120.0f);
+	//CHECK LEFT COLLISION WITH BOMB:
+	if ((beginSmallLeftPaddle + smallLeftPaddleTime) < time(NULL)){
+		paddle1.setHeight(120.0f);
     bool isBallBetweenX = (ball.getXPos() > bomb_posx) && (ball.getXPos() < (bomb_posx + bomb_width));
     bool isBallBetweenY = (ball.getYPos() > bomb_posy) && (ball.getYPos() < (bomb_posy + bomb_height));
-
     if (lastPaddleHit == 'L' && (isBallBetweenX && isBallBetweenY)){
-        bombBegin = time(NULL);
-        createSound(8);
-        createSound(9);
-            //set to half normal height:            
-            paddle1.setHeight(60.0f);
-            if (hud->getPlayer1Health()>0){
-            hud->setPlayer1Health(hud->getPlayer1Health()-10*(1+random(8)));
-            //GAMEOVER:
-            if (hud->getPlayer1Health() <= 0){
-                createSound(5);
-                is_gameover = true;
-                ball.setXVel(0.0f);
-                ball.setYVel(0.0f);
-                stopGame();
-            }
-            }
-            beginSmallLeftPaddle = time(NULL);
+			bombBegin = time(NULL);
+			createSound(8);
+			createSound(9);
+			//set to half normal height:            
+			paddle1.setHeight(60.0f);
+			if (hud->getPlayer1Health()>0){
+				hud->setPlayer1Health(hud->getPlayer1Health()-10*(1+random(8)));
+				//GAMEOVER:
+				if (hud->getPlayer1Health() <= 0){
+					createSound(5);
+					is_gameover = true;
+					ball.setXVel(0.0f);
+					ball.setYVel(0.0f);
+					stopGame();
+				}
+			}
+			beginSmallLeftPaddle = time(NULL);
     }
-    }
+	}
 
-
-    //CHECK RIGHT COLLISION WITH BOMB:
-    if ((beginSmallRightPaddle + smallRightPaddleTime) < time(NULL)){
-        paddle2.setHeight(120.0f);
-        //is_bomb_visible = true;
-        bool isBallBetweenX = (ball.getXPos() > bomb_posx) && (ball.getXPos() < (bomb_posx + bomb_width));
-        bool isBallBetweenY = (ball.getYPos() > bomb_posy) && (ball.getYPos() < (bomb_posy + bomb_height));
-
-        if (lastPaddleHit == 'R' && (isBallBetweenX && isBallBetweenY)){
-        bombBegin = time(NULL);
-        createSound(8);
-        //is_bomb_visible = false;
-            //set to half normal height:
-            paddle2.setHeight(60.0f);
-            if (hud->getPlayer2Health()>0){
-            hud->setPlayer2Health(hud->getPlayer2Health()- 10*(1+random(8)));
-            //GAMEOVER:
-            if (hud->getPlayer2Health() <= 0){
-                createSound(5);
-                is_gameover = true;
-                ball.setXVel(0.0f);
-                ball.setYVel(0.0f);
-                stopGame();
-            }
-            }
-            beginSmallRightPaddle = time(NULL);
-
-    }
-    }
-
+	//CHECK RIGHT COLLISION WITH BOMB:
+	if ((beginSmallRightPaddle + smallRightPaddleTime) < time(NULL)){
+		paddle2.setHeight(120.0f);
+		//is_bomb_visible = true;
+		bool isBallBetweenX = (ball.getXPos() > bomb_posx) && (ball.getXPos() < (bomb_posx + bomb_width));
+		bool isBallBetweenY = (ball.getYPos() > bomb_posy) && (ball.getYPos() < (bomb_posy + bomb_height));
+		if (lastPaddleHit == 'R' && (isBallBetweenX && isBallBetweenY)){
+			bombBegin = time(NULL);
+			createSound(8);
+			createSound(9);
+			//is_bomb_visible = false;
+			//set to half normal height:
+			paddle2.setHeight(60.0f);
+			if (hud->getPlayer2Health()>0){
+				hud->setPlayer2Health(hud->getPlayer2Health()- 10*(1+random(8)));
+				//GAMEOVER:
+				if (hud->getPlayer2Health() <= 0){
+					createSound(5);
+					is_gameover = true;
+					ball.setXVel(0.0f);
+					ball.setYVel(0.0f);
+					stopGame();
+				}
+			}
+      beginSmallRightPaddle = time(NULL);
+		}
+	}
 }
 
 
 int getTimer(){    
-    int time = startTime - timer.getTicks();
-    string str;
-    stringstream ss;
-    stringstream ss2;
-    ss << time;
-    timeStr = ss.str();
-    int ret = atoi(timeStr.c_str()) / 10000;
-    if (ret < 0){
-        createSound(5);
-        ret = 0;
-        is_gameover = true;
-        ball.setXVel(0.0f);
-        ball.setYVel(0.0f);
-        stopGame();
-        //createSound(5);
-    }
-    return ret;
+	int time = startTime - timer.getTicks();
+	string str;
+	stringstream ss;
+	stringstream ss2;
+	ss << time;
+	timeStr = ss.str();
+	int ret = atoi(timeStr.c_str()) / 10000;
+	if (ret < 0){
+		createSound(5);
+		ret = 0;
+		is_gameover = true;
+		ball.setXVel(0.0f);
+		ball.setYVel(0.0f);
+		stopGame();
+		//createSound(5);
+	}
+	return ret;
 }
 
 void render(Game *g)
@@ -690,18 +667,18 @@ void render(Game *g)
 		r1.bot = yres/2.0 - 110.0;
 		r1.left = xres/2.0 - 100.0;
 		r1.center = 0;
-        ggprint16(&r1, 16, 0xffffff, "Press 'LEFT/RIGHT'' for background");
+		ggprint16(&r1, 16, 0xffffff, "Press 'LEFT/RIGHT'' for background");
 
 		Rect r2;
 		r2.bot = (yres / 2.0) - 150;
 		r2.left = xres / 2.0 - 70.0;
 		r2.center = 0;
-		ggprint16(&r2, 16, 0xffffff, "Press 'B' to start");
+		ggprint16(&r2, 16, 0xffffff, "Press 'Enter' to start");
 
-        //PASS showWelcome the high score:
-        high_score = setHighScore(0, 0);
-        hud->showWelcome(high_score);
-        switch(selected_screen){
+		//PASS showWelcome the high score:
+		high_score = setHighScore(0, 0);
+		hud->showWelcome(high_score);
+		switch(selected_screen){
 			case LEFT:
 				hud->selectLeftScreen();
 				break;
@@ -731,46 +708,43 @@ void render(Game *g)
 		return;
 	}
 	else{
-        renderTexture(bgTexture, xres, yres);
+		renderTexture(bgTexture, xres, yres);
 	}
 
-    if (is_gameover){
-        renderTexture(gameOverTexture, xres, yres);
-        high_score = setHighScore(ball.getPlayer1Score(), ball.getPlayer2Score());
-        //cout << "Final Score : " << high_score << "\n";
-        hud->showGameOver(high_score,ball.getPlayer1Score(), ball.getPlayer2Score());
-        return;
-    }
+	if (is_gameover){
+		renderTexture(gameOverTexture, xres, yres);
+		high_score = setHighScore(ball.getPlayer1Score(), ball.getPlayer2Score());
+		//cout << "Final Score : " << high_score << "\n";
+		hud->showGameOver(high_score,ball.getPlayer1Score(), ball.getPlayer2Score());
+		return;
+	}
 
+	hud->showScore(ball.getPlayer1Score(), ball.getPlayer2Score());
+	hud->showHealth(hud->getPlayer1Health(), hud->getPlayer2Health());
+	hud->showCourtYard();
 
-    hud->showScore(ball.getPlayer1Score(), ball.getPlayer2Score());
-    hud->showHealth(hud->getPlayer1Health(), hud->getPlayer2Health());
-    hud->showCourtYard();
-
-//DRAW BOMB:
-    glColor3f(1.0, 1.0, 1.0);        
-        glPushMatrix();
-        GLuint which_bomb_texture;
-        if ((bombBegin + 2) > time(NULL)){
-            which_bomb_texture = explodeTexture;
-        }
-        else{
-            which_bomb_texture = bombTexture;
-        }
-
-        glBindTexture(GL_TEXTURE_2D, which_bomb_texture);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-        glBegin(GL_QUADS);
-
-        glTexCoord2f(0.0f, 1.0f); glVertex2i(bomb_posx + bomb_width, bomb_posy + bomb_height);
-        glTexCoord2f(0.0f, 0.0f); glVertex2i(bomb_posx + bomb_width, bomb_posy);
-        glTexCoord2f(1.0f, 0.0f); glVertex2i(bomb_posx, bomb_posy);
-        glTexCoord2f(1.0f, 1.0f); glVertex2i(bomb_posx, bomb_posy + bomb_height);
-        glEnd();
-        glDisable(GL_BLEND);
-        glPopMatrix();
-    glBindTexture(GL_TEXTURE_2D, 0);
+	//DRAW BOMB:
+	glColor3f(1.0, 1.0, 1.0);        
+	glPushMatrix();
+	GLuint which_bomb_texture;
+	if ((bombBegin + 2) > time(NULL)){
+		which_bomb_texture = explodeTexture;
+	}
+	else{
+		which_bomb_texture = bombTexture;
+	}
+	glBindTexture(GL_TEXTURE_2D, which_bomb_texture);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(bomb_posx + bomb_width, bomb_posy + bomb_height);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(bomb_posx + bomb_width, bomb_posy);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(bomb_posx, bomb_posy);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(bomb_posx, bomb_posy + bomb_height);
+	glEnd();
+	glDisable(GL_BLEND);
+	glPopMatrix();
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	//Draw the paddle    
 	glColor3f(0.0, 0.5, 0.5);
@@ -781,18 +755,11 @@ void render(Game *g)
 	//Draw the ball
 	ball.render();
 
-	//TODO
 	//If option 2 is selected i.e. ninja_robot.ppm is the background
 	//Level 2 selected
 	//Draw some obstacles to showcase a difference between level 1 and level2
 	if(level == 2) {
 		obstacle->render();
-
 	}
-    
-    hud->showTimer(getTimer());
-    
-
-
+	hud->showTimer(getTimer());
 }
-
