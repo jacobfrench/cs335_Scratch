@@ -16,6 +16,8 @@
 #include <GL/glx.h>
 #include "brianC.h"
 using namespace std;
+
+
 void submitScore() 
 {
 	char postToWeb[] = "curl --data param1=5 http://cs.csubak.edu/~ckitchens/cs335/finalproject/index.php";
@@ -30,25 +32,31 @@ Ppmimage *loadImage(const char* filename)
 
 GLuint generateTexture(GLuint texture, Ppmimage * image)
 {
+
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, &texture);
 
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, image->width, image->height, 0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3,
+							image->width, image->height,
+							0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
 	return texture;
 }
 
 GLuint generateTransparentTexture(GLuint texture, Ppmimage * image)
 {
+
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, &texture);
 
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, image->width, image->height, 0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3,
+							image->width, image->height,
+							0, GL_RGB, GL_UNSIGNED_BYTE, image->data);
 	GLuint silhouetteTexture;
 	glGenTextures(1, &silhouetteTexture);
 
@@ -56,7 +64,8 @@ GLuint generateTransparentTexture(GLuint texture, Ppmimage * image)
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	unsigned char *silhouetteData = buildAlphaData(image);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width, image->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width, image->height, 0,
+							GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	delete [] silhouetteData;
 	return silhouetteTexture;
 }
@@ -78,7 +87,8 @@ void convertToRGBA(Ppmimage *picture)
 	int w = picture->width;
 	int y = picture->height;
 	unsigned char *silhouetteData = buildAlphaData(picture);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, y, 0,
+			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
 	delete [] silhouetteData;
 }
 
@@ -117,7 +127,7 @@ GameObject::GameObject(float xPos, float yPos, float width, float height) {
 	this->xPos = xPos;
 	this->yPos = yPos;
 	this->width = width;
-	this->height = height;    
+	this->height = height;
 }
 
 //TEMP, will remove
@@ -157,15 +167,16 @@ float GameObject::getWidth() {
 	return this->width;
 }
 
-float GameObject::getHeight() {
+float GameObject::getHeight()
+{
 	return this->height;
 }
 
-void GameObject::setYVel(float yVel){
+void GameObject::setYVel(float yVel)
+{
 	this->yVel = yVel;
-	this->yPos += yVel;    
+	this->yPos += yVel;
 }
-
 
 float GameObject::getYVel(){
 	return yVel;
@@ -196,7 +207,7 @@ Examples
  Moving platforms
 
 =======*/
-Obstacle::Obstacle(int numOfPoints):GameObject() {
+Obstacle::Obstacle(int numOfPoints):GameObject(){
 	this->numOfPoints = numOfPoints;
 }
 
@@ -212,9 +223,8 @@ void Obstacle::render() {
 	glPopMatrix();
 }
 
+
 void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player) {
-	//This function will check if the ball collides with
-	//the obstacle
 	int player_score = player.getScore();
 	player_score--;
 	float ballspeed = 15.0f;
@@ -225,7 +235,6 @@ void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player) {
 	int width = this->getWidth();
 	int height = this->getHeight();
 
-        
 	bool onLeftSide = (ball.getXPos() < xres/2);
 	bool onRightSide = (ball.getXPos() > xres/2);
     
@@ -239,10 +248,9 @@ void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player) {
 		createSound(6); 
 		ball.setXVel(ballXVel);
 	}
-    
+
 	//Obstacle movment
 	float obstacleSpeed = 5.0f;
-    
 	//if object hits bottom of screen
 	if(yPos <= 0.0f){
 		setYVel(obstacleSpeed);
@@ -261,21 +269,20 @@ High score
 TODO:
  refactor function into multiple functions
 **/
-
 int setHighScore(int p1Score, int p2Score)
 {
+
 	int finalHighScore = 0;
 	//test if scores are actually there
 	if(p1Score >= 0 || p2Score >= 0){
+
 		ifstream highScoreFile;
 		ofstream finalScoreFile;
-		string line;        
+		string line;
 		highScoreFile.open("highscores.txt");
-        
+
 		if(highScoreFile.is_open()) {
-			//cout << "File opened\n";
 			int currentLocalScore = (p1Score > p2Score) ? p1Score : p2Score;
-			//cout << "Score " << currentLocalScore << "\n";
 			while(!highScoreFile.eof()) {
 				while(getline(highScoreFile, line)) {
 					int scoreFromFile = atoi(line.c_str());
@@ -286,11 +293,9 @@ int setHighScore(int p1Score, int p2Score)
 			finalScoreFile.open("highscores.txt");
 			finalScoreFile << finalHighScore;
 			finalScoreFile.close();
-		}
-		else {
+		} else {
 			cout << "Error";
 		}
-		return finalHighScore;
 	}
 	return finalHighScore;
 }
