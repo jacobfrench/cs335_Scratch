@@ -482,6 +482,7 @@ int check_keys(XEvent *e, Game *g){
 		}
 		if(key == XK_b) {
             //printf("Enter pressed\n");
+            createSound2();
             gameStarted = true;
             hud->setPlayer1Health(100);
             hud->setPlayer2Health(100);
@@ -671,6 +672,7 @@ int getTimer(){
         ball.setXVel(0.0f);
         ball.setYVel(0.0f);
         stopGame();
+        //createSound(5);
     }
     return ret;
 }
