@@ -9,8 +9,8 @@
 class Ball{
 
 private:
-    float xPos;
-    float yPos;
+	float xPos;
+	float yPos;
 	float yVel;
 	float xVel;
 	float radius;
@@ -18,10 +18,10 @@ private:
 	int player2Score;    
 
 public:
-    int xres;
-    int yres;
-    void setResolution(int in_xres,int in_yres);
-    void render();
+	int xres;
+	int yres;
+	void setResolution(int in_xres,int in_yres);
+	void render();
 	void setXVel(float xVel);
 	float getXVel();
     
@@ -38,15 +38,15 @@ public:
 	float getRadius();
 
 	//returns true if ball hits left or right edge of screen:
-	    bool checkCollision(float xres, float yres);
+	bool checkCollision(float xres, float yres);
 
 	int getPlayer1Score();
 	int getPlayer2Score();
 
-    void resetScore();
+	void resetScore();
 
-    Ball(const int in_xres, const int yres);
-    ~Ball();
+	Ball(const int in_xres, const int yres);
+	~Ball();
 };
 #endif // BALL_H
 

@@ -70,17 +70,15 @@ GLuint generateTransparentTexture(GLuint texture, Ppmimage * image)
 	return silhouetteTexture;
 }
 
-
-
 void renderTexture(GLuint texture, int width, int height) 
 {
 	glColor3f(1.0, 1.0, 1.0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(0, height);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i(width, height);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(width, 0);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(0, 0);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(0, height);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(width, height);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(width, 0);
 	glEnd();
 }
 
@@ -88,7 +86,6 @@ void convertToRGBA(Ppmimage *picture)
 {
 	int w = picture->width;
 	int y = picture->height;
-
 	unsigned char *silhouetteData = buildAlphaData(picture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, y, 0,
 			GL_RGBA, GL_UNSIGNED_BYTE, silhouetteData);
@@ -122,7 +119,6 @@ unsigned char *buildAlphaData(Ppmimage *img)
 	}
 	return newdata;
 }
-
 
 /*======
 GameObject
@@ -182,14 +178,11 @@ void GameObject::setYVel(float yVel)
 	this->yPos += yVel;
 }
 
-
-float GameObject::getYVel()
-{
+float GameObject::getYVel(){
 	return yVel;
 }
 
-void GameObject::render()
-{
+void GameObject::render() {
 	glPushMatrix();
 	glTranslatef(this->xPos, this->yPos, 0);
 	glRectf(0.0f, 0.0f, width, height);
@@ -201,13 +194,9 @@ void GameObject::render()
 }
 
 
-
 /*======
 PowerUps
-
 =======*/
-
-
 
 /*======
 Obstacles
@@ -218,13 +207,11 @@ Examples
  Moving platforms
 
 =======*/
-Obstacle::Obstacle(int numOfPoints):GameObject()
-{
+Obstacle::Obstacle(int numOfPoints):GameObject(){
 	this->numOfPoints = numOfPoints;
 }
 
-void Obstacle::render()
-{
+void Obstacle::render() {
 	glColor3ub(50,50,50);
 	glPushMatrix();
 	glTranslatef(this->getXPos(), this->getYPos(), 0);
@@ -236,10 +223,8 @@ void Obstacle::render()
 	glPopMatrix();
 }
 
-void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player)
-{
-	//This function will check if the ball collides with
-	//the obstacle
+
+void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player) {
 	int player_score = player.getScore();
 	player_score--;
 	float ballspeed = 15.0f;
@@ -250,24 +235,22 @@ void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player)
 	int width = this->getWidth();
 	int height = this->getHeight();
 
-		
 	bool onLeftSide = (ball.getXPos() < xres/2);
 	bool onRightSide = (ball.getXPos() > xres/2);
-	
+    
 	//Ball moving to the right
 	if(onLeftSide && ball.getXVel() > 0 && ball.getXPos() >= xPos && ball.getYPos() >= yPos && ball.getYPos() <= yPos + height){
-	createSound(6); 
-	ball.setXVel(-ballXVel);
+		createSound(6); 
+    ball.setXVel(-ballXVel);
 	}
 	//Ball moving to the left
 	else if(onRightSide && ball.getXVel() < 0 && ball.getXPos() <= xPos+width && ball.getYPos() >= yPos && ball.getYPos() <= yPos+height){
 		createSound(6); 
 		ball.setXVel(ballXVel);
 	}
-	
+
 	//Obstacle movment
 	float obstacleSpeed = 5.0f;
-	
 	//if object hits bottom of screen
 	if(yPos <= 0.0f){
 		setYVel(obstacleSpeed);
@@ -288,19 +271,18 @@ TODO:
 **/
 int setHighScore(int p1Score, int p2Score)
 {
-int finalHighScore = 0;
+
+	int finalHighScore = 0;
 	//test if scores are actually there
-	if(p1Score >= 0 || p2Score >= 0)
-	{
+	if(p1Score >= 0 || p2Score >= 0){
+
 		ifstream highScoreFile;
 		ofstream finalScoreFile;
-		string line;        
+		string line;
 		highScoreFile.open("highscores.txt");
-		
+
 		if(highScoreFile.is_open()) {
-			//cout << "File opened\n";
 			int currentLocalScore = (p1Score > p2Score) ? p1Score : p2Score;
-			//cout << "Score " << currentLocalScore << "\n";
 			while(!highScoreFile.eof()) {
 				while(getline(highScoreFile, line)) {
 					int scoreFromFile = atoi(line.c_str());
@@ -308,14 +290,12 @@ int finalHighScore = 0;
 				}
 			}
 			highScoreFile.close();
-
 			finalScoreFile.open("highscores.txt");
 			finalScoreFile << finalHighScore;
 			finalScoreFile.close();
 		} else {
 			cout << "Error";
 		}
-		return finalHighScore;
 	}
-return finalHighScore;
+	return finalHighScore;
 }
