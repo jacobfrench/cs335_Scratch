@@ -17,6 +17,7 @@ class Hud{
     int yres;
     int player1_health;
     int player2_health;
+    bool isAI;
   public:
     bool is_show_welcome;   
     Hud(const int in_xres, const int in_yres);
@@ -33,5 +34,8 @@ class Hud{
     void selectRightScreen();
     void showTimer(int timer);
     void showGameOver(int in_highscore,int p1_score,int p2_score);
+    void drawIntro();
+    void setAI(bool in_AI);
+    bool isAI();
 };
 #endif
