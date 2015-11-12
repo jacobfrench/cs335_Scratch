@@ -130,7 +130,6 @@ GameObject::GameObject(float xPos, float yPos, float width, float height) {
 	this->height = height;
 }
 
-//TEMP, will remove
 GameObject::GameObject() {
 	this->xPos = (1250 / 2.0) - 25;
 	this->yPos = 900 / 2.0;
@@ -193,20 +192,6 @@ void GameObject::render() {
 	glPopMatrix();
 }
 
-
-/*======
-PowerUps
-=======*/
-
-/*======
-Obstacles
-Obstacles can be 2d polygons that
-have collision detection
-
-Examples 
- Moving platforms
-
-=======*/
 Obstacle::Obstacle(int numOfPoints):GameObject(){
 	this->numOfPoints = numOfPoints;
 }
