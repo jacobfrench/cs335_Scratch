@@ -61,7 +61,6 @@ class Obstacle: public GameObject {
 		Obstacle(int numOfPoints);
 		void checkCollision(int xres, int yres, Ball &ball, Player &player);
 		void render();
-
 };
 
 class PowerUp: GameObject {
@@ -70,7 +69,6 @@ class PowerUp: GameObject {
 		GLuint textureId;
 	public:
 		PowerUp(Ppmimage *image, GLuint textureId);
-
 };
 
 
