@@ -17,7 +17,7 @@
 #include <string>
 #include <fstream>
 #include <cstdlib>
-
+#include "brianC.h"
 
 using namespace std;
 
