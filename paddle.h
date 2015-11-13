@@ -13,7 +13,7 @@ class Paddle{
 		float yPos;
 		float width;
 		float height;
-        float yVel;
+		float yVel;
 		int yres;
 		bool isCpu;
 	public:

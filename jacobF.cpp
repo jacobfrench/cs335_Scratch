@@ -3,7 +3,6 @@
 #include "timer.h"
 #include "brianC.h"
 
-
 Ball::Ball(const int in_xres, const int in_yres)
 {
 	this->player1Score = 0;
@@ -155,7 +154,7 @@ void Paddle::setWindowHeight(int in_yres)
 
 Paddle::~Paddle()
 {
-
+	isCpu = false;
 }
 
 void Paddle::render()
