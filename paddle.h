@@ -13,9 +13,10 @@ class Paddle{
 		float yPos;
 		float width;
 		float height;
-        float yVel;
+		float yVel;
 		int yres;
 		bool isCpu;
+		void checkScreenCollision(int yres);
 	public:
 		void render();
 		void setWindowHeight(int in_yres);
