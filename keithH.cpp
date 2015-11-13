@@ -19,22 +19,6 @@
 
 using namespace std;
 
-//SET IMAGES
-string BG_IMAGE_PATH = "./images/titlescreen.ppm";
-string BOMB_IMAGE_PATH = "./images/bomb.ppm";
-string GAMEOVER_IMAGE_PATH = "./images/game_over.ppm";
-string BG_IMAGE_PATH1 = "./images/ninja_robot.ppm";
-string BG_IMAGE_PATH2 = "./images/ninja_robot2.ppm";
-string EXPLODE_IMAGE_PATH = "./images/explode.ppm";
-Ppmimage *introBG = NULL;
-Ppmimage *mainBG = NULL;
-Ppmimage *bgImage1 = NULL;
-Ppmimage *bgImage2 = NULL;
-Ppmimage *bombImage = NULL;
-Ppmimage *gameOverImage = NULL;
-Ppmimage *explodeImage = NULL;
-GLuint introTexture,mainTexture,bgStartTexture, bgTexture, bgTexture1, bgTexture2, bombTexture, gameOverTexture, explodeTexture;
-
 Hud::Hud(const int in_xres, const int in_yres){
   xres = in_xres;
   yres = in_yres;
@@ -273,60 +257,4 @@ int Hud::getPlayer1Health(){
 
 int Hud::getPlayer2Health(){
   return player2_health;
-}
-
-void Hud::drawIntro(){
- 		//DRAW titlescreen.ppm:
-		renderTexture(introTexture, xres, yres);
-		//PRINT CHOOSE BACKGROUND SCREEN:
-		Rect r1;
-		r1.bot = yres/2.0 - 110.0;
-		r1.left = xres/2.0 - 100.0;
-		r1.center = 0;
-		ggprint16(&r1, 16, 0xffffff, "Press 'LEFT/RIGHT'' for background");
-
-		Rect r2;
-		r2.bot = (yres / 2.0) - 150;
-		r2.left = xres / 2.0 - 70.0;
-		r2.center = 0;
-		ggprint16(&r2, 16, 0xffffff, "Press 'Enter' to start");
-
-		//PASS showWelcome the high score:
-		high_score = setHighScore(0, 0);
-		showWelcome(high_score);
-		switch(selected_screen){
-			case LEFT:
-				hud->selectLeftScreen();
-				break;
-			case RIGHT:
-				hud->selectRightScreen();
-				break;
-			default:
-				break;
-		}
-		glColor3f(1.0, 1.0, 1.0);
-		//RENDER OPTION BG1:
-		glBindTexture(GL_TEXTURE_2D, bgTexture1);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(xres/2 - 350, yres/2 - 350);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(xres/2 - 350, yres/2-150);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i(xres/2 -100 , yres/2-150);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(xres/2 - 100, yres/2 - 350);
-		glEnd();
-		//RENDER OPTION BG2:
-		glBindTexture(GL_TEXTURE_2D, bgTexture2);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(xres/2 + 350, yres/2 - 350);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(xres/2 + 350, yres/2 - 150);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i(xres/2 + 100 , yres/2 - 150);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(xres/2 + 100, yres/2 - 350);
-		glEnd();   
-}
-
-void Hud::setAI(bool in_AI){
-  isAI = in_AI;
-}
-
-bool isAI(){
-  return isAI;
 }

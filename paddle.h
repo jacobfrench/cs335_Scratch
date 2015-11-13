@@ -13,8 +13,9 @@ class Paddle{
 		float yPos;
 		float width;
 		float height;
-		float yVel;    
+		float yVel;
 		int yres;
+		bool isCpu;
 	public:
 		void render();
 		void setWindowHeight(int in_yres);
@@ -29,8 +30,9 @@ class Paddle{
 		void setYVel(float yVel);
 		float getYVel();
 		bool checkCollision(int yres, Ball &ball);
+		void setCpuPlayer(bool isCPU);
+		void checkAI(int yres, Ball &ball);
 		Paddle(const int yres);
 		~Paddle();
 };
 #endif // PADDLE_H
-

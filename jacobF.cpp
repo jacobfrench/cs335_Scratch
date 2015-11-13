@@ -154,7 +154,7 @@ void Paddle::setWindowHeight(int in_yres)
 
 Paddle::~Paddle()
 {
-
+	isCpu = false;
 }
 
 void Paddle::render()
@@ -239,6 +239,8 @@ bool Paddle::checkCollision(int yres, Ball &ball)
 	bool hitBottom = yPos <= 0 && yVel < 0;
 	bool paddleMovingUp = yVel > 0;
 	bool paddleMovingDown = yVel < 0;
+
+	checkAI(yres, ball);
 	if(hitTop){
 		yPos = yres - height;
 	}
@@ -278,7 +280,34 @@ bool Paddle::checkCollision(int yres, Ball &ball)
 		}
 		return true;
 	}
+	
+
 	return false;
+}
+
+void Paddle::checkAI(int yres, Ball &ball)
+{
+	//If player 2 is CPU
+
+	int center = yPos + (height / 2);
+	if(isCpu){
+		//this->setYVel(ball.getYVel());
+		if(ball.getYPos() < center || ball.getYPos() < yPos){
+			this->setYVel(ball.getYVel() - 0.003f);
+		}
+		else if(ball.getYPos() > center || ball.getYPos() > yPos+height){
+			this->setYVel(ball.getYVel() + 0.003f);
+		}
+		else{
+			this->setYVel(0.0f);
+		}
+	}
+
+}
+
+void Paddle::setCpuPlayer(bool isCpu)
+{
+	this->isCpu = isCpu;
 }
 
 Timer::Timer()
