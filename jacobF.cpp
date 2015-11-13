@@ -3,6 +3,8 @@
 #include "timer.h"
 #include "brianC.h"
 
+#define PI 3.141592653589
+
 Ball::Ball(const int in_xres, const int in_yres)
 {
 	this->player1Score = 0;
@@ -239,8 +241,11 @@ bool Paddle::checkCollision(int yres, Ball &ball)
 	bool paddleMovingUp = yVel > 0;
 	bool paddleMovingDown = yVel < 0;
 
+
 	checkAI(yres, ball);
 	checkScreenCollision(yres);
+	float angle = PI/2;
+
 
 	//collision with ball
 	//left paddle
@@ -249,14 +254,14 @@ bool Paddle::checkCollision(int yres, Ball &ball)
 		createSound(1);
         
 		if(paddleMovingUp){
-			ballYVel = ballspeed * -sin(55);
+			ballYVel = ballspeed * -sin(-angle);
 			ball.setYVel(ballYVel);
 			ball.setXVel(ballXVel);
 		}
 		else if(paddleMovingDown){
-			ballYVel = ballspeed * -sin(55);
+			ballYVel = ballspeed * -sin(-angle);
 			ball.setYVel(-ballYVel);
-			ball.setXVel(ballXVel);            
+			ball.setXVel(ballXVel);
 		}
 		return true;
 	}
@@ -265,12 +270,12 @@ bool Paddle::checkCollision(int yres, Ball &ball)
 		ball.setXVel(-ballXVel);
 		createSound(1);
 		if(paddleMovingUp){
-			ballYVel = ballspeed * -sin(55);
+			ballYVel = ballspeed * -sin(angle);
 			ball.setYVel(ballYVel);
 			ball.setXVel(-ballXVel);
 		}
 		else if(paddleMovingDown){
-			ballYVel = ballspeed * -sin(55);
+			ballYVel = ballspeed * -sin(-angle);
 			ball.setYVel(-ballYVel);
 			ball.setXVel(-ballXVel);
 		}
@@ -294,10 +299,10 @@ void Paddle::checkAI(int yres, Ball &ball)
 		}
 		else{
 			if(ball.getYPos() > center){
-				this->setYVel(absoluteBallYVel - 0.5f);
+				this->setYVel(absoluteBallYVel - 0.3f);
 			}
 			else if(ball.getYPos() < center){
-				this->setYVel(-absoluteBallYVel + 0.5f);
+				this->setYVel(-absoluteBallYVel + 0.3f);
 			}
 
 		}

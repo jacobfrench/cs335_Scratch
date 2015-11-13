@@ -247,7 +247,7 @@ void init_ball_paddles(){
 	ball.resetScore();
 	ball.setXPos(xres/2);
 	ball.setYPos(yres/2);
-	ball.setRadius(15.0f);
+	ball.setRadius(12.0f);
 	
 	//ball velocity
 	ballXVel = 8.0f * cos(30);
