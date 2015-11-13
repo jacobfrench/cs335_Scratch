@@ -234,21 +234,16 @@ bool Paddle::checkCollision(int yres, Ball &ball)
 	bool hitRightPaddle  = (ball.getXPos() >= xPos) &&
 		ball.getYPos() >= yPos && ball.getYPos() <= yPos + height;
 
-	//paddle collision with edges of screen
-	bool hitTop = yPos + height >= yres && yVel > 0;
-	bool hitBottom = yPos <= 0 && yVel < 0;
+
+	//check if paddle is moving up or down
 	bool paddleMovingUp = yVel > 0;
 	bool paddleMovingDown = yVel < 0;
 
 	checkAI(yres, ball);
-	if(hitTop){
-		yPos = yres - height;
-	}
-	else if(hitBottom){
-		yPos = 0;
-	}
+	checkScreenCollision(yres);
 
 	//collision with ball
+	//left paddle
 	if(onLeftSide && hitLeftPaddle){
 		ball.setXVel(ballXVel);
 		createSound(1);
@@ -265,6 +260,7 @@ bool Paddle::checkCollision(int yres, Ball &ball)
 		}
 		return true;
 	}
+	//right paddle
 	else if(onRightSide && hitRightPaddle){
 		ball.setXVel(-ballXVel);
 		createSound(1);
@@ -298,16 +294,29 @@ void Paddle::checkAI(int yres, Ball &ball)
 		}
 		else{
 			if(ball.getYPos() > center){
-				this->setYVel(absoluteBallYVel - 0.003f);
+				this->setYVel(absoluteBallYVel - 0.5f);
 			}
 			else if(ball.getYPos() < center){
-				this->setYVel(-absoluteBallYVel + 0.003f);
+				this->setYVel(-absoluteBallYVel + 0.5f);
 			}
-			else{
-				this->setYVel(absoluteBallYVel * -1);
-			}
+
 		}
+		checkScreenCollision(yres);
 		
+	}
+
+
+}
+
+void Paddle::checkScreenCollision(int yres)
+{
+	bool hitTop = yPos + height >= yres && yVel > 0;
+	bool hitBottom = yPos <= 0 && yVel < 0;
+	if(hitTop){
+		yPos = yres - height;
+	}
+	else if(hitBottom){
+		yPos = 0;
 	}
 
 }

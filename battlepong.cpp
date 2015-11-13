@@ -595,7 +595,7 @@ void physics(Game *g)
 			bombBegin = time(NULL);
 			createSound(8);
 			createSound(9);
-			//set to half normal height:            
+			//set to half normal height:
 			paddle1.setHeight(60.0f);
 			if (hud->getPlayer1Health()>0){
 				hud->setPlayer1Health(hud->getPlayer1Health()-10*(1+random(8)));
