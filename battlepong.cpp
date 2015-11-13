@@ -266,6 +266,9 @@ void init_ball_paddles(){
 	paddle2.setYPos((float)yres/2);
 	paddle2.setHeight(120.0f);
 	paddle2.setWidth(15.0f);
+
+	//testing AI
+	paddle2.setCpuPlayer(true);
 }
 
 void stopGame(){
