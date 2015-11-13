@@ -288,15 +288,17 @@ bool Paddle::checkCollision(int yres, Ball &ball)
 void Paddle::checkAI(int yres, Ball &ball)
 {
 	//If player 2 is CPU
+
 	int center = yPos + (height / 2);
 	if(isCpu){
-		if(ball.getYPos() < yPos){
-			this->setYVel(-13.0f);
+		//this->setYVel(ball.getYVel());
+		if(ball.getYPos() < center || ball.getYPos() < yPos){
+			this->setYVel(ball.getYVel() - 0.003f);
 		}
-		else if(ball.getYPos() > yPos+height){
-			this->setYVel(13.0f);
+		else if(ball.getYPos() > center || ball.getYPos() > yPos+height){
+			this->setYVel(ball.getYVel() + 0.003f);
 		}
-		else if(ball.getYPos() == center){
+		else{
 			this->setYVel(0.0f);
 		}
 	}
