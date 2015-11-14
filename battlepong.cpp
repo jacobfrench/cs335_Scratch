@@ -90,6 +90,7 @@ string BG_IMAGE_PATH1 = "./images/ninja_robot.ppm";
 string BG_IMAGE_PATH2 = "./images/ninja_robot2.ppm";
 string HELP_MENU_IMAGE_PATH = "./images/help_menu.ppm";
 string EXPLODE_IMAGE_PATH = "./images/explode.ppm";
+string PAUSED_IMAGE_PATH = "./images/paused.ppm";
 Ppmimage *introBG = NULL;
 Ppmimage *mainBG = NULL;
 Ppmimage *bgImage1 = NULL;
@@ -98,7 +99,8 @@ Ppmimage *bombImage = NULL;
 Ppmimage *gameOverImage = NULL;
 Ppmimage *explodeImage = NULL;
 Ppmimage *helpMenuImage = NULL;
-GLuint introTexture,mainTexture,bgStartTexture, bgTexture, bgTexture1, bgTexture2, bombTexture, gameOverTexture, explodeTexture, helpMenuTexture;
+Ppmimage *pausedImage = NULL;
+GLuint introTexture,mainTexture,bgStartTexture, bgTexture, bgTexture1, bgTexture2, bombTexture, gameOverTexture, explodeTexture, helpMenuTexture, pausedTexture;
 //-------------
 
 int keys[65536];
@@ -165,7 +167,7 @@ int is_render_powerup;
 bool is_gameover;
 float ball_saved_Y_velocity;
 float ball_saved_X_velocity;
-bool is_paused;
+float obstacle_saved_Y_velocity;
 
 //BOMB variables:
 float bomb_theta= 0;
@@ -184,8 +186,11 @@ int main(void)
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);	
 
-	hud = new Hud(xres ,yres);	
+    hud = new Hud(xres ,yres);
+    //DEFUALT IS LEVEL 1 SELECTED:
 	selected_screen = LEFT;    
+    level =1;
+    //--------------
 	is_gameover = false;
 	high_score = 0;
 	gameStarted = false;
@@ -198,10 +203,10 @@ int main(void)
 	smallLeftPaddleTime = 7;
 	beginSmallRightPaddle = time(NULL);
 	smallRightPaddleTime = 7;
-	hud->setAI(false);//DEFAULT: player2 is human
-	is_paused = false;
+	hud->setAI(false);//DEFAULT: player2 is human	
 	ball_saved_X_velocity = 8.0f * cos(30);
-	ball_saved_Y_velocity = 8.0f * sin(90);
+	ball_saved_Y_velocity = 8.0f * sin(90);    
+    obstacle_saved_Y_velocity = -5.0;
 
 	int min;
 	if (xres<yres){
@@ -238,7 +243,7 @@ int main(void)
 		timeSpan = timeDiff(&timeStart, &timeCurrent);
 		timeCopy(&timeStart, &timeCurrent);
 		physicsCountdown += timeSpan;
-		while (physicsCountdown >= physicsRate && !is_paused) {
+        while (physicsCountdown >= physicsRate) {
 			physics(&game);
 			physicsCountdown -= physicsRate;
 		}        
@@ -289,6 +294,7 @@ void stopGame(){
 void pauseGame(){
 	ball_saved_Y_velocity = ball.getYVel();
 	ball_saved_X_velocity = ball.getXVel();
+    obstacle_saved_Y_velocity = obstacle->getYVel();
 	ball.setXVel(0);
 	ball.setYVel(0);
 	obstacle->setYVel(0);
@@ -298,7 +304,7 @@ void pauseGame(){
 void resumeGame(){
 	ball.setXVel(ball_saved_X_velocity);
 	ball.setYVel(ball_saved_Y_velocity);
-	obstacle->setYVel(-5);
+    obstacle->setYVel(obstacle_saved_Y_velocity);
 	timer.resume();
 }
 
@@ -431,6 +437,9 @@ void init_opengl(void)
 	//Create help menu texture:
 	helpMenuImage = loadImage(HELP_MENU_IMAGE_PATH.c_str());
 	helpMenuTexture = generateTexture(helpMenuTexture, helpMenuImage);
+    //Create paused texture:
+    pausedImage = loadImage(PAUSED_IMAGE_PATH.c_str());
+    pausedTexture = generateTransparentTexture(pausedTexture, pausedImage);
 }
 
 void check_resize(XEvent *e)
@@ -525,12 +534,12 @@ int check_keys(XEvent *e, Game *g){
 			timer.start();            
 		}
 if (hud->isShowHelpMenu()==false && hud->isShowWelcome()==false){
-			if (key == XK_p && is_paused){
-				is_paused = false;
+            if (key == XK_p && hud->isPaused()==true){
+                hud->setPaused(false);
 				resumeGame();
 			}
-			else if (key == XK_p && !is_paused){
-				is_paused = true;
+            else if (key == XK_p && hud->isPaused()==false){
+                hud->setPaused(true);
 				pauseGame();
 			}
             else if (key == XK_q){//to quit out of game
@@ -639,15 +648,15 @@ void physics(Game *g)
 	//paddle2 movement
 	paddle2.setYVel(paddle2YVel);
 
-    if (level == 1){
-	//SET BOMBS POSITION:
-	bomb_theta = bomb_theta + speed_theta;
-	if (fabs(bomb_theta) >= 2*PI){
-		bomb_theta=0;
-		speed_theta *= -1;
-	}
-	bomb_posx=(int)(xres/2 + bomb_radius*cos(bomb_theta - PI/2) - bomb_width/2);
-	bomb_posy=(int)(yres/2 + bomb_radius*sin(bomb_theta - PI/2) - bomb_height/2);
+    if (level == 1 && hud->isPaused()==false){
+	//SET BOMBS POSITION:         
+            bomb_theta = bomb_theta + speed_theta;
+            if (fabs(bomb_theta) >= 2*PI){
+                bomb_theta=0;
+                speed_theta *= -1;
+            }
+            bomb_posx=(int)(xres/2 + bomb_radius*cos(bomb_theta - PI/2) - bomb_width/2);
+            bomb_posy=(int)(yres/2 + bomb_radius*sin(bomb_theta - PI/2) - bomb_height/2);
 
 	//CHECK LEFT COLLISION WITH BOMB:
 	if ((beginSmallLeftPaddle + smallLeftPaddleTime) < time(NULL)){
@@ -771,18 +780,19 @@ return;
 	hud->showCourtYard();
 
 	//DRAW BOMB:
-	GLuint which_bomb_texture;
-	if ((bombBegin + 2) > time(NULL)){
-		which_bomb_texture = explodeTexture;
-	}
-	else{
-		which_bomb_texture = bombTexture;
-	}
     if (level == 1){
-	hud->renderBomb(which_bomb_texture,bomb_posx,bomb_posy,bomb_width,bomb_height);
+        GLuint which_bomb_texture = bombTexture;
+        if ((bombBegin + 2) > time(NULL)){
+            which_bomb_texture = explodeTexture;
+        }
+        else{
+            which_bomb_texture = bombTexture;
+        }
+
+        hud->renderBomb(which_bomb_texture,bomb_posx,bomb_posy,bomb_width,bomb_height);
     }
 
-	//Draw the paddle    
+    //Draw the paddle
 	glColor3f(0.0, 0.5, 0.5);
 	paddle1.render();
 	glColor3f(0.7, 0.5, 0.0);
@@ -798,4 +808,7 @@ return;
 		obstacle->render();
 	}
 	hud->showTimer(getTimer());
+    if (hud->isPaused()){
+        hud->showPaused(pausedTexture);
+    }
 }
