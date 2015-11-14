@@ -20,8 +20,11 @@ class Hud{
     bool isAI;
     bool is_show_welcome;
     bool is_show_help_menu;
+    bool is_paused;
   public:    
     Hud(const int in_xres, const int in_yres);
+    bool isPaused();
+    void setPaused(bool in_is_paused);
     bool isShowHelpMenu();
     void setIsShowHelpMenu(bool in_is_show_help_menu);
     bool isShowWelcome();
@@ -46,5 +49,6 @@ class Hud{
     void selectAI();
     void selectHuman();
     void renderBomb(GLuint which_bomb_texture, float bomb_posx, float bomb_posy, float bomb_width, float bomb_height);
+    void showPaused(GLuint pausedTexture);
 };
 #endif

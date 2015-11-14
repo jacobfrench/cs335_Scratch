@@ -29,6 +29,7 @@ Hud::Hud(const int in_xres, const int in_yres){
 	is_show_welcome=true;
 	player1_health = 100;
 	player2_health = 100;
+    is_paused = false;
 }
 
 void Hud::setResolution(const int in_xres, const int in_yres){
@@ -349,6 +350,7 @@ bool Hud::getAI(){
 }
 
 void Hud::selectAI(){
+    glColor3f(1.0, 1.0, 1.0);
 	glColor3ub( 0, 255, 0);
 	glLineWidth(10.0);
 	glBegin(GL_LINE_LOOP);
@@ -360,6 +362,7 @@ void Hud::selectAI(){
 }
 
 void Hud::selectHuman(){
+    glColor3f(1.0, 1.0, 1.0);
 	glColor3ub( 0, 255, 0);
 	glLineWidth(10.0);
 	glBegin(GL_LINE_LOOP);
@@ -370,7 +373,7 @@ void Hud::selectHuman(){
 	glEnd();
 }
 
-void Hud::renderBomb(GLuint which_bomb_texture, float bomb_posx, float bomb_posy, float bomb_width, float bomb_height){
+void Hud::renderBomb(GLuint which_bomb_texture, float bomb_posx, float bomb_posy, float bomb_width, float bomb_height){    
 	glColor3f(1.0, 1.0, 1.0);
 	glPushMatrix();
 	glBindTexture(GL_TEXTURE_2D, which_bomb_texture);
@@ -390,7 +393,7 @@ void Hud::renderBomb(GLuint which_bomb_texture, float bomb_posx, float bomb_posy
 void Hud::showHelpMenu(GLuint help_menu_texture){
 	renderTexture(help_menu_texture, xres, yres);
 	int cref = 0x00ffffff;
-	int push_down_offset = 200;
+    float push_down_offset = yres*(2.0/5.0);
 	//PRINT PROMPT AI:
 	Rect r1;
 	r1.bot = yres - 50 - push_down_offset;
@@ -511,3 +514,27 @@ void Hud::setIsShowWelcome(bool in_is_show_welcome){
 	is_show_welcome = in_is_show_welcome;
 }
 
+bool Hud::isPaused(){
+    return is_paused;
+}
+
+void Hud::setPaused(bool in_is_paused){
+    is_paused = in_is_paused;
+}
+
+void Hud::showPaused(GLuint pausedTexture){
+    glColor3f(1.0, 1.0, 1.0);
+    glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, pausedTexture);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(xres/2 - 300, yres/2 - 100);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(xres/2 - 300, yres/2 + 100);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i(xres/2 + 300 , yres/2 + 100);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i(xres/2 + 300, yres/2 - 100);
+    glEnd();
+    glDisable(GL_BLEND);
+    glPopMatrix();
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
