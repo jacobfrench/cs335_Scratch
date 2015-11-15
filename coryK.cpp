@@ -268,6 +268,15 @@ Portal::Portal()
 
 void Portal::setPortalType(int type)
 {
+	if(type == 0) {
+		this->setXPos(250);
+		this->setYPos(100);
+	}
+
+	if(type == 1) {
+		this->setXPos(900);
+		this->setYPos(400);
+	}
 	portalType = type;
 }
 

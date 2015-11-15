@@ -807,7 +807,10 @@ return;
 
         portal0->setPortalType(0);
         portal1->setPortalType(1);
+        portal0->render(portalTexture0);
+        portal1->render(portalTexture1);
 
+        
         hud->renderBomb(which_bomb_texture,bomb_posx,bomb_posy,bomb_width,bomb_height);
     }
 
