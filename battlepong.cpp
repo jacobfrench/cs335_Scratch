@@ -92,7 +92,7 @@ string HELP_MENU_IMAGE_PATH = "./images/help_menu.ppm";
 string EXPLODE_IMAGE_PATH = "./images/explode.ppm";
 string PAUSED_IMAGE_PATH = "./images/paused.ppm";
 string PORTAL_TYPE_0_PATH = "./images/portal0.ppm";
-string PORTAL_TYPE_1_PATH = "./images/partal1.ppm";
+string PORTAL_TYPE_1_PATH = "./images/portal1.ppm";
 
 Ppmimage *introBG = NULL;
 Ppmimage *mainBG = NULL;
@@ -162,8 +162,8 @@ int level;
 GameObject* obj = new GameObject(xres / 2.0, yres / 2.0, 50.0f, 50.0f);
 /* Test - Create Derivd Class - Obstacle */
 Obstacle *obstacle = new Obstacle();
-Portal *portal0;
-Portal *portal1;
+Portal *portal0 = new Portal();
+Portal *portal1 = new Portal();
 
 time_t bombBegin, bombRandom, beginSmallLeftPaddle, smallLeftPaddleTime, beginSmallRightPaddle, smallRightPaddleTime;
 time_t beginExplode;
@@ -796,6 +796,7 @@ return;
 
 	//DRAW BOMB:
     if (level == 1){
+
         GLuint which_bomb_texture = bombTexture;
         if ((bombBegin + 2) > time(NULL)){
             which_bomb_texture = explodeTexture;
@@ -803,6 +804,9 @@ return;
         else{
             which_bomb_texture = bombTexture;
         }
+
+        portal0->setPortalType(0);
+        portal1->setPortalType(1);
 
         hud->renderBomb(which_bomb_texture,bomb_posx,bomb_posy,bomb_width,bomb_height);
     }
