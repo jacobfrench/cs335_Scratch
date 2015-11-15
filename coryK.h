@@ -47,21 +47,27 @@ class GameObject {
 
 };
 
-class Obstacle: public GameObject {
+class Obstacle: public GameObject 
+{
 	private:
-		int numOfPoints;
 	public:
-		Obstacle(int numOfPoints);
+		Obstacle();
 		void checkCollision(int xres, int yres, Ball &ball, Player &player);
 		void render();
+		~Obstacle();
 };
 
-class PowerUp: GameObject {
+
+class Portal:Obstacle
+{
 	private:
-		Ppmimage* image;
-		GLuint textureId;
+		int portalType;
 	public:
-		PowerUp(Ppmimage *image, GLuint textureId);
+		Portal();
+		void setPortalType(int type);
+		void render(GLuint portalTexture);
+		void transporBall();
+		~Portal();
 };
 
 #endif
