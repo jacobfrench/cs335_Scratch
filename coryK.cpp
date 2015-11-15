@@ -1,5 +1,9 @@
 /*Author: Cory Kitchens
 * Program Name: coryK.cpp
+*
+* This file defines classes
+* Helper functions for graphics/textures
+* Class methods for base GameObject, PowerUps, and Obstacles
 */
 
 #include <iostream>
@@ -200,9 +204,9 @@ void GameObject::render()
 	glPopMatrix();
 }
 
-Obstacle::Obstacle(int numOfPoints):GameObject()
+Obstacle::Obstacle():GameObject()
 {
-	this->numOfPoints = numOfPoints;
+
 }
 
 void Obstacle::render() 
@@ -257,14 +261,39 @@ void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player)
 	}
 }
 
+Portal::Portal()
+{
+
+}
+
+void Portal::setPortalType(int type)
+{
+	portalType = type;
+}
+
+void Portal::render(GLuint portalTexture)
+{
+	glColor3f(1.0, 1.0, 1.0);
+	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, portalTexture);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(this->getXPos() + this->getWidth(), this->getYPos() + this->getHeight());
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(this->getXPos() + this->getWidth(), this->getYPos());
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(this->getXPos(), this->getYPos());
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(this->getXPos(), this->getYPos() + this->getHeight());
+	glEnd();
+	glDisable(GL_BLEND);
+	glPopMatrix();
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+
+
 /*======
 High score
 =======*/
-
-/**
-TODO:
- refactor function into multiple functions
-**/
 int setHighScore(int p1Score, int p2Score)
 {
 	int finalHighScore = 0;
