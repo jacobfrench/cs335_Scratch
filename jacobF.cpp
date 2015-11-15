@@ -3,6 +3,8 @@
 #include "timer.h"
 #include "brianC.h"
 
+#define PI 3.141592653589
+
 Ball::Ball(const int in_xres, const int in_yres)
 {
 	this->player1Score = 0;
@@ -154,7 +156,7 @@ void Paddle::setWindowHeight(int in_yres)
 
 Paddle::~Paddle()
 {
-
+	isCpu = false;
 }
 
 void Paddle::render()
@@ -234,11 +236,87 @@ bool Paddle::checkCollision(int yres, Ball &ball)
 	bool hitRightPaddle  = (ball.getXPos() >= xPos) &&
 		ball.getYPos() >= yPos && ball.getYPos() <= yPos + height;
 
-	//paddle collision with edges of screen
-	bool hitTop = yPos + height >= yres && yVel > 0;
-	bool hitBottom = yPos <= 0 && yVel < 0;
+
+	//check if paddle is moving up or down
 	bool paddleMovingUp = yVel > 0;
 	bool paddleMovingDown = yVel < 0;
+
+
+	checkAI(yres, ball);
+	checkScreenCollision(yres);
+	float angle = PI/2;
+
+
+	//collision with ball
+	//left paddle
+	if(onLeftSide && hitLeftPaddle){
+		ball.setXVel(ballXVel);
+		createSound(1);
+        
+		if(paddleMovingUp){
+			ballYVel = ballspeed * -sin(-angle);
+			ball.setYVel(ballYVel);
+			ball.setXVel(ballXVel);
+		}
+		else if(paddleMovingDown){
+			ballYVel = ballspeed * -sin(-angle);
+			ball.setYVel(-ballYVel);
+			ball.setXVel(ballXVel);
+		}
+		return true;
+	}
+	//right paddle
+	else if(onRightSide && hitRightPaddle){
+		ball.setXVel(-ballXVel);
+		createSound(1);
+		if(paddleMovingUp){
+			ballYVel = ballspeed * -sin(angle);
+			ball.setYVel(ballYVel);
+			ball.setXVel(-ballXVel);
+		}
+		else if(paddleMovingDown){
+			ballYVel = ballspeed * -sin(-angle);
+			ball.setYVel(-ballYVel);
+			ball.setXVel(-ballXVel);
+		}
+		return true;
+	}
+	
+
+	return false;
+}
+
+void Paddle::checkAI(int yres, Ball &ball)
+{
+	//If paddle is CPU
+	int center = yPos + (height / 2);
+	int top = yPos+height;
+	int bottom = yPos;
+	float absoluteBallYVel = abs(ball.getYVel());
+	if(isCpu){
+		if(ball.getYPos() == center){
+			this->setYVel(0.0f);
+		}
+		else{
+			if(ball.getYPos() > center){
+				this->setYVel(absoluteBallYVel - 0.3f);
+			}
+			else if(ball.getYPos() < center){
+				this->setYVel(-absoluteBallYVel + 0.3f);
+			}
+
+		}
+		checkScreenCollision(yres);
+		
+	}
+
+
+}
+
+void Paddle::checkScreenCollision(int yres)
+{
+	bool hitTop = yPos + height >= yres && yVel > 0;
+	bool hitBottom = yPos <= 0 && yVel < 0;
 	if(hitTop){
 		yPos = yres - height;
 	}
@@ -246,39 +324,11 @@ bool Paddle::checkCollision(int yres, Ball &ball)
 		yPos = 0;
 	}
 
-	//collision with ball
-	if(onLeftSide && hitLeftPaddle){
-		ball.setXVel(ballXVel);
-		createSound(1);
-        
-		if(paddleMovingUp){
-			ballYVel = ballspeed * -sin(55);
-			ball.setYVel(ballYVel);
-			ball.setXVel(ballXVel);
-		}
-		else if(paddleMovingDown){
-			ballYVel = ballspeed * -sin(55);
-			ball.setYVel(-ballYVel);
-			ball.setXVel(ballXVel);            
-		}
-		return true;
-	}
-	else if(onRightSide && hitRightPaddle){
-		ball.setXVel(-ballXVel);
-		createSound(1);
-		if(paddleMovingUp){
-			ballYVel = ballspeed * -sin(55);
-			ball.setYVel(ballYVel);
-			ball.setXVel(-ballXVel);
-		}
-		else if(paddleMovingDown){
-			ballYVel = ballspeed * -sin(55);
-			ball.setYVel(-ballYVel);
-			ball.setXVel(-ballXVel);
-		}
-		return true;
-	}
-	return false;
+}
+
+void Paddle::setCpuPlayer(bool isCpu)
+{
+	this->isCpu = isCpu;
 }
 
 Timer::Timer()

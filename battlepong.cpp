@@ -88,7 +88,9 @@ string BOMB_IMAGE_PATH = "./images/bomb.ppm";
 string GAMEOVER_IMAGE_PATH = "./images/game_over.ppm";
 string BG_IMAGE_PATH1 = "./images/ninja_robot.ppm";
 string BG_IMAGE_PATH2 = "./images/ninja_robot2.ppm";
+string HELP_MENU_IMAGE_PATH = "./images/help_menu.ppm";
 string EXPLODE_IMAGE_PATH = "./images/explode.ppm";
+string PAUSED_IMAGE_PATH = "./images/paused.ppm";
 Ppmimage *introBG = NULL;
 Ppmimage *mainBG = NULL;
 Ppmimage *bgImage1 = NULL;
@@ -96,7 +98,9 @@ Ppmimage *bgImage2 = NULL;
 Ppmimage *bombImage = NULL;
 Ppmimage *gameOverImage = NULL;
 Ppmimage *explodeImage = NULL;
-GLuint introTexture,mainTexture,bgStartTexture, bgTexture, bgTexture1, bgTexture2, bombTexture, gameOverTexture, explodeTexture;
+Ppmimage *helpMenuImage = NULL;
+Ppmimage *pausedImage = NULL;
+GLuint introTexture,mainTexture,bgStartTexture, bgTexture, bgTexture1, bgTexture2, bombTexture, gameOverTexture, explodeTexture, helpMenuTexture, pausedTexture;
 //-------------
 
 int keys[65536];
@@ -117,6 +121,7 @@ void physics(Game *game);
 void render(Game *game);
 int getTimer();
 void stopGame();
+void pauseGame();
 
 //instance variables
 Ball ball(xres,yres);
@@ -160,6 +165,9 @@ char lastPaddleHit;
 
 int is_render_powerup;
 bool is_gameover;
+float ball_saved_Y_velocity;
+float ball_saved_X_velocity;
+float obstacle_saved_Y_velocity;
 
 //BOMB variables:
 float bomb_theta= 0;
@@ -178,8 +186,11 @@ int main(void)
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);	
 
-	hud = new Hud(xres ,yres);	
+    hud = new Hud(xres ,yres);
+    //DEFUALT IS LEVEL 1 SELECTED:
 	selected_screen = LEFT;    
+    level =1;
+    //--------------
 	is_gameover = false;
 	high_score = 0;
 	gameStarted = false;
@@ -192,6 +203,10 @@ int main(void)
 	smallLeftPaddleTime = 7;
 	beginSmallRightPaddle = time(NULL);
 	smallRightPaddleTime = 7;
+	hud->setAI(false);//DEFAULT: player2 is human	
+	ball_saved_X_velocity = 8.0f * cos(30);
+	ball_saved_Y_velocity = 8.0f * sin(90);    
+    obstacle_saved_Y_velocity = -5.0;
 
 	int min;
 	if (xres<yres){
@@ -228,7 +243,7 @@ int main(void)
 		timeSpan = timeDiff(&timeStart, &timeCurrent);
 		timeCopy(&timeStart, &timeCurrent);
 		physicsCountdown += timeSpan;
-		while (physicsCountdown >= physicsRate) {
+        while (physicsCountdown >= physicsRate) {
 			physics(&game);
 			physicsCountdown -= physicsRate;
 		}        
@@ -266,6 +281,8 @@ void init_ball_paddles(){
 	paddle2.setYPos((float)yres/2);
 	paddle2.setHeight(120.0f);
 	paddle2.setWidth(15.0f);
+
+
 }
 
 void stopGame(){
@@ -273,6 +290,22 @@ void stopGame(){
 	ball.setYPos(yres/2);
 	ball.setXVel(0);
 	ball.setYVel(0);;
+}
+void pauseGame(){
+	ball_saved_Y_velocity = ball.getYVel();
+	ball_saved_X_velocity = ball.getXVel();
+    obstacle_saved_Y_velocity = obstacle->getYVel();
+	ball.setXVel(0);
+	ball.setYVel(0);
+	obstacle->setYVel(0);
+	timer.pause();
+}
+
+void resumeGame(){
+	ball.setXVel(ball_saved_X_velocity);
+	ball.setYVel(ball_saved_Y_velocity);
+    obstacle->setYVel(obstacle_saved_Y_velocity);
+	timer.resume();
 }
 
 void cleanupXWindows(void)
@@ -401,6 +434,12 @@ void init_opengl(void)
 	//Create gameover texture:
 	gameOverImage = loadImage(GAMEOVER_IMAGE_PATH.c_str());
 	gameOverTexture = generateTexture(gameOverTexture, gameOverImage);
+	//Create help menu texture:
+	helpMenuImage = loadImage(HELP_MENU_IMAGE_PATH.c_str());
+	helpMenuTexture = generateTexture(helpMenuTexture, helpMenuImage);
+    //Create paused texture:
+    pausedImage = loadImage(PAUSED_IMAGE_PATH.c_str());
+    pausedTexture = generateTransparentTexture(pausedTexture, pausedImage);
 }
 
 void check_resize(XEvent *e)
@@ -477,20 +516,39 @@ int check_keys(XEvent *e, Game *g){
 			hud->setPlayer1Health(100);
 			hud->setPlayer2Health(100);
 			if (is_gameover == true){
-				hud->is_show_welcome = true;
+                hud->setIsShowWelcome(true);
 				gameStarted = false;
 				intro = 0;
 			}
 			else{
-				hud->is_show_welcome = false;
+				hud->setIsShowWelcome(false);
 				init_ball_paddles();
+				//REINITIALIZE OBSTACLE POSITION AND VELIOCITY:
+			        obstacle->setXPos((1250 / 2.0) - 25);
+				obstacle->setYPos(900 / 2.0);	
+				obstacle->setYVel(-5.0f);	
 				intro = 1;
 			}
 			is_gameover = false;
 			timer.reset();
 			timer.start();            
 		}
-		if (hud->is_show_welcome == true){
+if (hud->isShowHelpMenu()==false && hud->isShowWelcome()==false){
+            if (key == XK_p && hud->isPaused()==true){
+                hud->setPaused(false);
+				resumeGame();
+			}
+            else if (key == XK_p && hud->isPaused()==false){
+                hud->setPaused(true);
+				pauseGame();
+			}
+            else if (key == XK_q){//to quit out of game
+                hud->setIsShowWelcome(true);
+                gameStarted = false;
+                intro = 0;
+            }
+		}
+		if (hud->isShowWelcome() == true){
 			if (key == XK_Left) {
 				bgTexture = generateTexture(bgTexture, bgImage1);
 				selected_screen = LEFT;
@@ -500,6 +558,26 @@ int check_keys(XEvent *e, Game *g){
 				bgTexture = generateTexture(bgTexture, bgImage2);            
 				selected_screen = RIGHT;
 				level = 2;
+			}
+else if (key == XK_Up) {
+				hud->setAI(false);//player 2 is human
+                paddle2.setCpuPlayer(false);
+			}
+			else if (key == XK_Down){
+				hud->setAI(true);//player 2 is computer
+                paddle2.setCpuPlayer(true);
+			}
+			else if (key == XK_h) {
+				hud->setIsShowWelcome(false);
+				hud->setIsShowHelpMenu(true);
+			}
+			return 0;
+		}
+		if (hud->isShowHelpMenu() == true){
+			if (key == XK_b){
+				//SHOW HELP MENU:
+				hud->setIsShowHelpMenu(false);
+				hud->setIsShowWelcome(true);
 			}
 		}
 	}
@@ -570,14 +648,15 @@ void physics(Game *g)
 	//paddle2 movement
 	paddle2.setYVel(paddle2YVel);
 
-	//SET BOMBS POSITION:
-	bomb_theta = bomb_theta + speed_theta;
-	if (fabs(bomb_theta) >= 2*PI){
-		bomb_theta=0;
-		speed_theta *= -1;
-	}
-	bomb_posx=(int)(xres/2 + bomb_radius*cos(bomb_theta - PI/2) - bomb_width/2);
-	bomb_posy=(int)(yres/2 + bomb_radius*sin(bomb_theta - PI/2) - bomb_height/2);
+    if (level == 1 && hud->isPaused()==false){
+	//SET BOMBS POSITION:         
+            bomb_theta = bomb_theta + speed_theta;
+            if (fabs(bomb_theta) >= 2*PI){
+                bomb_theta=0;
+                speed_theta *= -1;
+            }
+            bomb_posx=(int)(xres/2 + bomb_radius*cos(bomb_theta - PI/2) - bomb_width/2);
+            bomb_posy=(int)(yres/2 + bomb_radius*sin(bomb_theta - PI/2) - bomb_height/2);
 
 	//CHECK LEFT COLLISION WITH BOMB:
 	if ((beginSmallLeftPaddle + smallLeftPaddleTime) < time(NULL)){
@@ -632,6 +711,7 @@ void physics(Game *g)
       beginSmallRightPaddle = time(NULL);
 		}
 	}
+    }
 }
 
 
@@ -660,52 +740,28 @@ void render(Game *g)
 	g->mouseThrustOn=false;    
 	glClear(GL_COLOR_BUFFER_BIT);
 	if(intro < 1) {
-		//DRAW titlescreen.ppm:
-		renderTexture(introTexture, xres, yres);
-		//PRINT CHOOSE BACKGROUND SCREEN:
-		Rect r1;
-		r1.bot = yres/2.0 - 110.0;
-		r1.left = xres/2.0 - 100.0;
-		r1.center = 0;
-		ggprint16(&r1, 16, 0xffffff, "Press 'LEFT/RIGHT'' for background");
-
-		Rect r2;
-		r2.bot = (yres / 2.0) - 150;
-		r2.left = xres / 2.0 - 70.0;
-		r2.center = 0;
-		ggprint16(&r2, 16, 0xffffff, "Press 'Enter' to start");
-
-		//PASS showWelcome the high score:
-		high_score = setHighScore(0, 0);
-		hud->showWelcome(high_score);
-		switch(selected_screen){
-			case LEFT:
-				hud->selectLeftScreen();
-				break;
-			case RIGHT:
-				hud->selectRightScreen();
-				break;
-			default:
-				break;
+char screen;
+		if (selected_screen == LEFT){
+			screen = 'L';
 		}
-		glColor3f(1.0, 1.0, 1.0);
-		//RENDER OPTION BG1:
-		glBindTexture(GL_TEXTURE_2D, bgTexture1);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(xres/2 - 350, yres/2 - 350);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(xres/2 - 350, yres/2-150);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i(xres/2 -100 , yres/2-150);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(xres/2 - 100, yres/2 - 350);
-		glEnd();
-		//RENDER OPTION BG2:
-		glBindTexture(GL_TEXTURE_2D, bgTexture2);
-		glBegin(GL_QUADS);
-		glTexCoord2f(0.0f, 1.0f); glVertex2i(xres/2 + 350, yres/2 - 350);
-		glTexCoord2f(0.0f, 0.0f); glVertex2i(xres/2 + 350, yres/2 - 150);
-		glTexCoord2f(1.0f, 0.0f); glVertex2i(xres/2 + 100 , yres/2 - 150);
-		glTexCoord2f(1.0f, 1.0f); glVertex2i(xres/2 + 100, yres/2 - 350);
-		glEnd();
-		return;
+		else{
+			screen = 'R';
+		}
+		if (hud->isShowWelcome() == true){
+			hud->showIntro(screen,introTexture, bgTexture1, bgTexture1);
+			if (hud->getAI() == true){
+				hud->selectAI();
+			}
+			else{
+				hud->selectHuman();
+			}
+			return;
+		}
+		else if (hud->isShowHelpMenu() == true){
+			hud->showHelpMenu(helpMenuTexture);
+			return;
+		}
+return;
 	}
 	else{
 		renderTexture(bgTexture, xres, yres);
@@ -724,29 +780,19 @@ void render(Game *g)
 	hud->showCourtYard();
 
 	//DRAW BOMB:
-	glColor3f(1.0, 1.0, 1.0);        
-	glPushMatrix();
-	GLuint which_bomb_texture;
-	if ((bombBegin + 2) > time(NULL)){
-		which_bomb_texture = explodeTexture;
-	}
-	else{
-		which_bomb_texture = bombTexture;
-	}
-	glBindTexture(GL_TEXTURE_2D, which_bomb_texture);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i(bomb_posx + bomb_width, bomb_posy + bomb_height);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(bomb_posx + bomb_width, bomb_posy);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(bomb_posx, bomb_posy);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(bomb_posx, bomb_posy + bomb_height);
-	glEnd();
-	glDisable(GL_BLEND);
-	glPopMatrix();
-	glBindTexture(GL_TEXTURE_2D, 0);
+    if (level == 1){
+        GLuint which_bomb_texture = bombTexture;
+        if ((bombBegin + 2) > time(NULL)){
+            which_bomb_texture = explodeTexture;
+        }
+        else{
+            which_bomb_texture = bombTexture;
+        }
 
-	//Draw the paddle    
+        hud->renderBomb(which_bomb_texture,bomb_posx,bomb_posy,bomb_width,bomb_height);
+    }
+
+    //Draw the paddle
 	glColor3f(0.0, 0.5, 0.5);
 	paddle1.render();
 	glColor3f(0.7, 0.5, 0.0);
@@ -762,4 +808,7 @@ void render(Game *g)
 		obstacle->render();
 	}
 	hud->showTimer(getTimer());
+    if (hud->isPaused()){
+        hud->showPaused(pausedTexture);
+    }
 }
