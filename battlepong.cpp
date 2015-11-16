@@ -91,6 +91,9 @@ string BG_IMAGE_PATH2 = "./images/ninja_robot2.ppm";
 string HELP_MENU_IMAGE_PATH = "./images/help_menu.ppm";
 string EXPLODE_IMAGE_PATH = "./images/explode.ppm";
 string PAUSED_IMAGE_PATH = "./images/paused.ppm";
+string PORTAL_TYPE_0_PATH = "./images/portal0.ppm";
+string PORTAL_TYPE_1_PATH = "./images/portal1.ppm";
+
 Ppmimage *introBG = NULL;
 Ppmimage *mainBG = NULL;
 Ppmimage *bgImage1 = NULL;
@@ -100,7 +103,11 @@ Ppmimage *gameOverImage = NULL;
 Ppmimage *explodeImage = NULL;
 Ppmimage *helpMenuImage = NULL;
 Ppmimage *pausedImage = NULL;
+Ppmimage *portalImage0 = NULL;
+Ppmimage *portalImage1 = NULL;
 GLuint introTexture,mainTexture,bgStartTexture, bgTexture, bgTexture1, bgTexture2, bombTexture, gameOverTexture, explodeTexture, helpMenuTexture, pausedTexture;
+GLuint portalTexture0;
+GLuint portalTexture1;
 //-------------
 
 int keys[65536];
@@ -154,7 +161,9 @@ int level;
 /* Test - Create Base Class - Game Object */
 GameObject* obj = new GameObject(xres / 2.0, yres / 2.0, 50.0f, 50.0f);
 /* Test - Create Derivd Class - Obstacle */
-Obstacle *obstacle = new Obstacle(3);
+Obstacle *obstacle = new Obstacle();
+Portal *portal0 = new Portal();
+Portal *portal1 = new Portal();
 
 time_t bombBegin, bombRandom, beginSmallLeftPaddle, smallLeftPaddleTime, beginSmallRightPaddle, smallRightPaddleTime;
 time_t beginExplode;
@@ -420,6 +429,12 @@ void init_opengl(void)
 	bombTexture = generateTransparentTexture(bombTexture, bombImage);
 	explodeImage = loadImage(EXPLODE_IMAGE_PATH.c_str());
 	explodeTexture = generateTransparentTexture(explodeTexture, explodeImage);
+
+	//Load Portal images
+	portalImage0 = loadImage(PORTAL_TYPE_0_PATH.c_str());
+	portalTexture0 = generateTransparentTexture(portalTexture0, portalImage0);
+	portalImage1 = loadImage(PORTAL_TYPE_1_PATH.c_str());
+	portalTexture1 = generateTransparentTexture(portalTexture1, portalImage1);
 
 	//Create background texture elements
 	introBG = loadImage(BG_IMAGE_PATH.c_str());
@@ -781,6 +796,7 @@ return;
 
 	//DRAW BOMB:
     if (level == 1){
+
         GLuint which_bomb_texture = bombTexture;
         if ((bombBegin + 2) > time(NULL)){
             which_bomb_texture = explodeTexture;
@@ -789,6 +805,12 @@ return;
             which_bomb_texture = bombTexture;
         }
 
+        portal0->setPortalType(0);
+        portal1->setPortalType(1);
+        portal0->render(portalTexture0);
+        portal1->render(portalTexture1);
+
+        
         hud->renderBomb(which_bomb_texture,bomb_posx,bomb_posy,bomb_width,bomb_height);
     }
 
