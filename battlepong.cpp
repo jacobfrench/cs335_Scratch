@@ -82,8 +82,19 @@ struct Game {
 };
 
 //SET IMAGES
+system("convert ./images/titlescreen.png ./images/titlescreen.ppm");
+system("convert ./images/bomb.png ./images/bomb.ppm");
+system("convert ./images/game_over.png ./images/game_over.ppm");
+system("convert ./images/ninja_robot.png ./images/ninja_robot.ppm");
+system("convert ./images/ninja_robot2.png ./images/ninja_robot2.ppm");
+system("convert ./images/help_menu.png ./images/help_menu.ppm");
+system("convert ./images/explode.png ./images/explode.ppm");
+system("convert ./images/paused.png ./images/paused.ppm");
+system("convert ./images/portal0.png ./images/portal0.ppm");
+system("convert ./images/portal1.png ./images/portal1.ppm");
+
+
 string BG_IMAGE_PATH = "./images/titlescreen.ppm";
-string MAINBG_IMAGE_PATH = "./images/mainBG.ppm";
 string BOMB_IMAGE_PATH = "./images/bomb.ppm";
 string GAMEOVER_IMAGE_PATH = "./images/game_over.ppm";
 string BG_IMAGE_PATH1 = "./images/ninja_robot.ppm";
@@ -321,6 +332,16 @@ void cleanupXWindows(void)
 {
 	XDestroyWindow(dpy, win);
 	XCloseDisplay(dpy);
+	remove("./images/titlescreen.ppm");
+	remove("./images/bomb.ppm");
+	remove("./images/game_over.ppm");
+	remove("./images/ninja_robot.ppm");
+	remove("./images/ninja_robot2.ppm");
+	remove("./images/help_menu.ppm");
+	remove("./images/explode.ppm");
+	remove("./images/paused.ppm");
+	remove("./images/portal0.ppm");
+	remove("./images/portal1.ppm");
 }
 
 void set_title(void)
