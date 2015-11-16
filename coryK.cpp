@@ -19,6 +19,8 @@
 
 using namespace std;
 
+bool DEBUG = true;
+
 void submitScore() 
 {
 	char postToWeb[] = "curl --data param1=5 http://cs.csubak.edu/~ckitchens/cs335/finalproject/index.php";
@@ -293,27 +295,40 @@ void Portal::checkCollision(Ball &ball, Portal &portal) {
 
 	int xPos = this->getXPos();
 	int yPos = this->getYPos();
-
+	
 	int topBoundingBox = yPos+height;
 	int bottomBoundBox = yPos-height;
 
 	int leftBoundingBox = xPos-width;
 	int rightBoundingBox = xPos+width;
 
-	if((ball.getYPos() >= bottomBoundBox || ball.getYPos() <= topBoundingBox) &&
-		(ball.getXPos() >= leftBoundingBox || ball.getXPos() <= rightBoundingBox))
-	{
-		cout << "Ball has hit the portal\n";
-		//transportBall(ball, portal);
+	bool insideHeight = (ball.getYPos() <= topBoundingBox && 
+						ball.getYPos() >= bottomBoundBox);
+	bool insideWidth = (ball.getXPos() <= rightBoundingBox &&
+						ball.getXPos() >= leftBoundingBox);
+
+	if(insideHeight && insideWidth) {
+		cout << "Ball inside portal\n";
 	}
+
+	//Draw bounding box
+	if(DEBUG) {
+		glColor3f(1.0, 1.0, 1.0);
+		glPushMatrix();
+		glTranslatef(xPos, yPos, 0);
+		glRectf(bottomBoundBox, leftBoundingBox, rightBoundingBox, topBoundingBox);
+		glEnd();
+		glPopMatrix();
+	}
+
 }
 
 void Portal::transportBall(Ball &ball, Portal &portal)
 {
-	int xPos = portal.getXPos();
-	int yPos = portal.getYPos();
-	ball.setXPos(xPos);
-	ball.setYPos(yPos);
+	int nextX = portal.getXPos();
+	int nextY = portal.getYPos();
+	ball.setXPos(nextX);
+	ball.setYPos(nextY);
 }
 
 
