@@ -763,7 +763,7 @@ char screen;
 			screen = 'R';
 		}
 		if (hud->isShowWelcome() == true){
-			hud->showIntro(screen,introTexture, bgTexture1, bgTexture1);
+            hud->showIntro(screen,introTexture, bgTexture1, bgTexture2);
 			if (hud->getAI() == true){
 				hud->selectAI();
 			}

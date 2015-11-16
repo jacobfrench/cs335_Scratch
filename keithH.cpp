@@ -227,7 +227,7 @@ void Hud::showGameOver(int in_highscore,int p1_score,int p2_score){
 }
 
 void Hud::selectLeftScreen(){
-	glColor3ub( 0, 255, 0);
+    glColor3ub( 0, 255, 0);
 	glBegin(GL_QUADS);
 	glLineWidth(10);
 	glVertex2f( xres/2 - 360, yres/2 - 150 + 10 );
@@ -238,13 +238,13 @@ void Hud::selectLeftScreen(){
 }
 
 void Hud::selectRightScreen(){
-	glColor3ub( 0, 255, 0 );
+    glColor3ub( 0, 255, 0 );
 	glBegin(GL_QUADS);
 	glLineWidth(10);
-	glVertex2f( xres/2 + 360, yres/2 -150 + 10 );
-	glVertex2f( xres/2 + 360, yres/2 - 350 - 10 );
-	glVertex2f( xres/2 + 90, yres/2 - 350 - 10);
-	glVertex2f( xres/2 + 90, yres/2 -150 + 10);
+    glVertex2f( xres/2 + 370, yres/2 -150 + 10 );
+    glVertex2f( xres/2 + 370, yres/2 - 350 - 10 );
+    glVertex2f( xres/2 + 100, yres/2 - 350 - 10);
+    glVertex2f( xres/2 + 100, yres/2 -150 + 10);
 	glEnd();
 }
 
@@ -305,7 +305,7 @@ void Hud::showIntro(char which_screen,GLuint introTexture, GLuint bgTexture1, GL
 
 	Rect r2;
 	r2.bot = (yres / 2.0) - 150;
-	r2.left = xres / 2.0 - 70.0;
+    r2.left = xres / 2.0 - 85.0;
 	r2.center = 0;
 	ggprint16(&r2, 16, 0xffffff, "Press 'Enter' to start");
 
@@ -334,11 +334,12 @@ void Hud::showIntro(char which_screen,GLuint introTexture, GLuint bgTexture1, GL
 	//RENDER OPTION BG2:
 	glBindTexture(GL_TEXTURE_2D, bgTexture2);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i(xres/2 + 350, yres/2 - 350);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(xres/2 + 350, yres/2 - 150);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i(xres/2 + 100 , yres/2 - 150);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i(xres/2 + 100, yres/2 - 350);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(xres/2 + 360, yres/2 - 350);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(xres/2 + 360, yres/2 - 150);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i(xres/2 + 110 , yres/2 - 150);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i(xres/2 + 110, yres/2 - 350);
 	glEnd();   
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Hud::setAI(bool in_AI){
@@ -350,20 +351,32 @@ bool Hud::getAI(){
 }
 
 void Hud::selectAI(){
-    glColor3f(1.0, 1.0, 1.0);
-	glColor3ub( 0, 255, 0);
-	glLineWidth(10.0);
-	glBegin(GL_LINE_LOOP);
-	glVertex2f( xres/2 +100, yres - 170 );
-	glVertex2f(xres/2 + 100, yres - 130 );
-	glVertex2f( xres/2 - 120, yres - 130 );
-	glVertex2f( xres/2 - 120, yres - 170 );
-	glEnd();
+    glColor3ub( 0, 255, 0);
+    glMatrixMode( GL_PROJECTION );
+    glLoadIdentity();
+    glOrtho( 0, xres, 0, yres, -1, 1);
+    glMatrixMode( GL_MODELVIEW );
+    glLoadIdentity();
+
+    glLineWidth(10.0);
+    glBegin(GL_LINE_LOOP);
+    glVertex2f( xres/2 +100, yres - 170 );
+    glVertex2f(xres/2 + 100, yres - 130 );
+    glVertex2f( xres/2 - 120, yres - 130 );
+    glVertex2f( xres/2 - 120, yres - 170 );
+    glEnd();
+
 }
 
-void Hud::selectHuman(){
-    glColor3f(1.0, 1.0, 1.0);
-	glColor3ub( 0, 255, 0);
+void Hud::selectHuman(){        
+    glColor3ub( 0, 255, 0);
+    glMatrixMode( GL_PROJECTION );
+    glLoadIdentity();
+    glOrtho( 0, xres, 0, yres, -1, 1);
+    glMatrixMode( GL_MODELVIEW );
+    glLoadIdentity();
+    glColor3ub( 0, 255, 0 );
+
 	glLineWidth(10.0);
 	glBegin(GL_LINE_LOOP);
 	glVertex2f( xres/2 +100, yres - 130 );
