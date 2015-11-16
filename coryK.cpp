@@ -280,6 +280,43 @@ void Portal::setPortalType(int type)
 	portalType = type;
 }
 
+int Portal::getPortalType()
+{
+	return this->portalType;
+}
+
+void Portal::checkCollision(Ball &ball, Portal &portal) {
+	//Build bounding box
+	//TODO turn bounding box into class paramters
+	int width = this->getWidth();
+	int height = this->getWidth();
+
+	int xPos = this->getXPos();
+	int yPos = this->getYPos();
+
+	int topBoundingBox = yPos+height;
+	int bottomBoundBox = yPos-height;
+
+	int leftBoundingBox = xPos-width;
+	int rightBoundingBox = xPos+width;
+
+	if((ball.getYPos() >= bottomBoundBox || ball.getYPos() <= topBoundingBox) &&
+		(ball.getXPos() >= leftBoundingBox || ball.getXPos() <= rightBoundingBox))
+	{
+		cout << "Ball has hit the portal\n";
+		//transportBall(ball, portal);
+	}
+}
+
+void Portal::transportBall(Ball &ball, Portal &portal)
+{
+	int xPos = portal.getXPos();
+	int yPos = portal.getYPos();
+	ball.setXPos(xPos);
+	ball.setYPos(yPos);
+}
+
+
 void Portal::render(GLuint portalTexture)
 {
 	glColor3f(1.0, 1.0, 1.0);
