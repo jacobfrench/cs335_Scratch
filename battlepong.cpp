@@ -82,8 +82,9 @@ struct Game {
 };
 
 //SET IMAGES
+
+
 string BG_IMAGE_PATH = "./images/titlescreen.ppm";
-string MAINBG_IMAGE_PATH = "./images/mainBG.ppm";
 string BOMB_IMAGE_PATH = "./images/bomb.ppm";
 string GAMEOVER_IMAGE_PATH = "./images/game_over.ppm";
 string BG_IMAGE_PATH1 = "./images/ninja_robot.ppm";
@@ -321,6 +322,7 @@ void cleanupXWindows(void)
 {
 	XDestroyWindow(dpy, win);
 	XCloseDisplay(dpy);
+
 }
 
 void set_title(void)
@@ -424,6 +426,18 @@ void init_opengl(void)
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
 
+    system("convert ./images/titlescreen.png ./images/titlescreen.ppm");
+    system("convert ./images/bomb.png ./images/bomb.ppm");
+    system("convert ./images/game_over.png ./images/game_over.ppm");
+    system("convert ./images/ninja_robot.png ./images/ninja_robot.ppm");
+    system("convert ./images/ninja_robot2.png ./images/ninja_robot2.ppm");
+    system("convert ./images/help_menu.png ./images/help_menu.ppm");
+    system("convert ./images/explode.png ./images/explode.ppm");
+    system("convert ./images/paused.png ./images/paused.ppm");
+    system("convert ./images/portal0.png ./images/portal0.ppm");
+    system("convert ./images/portal1.png ./images/portal1.ppm");
+
+
 	//Load bomb image(s):
 	bombImage = loadImage(BOMB_IMAGE_PATH.c_str());
 	bombTexture = generateTransparentTexture(bombTexture, bombImage);
@@ -438,9 +452,7 @@ void init_opengl(void)
 
 	//Create background texture elements
 	introBG = loadImage(BG_IMAGE_PATH.c_str());
-	introTexture = generateTexture(introTexture, introBG);
-	mainBG = loadImage(MAINBG_IMAGE_PATH.c_str());
-	mainTexture = generateTexture(mainTexture, mainBG);
+	introTexture = generateTexture(introTexture, introBG);		
 	bgImage1 = loadImage(BG_IMAGE_PATH1.c_str());
 	bgTexture = generateTexture(bgTexture, bgImage1);
 	bgTexture1 = generateTexture(bgTexture1, bgImage1);
@@ -455,6 +467,18 @@ void init_opengl(void)
     //Create paused texture:
     pausedImage = loadImage(PAUSED_IMAGE_PATH.c_str());
     pausedTexture = generateTransparentTexture(pausedTexture, pausedImage);
+
+    //REMOVE PPMS:
+    remove("./images/titlescreen.ppm");
+    remove("./images/bomb.ppm");
+    remove("./images/game_over.ppm");
+    remove("./images/ninja_robot.ppm");
+    remove("./images/ninja_robot2.ppm");
+    remove("./images/help_menu.ppm");
+    remove("./images/explode.ppm");
+    remove("./images/paused.ppm");
+    remove("./images/portal0.ppm");
+    remove("./images/portal1.ppm");
 }
 
 void check_resize(XEvent *e)
