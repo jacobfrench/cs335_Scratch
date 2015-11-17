@@ -82,8 +82,9 @@ struct Game {
 };
 
 //SET IMAGES
+
+
 string BG_IMAGE_PATH = "./images/titlescreen.ppm";
-string MAINBG_IMAGE_PATH = "./images/mainBG.ppm";
 string BOMB_IMAGE_PATH = "./images/bomb.ppm";
 string GAMEOVER_IMAGE_PATH = "./images/game_over.ppm";
 string BG_IMAGE_PATH1 = "./images/ninja_robot.ppm";
@@ -184,8 +185,13 @@ int bomb_radius;
 float speed_theta=1/(10*PI);
 //-----------------
 
-int main(void)
+int main(int argc, char **argv[])
 {
+	if(argc > 1) {
+		beginTesting();
+		return 0;
+	}
+	
 	logOpen();
 	initXWindows();
 	init_opengl();
@@ -282,13 +288,13 @@ void init_ball_paddles(){
 	//init paddle1
 	paddle1.setXPos(50.0f);
 	paddle1.setYPos((float)yres/2);
-	paddle1.setHeight(120.0f);
+	paddle1.setHeight(100.0f);
 	paddle1.setWidth(15.0f);
 	
 	//init paddle2
 	paddle2.setXPos((float)xres - 65.0f);
 	paddle2.setYPos((float)yres/2);
-	paddle2.setHeight(120.0f);
+	paddle2.setHeight(100.0f);
 	paddle2.setWidth(15.0f);
 
 
@@ -321,6 +327,7 @@ void cleanupXWindows(void)
 {
 	XDestroyWindow(dpy, win);
 	XCloseDisplay(dpy);
+
 }
 
 void set_title(void)
@@ -424,6 +431,18 @@ void init_opengl(void)
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
 
+	system("convert ./images/titlescreen.png ./images/titlescreen.ppm");
+	system("convert ./images/bomb.png ./images/bomb.ppm");
+	system("convert ./images/game_over.png ./images/game_over.ppm");
+	system("convert ./images/ninja_robot.png ./images/ninja_robot.ppm");
+	system("convert ./images/ninja_robot2.png ./images/ninja_robot2.ppm");
+	system("convert ./images/help_menu.png ./images/help_menu.ppm");
+	system("convert ./images/explode.png ./images/explode.ppm");
+	system("convert ./images/paused.png ./images/paused.ppm");
+	system("convert ./images/portal0.png ./images/portal0.ppm");
+	system("convert ./images/portal1.png ./images/portal1.ppm");
+
+
 	//Load bomb image(s):
 	bombImage = loadImage(BOMB_IMAGE_PATH.c_str());
 	bombTexture = generateTransparentTexture(bombTexture, bombImage);
@@ -438,9 +457,7 @@ void init_opengl(void)
 
 	//Create background texture elements
 	introBG = loadImage(BG_IMAGE_PATH.c_str());
-	introTexture = generateTexture(introTexture, introBG);
-	mainBG = loadImage(MAINBG_IMAGE_PATH.c_str());
-	mainTexture = generateTexture(mainTexture, mainBG);
+	introTexture = generateTexture(introTexture, introBG);		
 	bgImage1 = loadImage(BG_IMAGE_PATH1.c_str());
 	bgTexture = generateTexture(bgTexture, bgImage1);
 	bgTexture1 = generateTexture(bgTexture1, bgImage1);
@@ -452,9 +469,22 @@ void init_opengl(void)
 	//Create help menu texture:
 	helpMenuImage = loadImage(HELP_MENU_IMAGE_PATH.c_str());
 	helpMenuTexture = generateTexture(helpMenuTexture, helpMenuImage);
+
 	//Create paused texture:
 	pausedImage = loadImage(PAUSED_IMAGE_PATH.c_str());
 	pausedTexture = generateTransparentTexture(pausedTexture, pausedImage);
+
+	//REMOVE PPMS:
+	remove("./images/titlescreen.ppm");
+	remove("./images/bomb.ppm");
+	remove("./images/game_over.ppm");
+	remove("./images/ninja_robot.ppm");
+	remove("./images/ninja_robot2.ppm");
+	remove("./images/help_menu.ppm");
+	remove("./images/explode.ppm");
+	remove("./images/paused.ppm");
+	remove("./images/portal0.ppm");
+	remove("./images/portal1.ppm");
 }
 
 void check_resize(XEvent *e)
@@ -675,7 +705,7 @@ void physics(Game *g)
 
 	//CHECK LEFT COLLISION WITH BOMB:
 	if ((beginSmallLeftPaddle + smallLeftPaddleTime) < time(NULL)){
-		paddle1.setHeight(120.0f);
+		paddle1.setHeight(100.0f);
 	bool isBallBetweenX = (ball.getXPos() > bomb_posx) && (ball.getXPos() < (bomb_posx + bomb_width));
 	bool isBallBetweenY = (ball.getYPos() > bomb_posy) && (ball.getYPos() < (bomb_posy + bomb_height));
 	if (lastPaddleHit == 'L' && (isBallBetweenX && isBallBetweenY)){
@@ -701,7 +731,7 @@ void physics(Game *g)
 
 	//CHECK RIGHT COLLISION WITH BOMB:
 	if ((beginSmallRightPaddle + smallRightPaddleTime) < time(NULL)){
-		paddle2.setHeight(120.0f);
+		paddle2.setHeight(100.0f);
 		//is_bomb_visible = true;
 		bool isBallBetweenX = (ball.getXPos() > bomb_posx) && (ball.getXPos() < (bomb_posx + bomb_width));
 		bool isBallBetweenY = (ball.getYPos() > bomb_posy) && (ball.getYPos() < (bomb_posy + bomb_height));
@@ -766,7 +796,7 @@ char screen;
 			screen = 'R';
 		}
 		if (hud->isShowWelcome() == true){
-			hud->showIntro(screen,introTexture, bgTexture1, bgTexture1);
+			hud->showIntro(screen,introTexture, bgTexture1, bgTexture2);
 			if (hud->getAI() == true){
 				hud->selectAI();
 			}

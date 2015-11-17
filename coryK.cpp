@@ -20,6 +20,14 @@
 using namespace std;
 
 bool DEBUG = true;
+void printMenuMap();
+int getUserInput();
+void testHighScore();
+
+bool ASSERT_GT_ZERO(int given);
+bool ASSERT_GT(int given, int expected);
+bool ASSERT_EQ(int given, int expected);
+
 
 void submitScore() 
 {
@@ -239,11 +247,11 @@ void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player)
 
 	bool onLeftSide = (ball.getXPos() < xres/2);
 	bool onRightSide = (ball.getXPos() > xres/2);
-    
+	
 	//Ball moving to the right
 	if(onLeftSide && ball.getXVel() > 0 && ball.getXPos() >= xPos && ball.getYPos() >= yPos && ball.getYPos() <= yPos + height){
 		createSound(6); 
-    ball.setXVel(-ballXVel);
+	ball.setXVel(-ballXVel);
 	}
 	//Ball moving to the left
 	else if(onRightSide && ball.getXVel() < 0 && ball.getXPos() <= xPos+width && ball.getYPos() >= yPos && ball.getYPos() <= yPos+height){
@@ -309,6 +317,7 @@ void Portal::checkCollision(Ball &ball, Portal &portal) {
 
 	if(insideHeight && insideWidth) {
 		cout << "Ball inside portal\n";
+
 	}
 
 	//Draw bounding box
@@ -383,4 +392,88 @@ int setHighScore(int p1Score, int p2Score)
 		}
 	}
 	return finalHighScore;
+}
+
+/**
+*Assert library
+*
+*A collection of testing functions
+*to test correct input/out
+*usage ./battlepong -DEBUG
+*/
+
+void printMenuMap()
+{
+	printf("///////////////////////////////////\n");
+	printf("////////////TESTING SUITE//////////\n");
+	printf("///////////////////////////////////\n");
+	printf("Menu Selection\n");
+	printf("1. Test High Score\n");
+	printf("2. Test PPM functionality\n");
+	printf("3. Test Game Object Class\n");
+	printf("4. Test Obstacle Class\n");
+	printf("5. Test Portal Class\n");
+	printf("-1 to exit\n");
+}
+int beginTesting() {
+	int selection = -1;
+	do {
+		printMenuMap();
+		int selection = getUserInput();
+		switch(selection)
+		{
+			case(1):
+				testHighScore();
+				break;
+			case(2):
+				break;
+			default:
+				break;
+		}
+
+	}while(selection < 0);
+	return 1;
+}
+
+
+int getUserInput()
+{
+	int option;
+	scanf("%d", &option);
+	return option;
+}
+
+
+void testHighScore()
+{
+	if(ASSERT_GT_ZERO(setHighScore(5,4))) {
+		int currentHighScore = setHighScore(1,2);
+		printf("Current High Score %i\n", currentHighScore);
+		printf("Input new high score\n");
+		int newHighScore = getUserInput();
+		if(ASSERT_GT(newHighScore, currentHighScore)) {
+			currentHighScore = setHighScore(1,1);
+			if(ASSERT_EQ(currentHighScore, newHighScore)) {
+				printf("New High Score %i\n", newHighScore);
+				printf("Testing High Score finished\n");
+			}
+		} else {
+			printf("Error - new score is not higher than current score\n");
+		}
+	}
+}
+
+bool ASSERT_GT_ZERO(int given)
+{
+	return (given > 0);
+}
+
+bool ASSERT_GT(int given, int expected)
+{
+	return(given > expected);
+}
+
+bool ASSERT_EQ(int given, int expected)
+{
+	return(given == expected);
 }

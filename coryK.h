@@ -72,4 +72,6 @@ class Portal:Obstacle
 		~Portal();
 };
 
+extern int beginTesting();
+
 #endif

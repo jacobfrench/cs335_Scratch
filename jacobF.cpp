@@ -299,10 +299,10 @@ void Paddle::checkAI(int yres, Ball &ball)
 		}
 		else{
 			if(ball.getYPos() > center){
-				this->setYVel(absoluteBallYVel - 0.3f);
+				this->setYVel(absoluteBallYVel - 0.5f);
 			}
 			else if(ball.getYPos() < center){
-				this->setYVel(-absoluteBallYVel + 0.3f);
+				this->setYVel(-absoluteBallYVel + 0.5f);
 			}
 
 		}
