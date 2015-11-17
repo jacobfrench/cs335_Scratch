@@ -42,7 +42,7 @@ typedef Flt	Matrix[4][4];
 #define VecCopy(a,b) (b)[0]=(a)[0];(b)[1]=(a)[1];(b)[2]=(a)[2]
 #define VecDot(a,b)	((a)[0]*(b)[0]+(a)[1]*(b)[1]+(a)[2]*(b)[2])
 #define VecSub(a,b,c) (c)[0]=(a)[0]-(b)[0]; \
-			     (c)[1]=(a)[1]-(b)[1]; \
+				 (c)[1]=(a)[1]-(b)[1]; \
 (c)[2]=(a)[2]-(b)[2]
 //constants
 const float timeslice = 1.0f;
@@ -185,8 +185,13 @@ int bomb_radius;
 float speed_theta=1/(10*PI);
 //-----------------
 
-int main(void)
+int main(int argc, char **argv[])
 {
+	if(argc > 1) {
+		beginTesting();
+		return 0;
+	}
+	
 	logOpen();
 	initXWindows();
 	init_opengl();
@@ -196,11 +201,11 @@ int main(void)
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);	
 
-    hud = new Hud(xres ,yres);
-    //DEFUALT IS LEVEL 1 SELECTED:
+	hud = new Hud(xres ,yres);
+	//DEFUALT IS LEVEL 1 SELECTED:
 	selected_screen = LEFT;    
-    level =1;
-    //--------------
+	level =1;
+	//--------------
 	is_gameover = false;
 	high_score = 0;
 	gameStarted = false;
@@ -216,7 +221,7 @@ int main(void)
 	hud->setAI(false);//DEFAULT: player2 is human	
 	ball_saved_X_velocity = 8.0f * cos(30);
 	ball_saved_Y_velocity = 8.0f * sin(90);    
-    obstacle_saved_Y_velocity = -5.0;
+	obstacle_saved_Y_velocity = -5.0;
 
 	int min;
 	if (xres<yres){
@@ -253,7 +258,7 @@ int main(void)
 		timeSpan = timeDiff(&timeStart, &timeCurrent);
 		timeCopy(&timeStart, &timeCurrent);
 		physicsCountdown += timeSpan;
-        while (physicsCountdown >= physicsRate) {
+		while (physicsCountdown >= physicsRate) {
 			physics(&game);
 			physicsCountdown -= physicsRate;
 		}        
@@ -304,7 +309,7 @@ void stopGame(){
 void pauseGame(){
 	ball_saved_Y_velocity = ball.getYVel();
 	ball_saved_X_velocity = ball.getXVel();
-    obstacle_saved_Y_velocity = obstacle->getYVel();
+	obstacle_saved_Y_velocity = obstacle->getYVel();
 	ball.setXVel(0);
 	ball.setYVel(0);
 	obstacle->setYVel(0);
@@ -314,7 +319,7 @@ void pauseGame(){
 void resumeGame(){
 	ball.setXVel(ball_saved_X_velocity);
 	ball.setYVel(ball_saved_Y_velocity);
-    obstacle->setYVel(obstacle_saved_Y_velocity);
+	obstacle->setYVel(obstacle_saved_Y_velocity);
 	timer.resume();
 }
 
@@ -426,16 +431,16 @@ void init_opengl(void)
 	glEnable(GL_TEXTURE_2D);
 	initialize_fonts();
 
-    system("convert ./images/titlescreen.png ./images/titlescreen.ppm");
-    system("convert ./images/bomb.png ./images/bomb.ppm");
-    system("convert ./images/game_over.png ./images/game_over.ppm");
-    system("convert ./images/ninja_robot.png ./images/ninja_robot.ppm");
-    system("convert ./images/ninja_robot2.png ./images/ninja_robot2.ppm");
-    system("convert ./images/help_menu.png ./images/help_menu.ppm");
-    system("convert ./images/explode.png ./images/explode.ppm");
-    system("convert ./images/paused.png ./images/paused.ppm");
-    system("convert ./images/portal0.png ./images/portal0.ppm");
-    system("convert ./images/portal1.png ./images/portal1.ppm");
+	system("convert ./images/titlescreen.png ./images/titlescreen.ppm");
+	system("convert ./images/bomb.png ./images/bomb.ppm");
+	system("convert ./images/game_over.png ./images/game_over.ppm");
+	system("convert ./images/ninja_robot.png ./images/ninja_robot.ppm");
+	system("convert ./images/ninja_robot2.png ./images/ninja_robot2.ppm");
+	system("convert ./images/help_menu.png ./images/help_menu.ppm");
+	system("convert ./images/explode.png ./images/explode.ppm");
+	system("convert ./images/paused.png ./images/paused.ppm");
+	system("convert ./images/portal0.png ./images/portal0.ppm");
+	system("convert ./images/portal1.png ./images/portal1.ppm");
 
 
 	//Load bomb image(s):
@@ -464,21 +469,22 @@ void init_opengl(void)
 	//Create help menu texture:
 	helpMenuImage = loadImage(HELP_MENU_IMAGE_PATH.c_str());
 	helpMenuTexture = generateTexture(helpMenuTexture, helpMenuImage);
-    //Create paused texture:
-    pausedImage = loadImage(PAUSED_IMAGE_PATH.c_str());
-    pausedTexture = generateTransparentTexture(pausedTexture, pausedImage);
 
-    //REMOVE PPMS:
-    remove("./images/titlescreen.ppm");
-    remove("./images/bomb.ppm");
-    remove("./images/game_over.ppm");
-    remove("./images/ninja_robot.ppm");
-    remove("./images/ninja_robot2.ppm");
-    remove("./images/help_menu.ppm");
-    remove("./images/explode.ppm");
-    remove("./images/paused.ppm");
-    remove("./images/portal0.ppm");
-    remove("./images/portal1.ppm");
+	//Create paused texture:
+	pausedImage = loadImage(PAUSED_IMAGE_PATH.c_str());
+	pausedTexture = generateTransparentTexture(pausedTexture, pausedImage);
+
+	//REMOVE PPMS:
+	remove("./images/titlescreen.ppm");
+	remove("./images/bomb.ppm");
+	remove("./images/game_over.ppm");
+	remove("./images/ninja_robot.ppm");
+	remove("./images/ninja_robot2.ppm");
+	remove("./images/help_menu.ppm");
+	remove("./images/explode.ppm");
+	remove("./images/paused.ppm");
+	remove("./images/portal0.ppm");
+	remove("./images/portal1.ppm");
 }
 
 void check_resize(XEvent *e)
@@ -555,7 +561,7 @@ int check_keys(XEvent *e, Game *g){
 			hud->setPlayer1Health(100);
 			hud->setPlayer2Health(100);
 			if (is_gameover == true){
-                hud->setIsShowWelcome(true);
+				hud->setIsShowWelcome(true);
 				gameStarted = false;
 				intro = 0;
 			}
@@ -563,7 +569,7 @@ int check_keys(XEvent *e, Game *g){
 				hud->setIsShowWelcome(false);
 				init_ball_paddles();
 				//REINITIALIZE OBSTACLE POSITION AND VELIOCITY:
-			        obstacle->setXPos((1250 / 2.0) - 25);
+					obstacle->setXPos((1250 / 2.0) - 25);
 				obstacle->setYPos(900 / 2.0);	
 				obstacle->setYVel(-5.0f);	
 				intro = 1;
@@ -573,19 +579,19 @@ int check_keys(XEvent *e, Game *g){
 			timer.start();            
 		}
 if (hud->isShowHelpMenu()==false && hud->isShowWelcome()==false){
-            if (key == XK_p && hud->isPaused()==true){
-                hud->setPaused(false);
+			if (key == XK_p && hud->isPaused()==true){
+				hud->setPaused(false);
 				resumeGame();
 			}
-            else if (key == XK_p && hud->isPaused()==false){
-                hud->setPaused(true);
+			else if (key == XK_p && hud->isPaused()==false){
+				hud->setPaused(true);
 				pauseGame();
 			}
-            else if (key == XK_q){//to quit out of game
-                hud->setIsShowWelcome(true);
-                gameStarted = false;
-                intro = 0;
-            }
+			else if (key == XK_q){//to quit out of game
+				hud->setIsShowWelcome(true);
+				gameStarted = false;
+				intro = 0;
+			}
 		}
 		if (hud->isShowWelcome() == true){
 			if (key == XK_Left) {
@@ -600,11 +606,11 @@ if (hud->isShowHelpMenu()==false && hud->isShowWelcome()==false){
 			}
 else if (key == XK_Up) {
 				hud->setAI(false);//player 2 is human
-                paddle2.setCpuPlayer(false);
+				paddle2.setCpuPlayer(false);
 			}
 			else if (key == XK_Down){
 				hud->setAI(true);//player 2 is computer
-                paddle2.setCpuPlayer(true);
+				paddle2.setCpuPlayer(true);
 			}
 			else if (key == XK_h) {
 				hud->setIsShowWelcome(false);
@@ -656,7 +662,7 @@ void physics(Game *g)
 
 	//ball collision
 	if(gameStarted){
-  	ball.setYVel(ball.getYVel());
+	ball.setYVel(ball.getYVel());
 		ball.setXVel(ball.getXVel());
 		obstacle->setYVel(obstacle->getYVel());
 		bool is_ball_hit_edge = ball.checkCollision(xres, yres);
@@ -687,22 +693,22 @@ void physics(Game *g)
 	//paddle2 movement
 	paddle2.setYVel(paddle2YVel);
 
-    if (level == 1 && hud->isPaused()==false){
+	if (level == 1 && hud->isPaused()==false){
 	//SET BOMBS POSITION:         
-            bomb_theta = bomb_theta + speed_theta;
-            if (fabs(bomb_theta) >= 2*PI){
-                bomb_theta=0;
-                speed_theta *= -1;
-            }
-            bomb_posx=(int)(xres/2 + bomb_radius*cos(bomb_theta - PI/2) - bomb_width/2);
-            bomb_posy=(int)(yres/2 + bomb_radius*sin(bomb_theta - PI/2) - bomb_height/2);
+			bomb_theta = bomb_theta + speed_theta;
+			if (fabs(bomb_theta) >= 2*PI){
+				bomb_theta=0;
+				speed_theta *= -1;
+			}
+			bomb_posx=(int)(xres/2 + bomb_radius*cos(bomb_theta - PI/2) - bomb_width/2);
+			bomb_posy=(int)(yres/2 + bomb_radius*sin(bomb_theta - PI/2) - bomb_height/2);
 
 	//CHECK LEFT COLLISION WITH BOMB:
 	if ((beginSmallLeftPaddle + smallLeftPaddleTime) < time(NULL)){
 		paddle1.setHeight(100.0f);
-    bool isBallBetweenX = (ball.getXPos() > bomb_posx) && (ball.getXPos() < (bomb_posx + bomb_width));
-    bool isBallBetweenY = (ball.getYPos() > bomb_posy) && (ball.getYPos() < (bomb_posy + bomb_height));
-    if (lastPaddleHit == 'L' && (isBallBetweenX && isBallBetweenY)){
+	bool isBallBetweenX = (ball.getXPos() > bomb_posx) && (ball.getXPos() < (bomb_posx + bomb_width));
+	bool isBallBetweenY = (ball.getYPos() > bomb_posy) && (ball.getYPos() < (bomb_posy + bomb_height));
+	if (lastPaddleHit == 'L' && (isBallBetweenX && isBallBetweenY)){
 			bombBegin = time(NULL);
 			createSound(8);
 			createSound(9);
@@ -720,7 +726,7 @@ void physics(Game *g)
 				}
 			}
 			beginSmallLeftPaddle = time(NULL);
-    }
+	}
 	}
 
 	//CHECK RIGHT COLLISION WITH BOMB:
@@ -747,10 +753,13 @@ void physics(Game *g)
 					stopGame();
 				}
 			}
-      beginSmallRightPaddle = time(NULL);
+	  beginSmallRightPaddle = time(NULL);
 		}
 	}
-    }
+	}
+	//Check collision with portal
+	portal0->checkCollision(ball, *portal1);
+	portal1->checkCollision(ball, *portal0);
 }
 
 
@@ -787,7 +796,7 @@ char screen;
 			screen = 'R';
 		}
 		if (hud->isShowWelcome() == true){
-            hud->showIntro(screen,introTexture, bgTexture1, bgTexture2);
+			hud->showIntro(screen,introTexture, bgTexture1, bgTexture2);
 			if (hud->getAI() == true){
 				hud->selectAI();
 			}
@@ -819,26 +828,26 @@ return;
 	hud->showCourtYard();
 
 	//DRAW BOMB:
-    if (level == 1){
+	if (level == 1){
 
-        GLuint which_bomb_texture = bombTexture;
-        if ((bombBegin + 2) > time(NULL)){
-            which_bomb_texture = explodeTexture;
-        }
-        else{
-            which_bomb_texture = bombTexture;
-        }
+		GLuint which_bomb_texture = bombTexture;
+		if ((bombBegin + 2) > time(NULL)){
+			which_bomb_texture = explodeTexture;
+		}
+		else{
+			which_bomb_texture = bombTexture;
+		}
 
-        portal0->setPortalType(0);
-        portal1->setPortalType(1);
-        portal0->render(portalTexture0);
-        portal1->render(portalTexture1);
+		portal0->setPortalType(0);
+		portal1->setPortalType(1);
+		portal0->render(portalTexture0);
+		portal1->render(portalTexture1);
 
-        
-        hud->renderBomb(which_bomb_texture,bomb_posx,bomb_posy,bomb_width,bomb_height);
-    }
 
-    //Draw the paddle
+		hud->renderBomb(which_bomb_texture,bomb_posx,bomb_posy,bomb_width,bomb_height);
+	}
+
+	//Draw the paddle
 	glColor3f(0.0, 0.5, 0.5);
 	paddle1.render();
 	glColor3f(0.7, 0.5, 0.0);
@@ -854,7 +863,7 @@ return;
 		obstacle->render();
 	}
 	hud->showTimer(getTimer());
-    if (hud->isPaused()){
-        hud->showPaused(pausedTexture);
-    }
+	if (hud->isPaused()){
+		hud->showPaused(pausedTexture);
+	}
 }
