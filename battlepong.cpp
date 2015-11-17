@@ -283,13 +283,13 @@ void init_ball_paddles(){
 	//init paddle1
 	paddle1.setXPos(50.0f);
 	paddle1.setYPos((float)yres/2);
-	paddle1.setHeight(120.0f);
+	paddle1.setHeight(100.0f);
 	paddle1.setWidth(15.0f);
 	
 	//init paddle2
 	paddle2.setXPos((float)xres - 65.0f);
 	paddle2.setYPos((float)yres/2);
-	paddle2.setHeight(120.0f);
+	paddle2.setHeight(100.0f);
 	paddle2.setWidth(15.0f);
 
 
@@ -699,7 +699,7 @@ void physics(Game *g)
 
 	//CHECK LEFT COLLISION WITH BOMB:
 	if ((beginSmallLeftPaddle + smallLeftPaddleTime) < time(NULL)){
-		paddle1.setHeight(120.0f);
+		paddle1.setHeight(100.0f);
     bool isBallBetweenX = (ball.getXPos() > bomb_posx) && (ball.getXPos() < (bomb_posx + bomb_width));
     bool isBallBetweenY = (ball.getYPos() > bomb_posy) && (ball.getYPos() < (bomb_posy + bomb_height));
     if (lastPaddleHit == 'L' && (isBallBetweenX && isBallBetweenY)){
@@ -725,7 +725,7 @@ void physics(Game *g)
 
 	//CHECK RIGHT COLLISION WITH BOMB:
 	if ((beginSmallRightPaddle + smallRightPaddleTime) < time(NULL)){
-		paddle2.setHeight(120.0f);
+		paddle2.setHeight(100.0f);
 		//is_bomb_visible = true;
 		bool isBallBetweenX = (ball.getXPos() > bomb_posx) && (ball.getXPos() < (bomb_posx + bomb_width));
 		bool isBallBetweenY = (ball.getYPos() > bomb_posy) && (ball.getYPos() < (bomb_posy + bomb_height));
