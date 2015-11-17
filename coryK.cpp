@@ -19,6 +19,20 @@
 
 using namespace std;
 
+bool DEBUG = true;
+void printMenuMap();
+int getUserInput();
+int testHighScore();
+int testPPM();
+int testGameObject();
+
+
+bool ASSERT_NT_NULL(GameObject *obj);
+bool ASSERT_GT_ZERO(int given);
+bool ASSERT_GT(int given, int expected);
+bool ASSERT_EQ(int given, int expected);
+
+
 void submitScore() 
 {
 	char postToWeb[] = "curl --data param1=5 http://cs.csubak.edu/~ckitchens/cs335/finalproject/index.php";
@@ -237,11 +251,11 @@ void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player)
 
 	bool onLeftSide = (ball.getXPos() < xres/2);
 	bool onRightSide = (ball.getXPos() > xres/2);
-    
+	
 	//Ball moving to the right
 	if(onLeftSide && ball.getXVel() > 0 && ball.getXPos() >= xPos && ball.getYPos() >= yPos && ball.getYPos() <= yPos + height){
 		createSound(6); 
-    ball.setXVel(-ballXVel);
+	ball.setXVel(-ballXVel);
 	}
 	//Ball moving to the left
 	else if(onRightSide && ball.getXVel() < 0 && ball.getXPos() <= xPos+width && ball.getYPos() >= yPos && ball.getYPos() <= yPos+height){
@@ -279,6 +293,57 @@ void Portal::setPortalType(int type)
 	}
 	portalType = type;
 }
+
+int Portal::getPortalType()
+{
+	return this->portalType;
+}
+
+void Portal::checkCollision(Ball &ball, Portal &portal) {
+	//Build bounding box
+	//TODO turn bounding box into class paramters
+	int width = this->getWidth();
+	int height = this->getWidth();
+
+	int xPos = this->getXPos();
+	int yPos = this->getYPos();
+	
+	int topBoundingBox = yPos+height;
+	int bottomBoundBox = yPos-height;
+
+	int leftBoundingBox = xPos-width;
+	int rightBoundingBox = xPos+width;
+
+	bool insideHeight = (ball.getYPos() <= topBoundingBox && 
+						ball.getYPos() >= bottomBoundBox);
+	bool insideWidth = (ball.getXPos() <= rightBoundingBox &&
+						ball.getXPos() >= leftBoundingBox);
+
+	if(insideHeight && insideWidth) {
+		cout << "Ball inside portal\n";
+
+	}
+
+	//Draw bounding box
+	if(DEBUG) {
+		glColor3f(1.0, 1.0, 1.0);
+		glPushMatrix();
+		glTranslatef(xPos, yPos, 0);
+		glRectf(bottomBoundBox, leftBoundingBox, rightBoundingBox, topBoundingBox);
+		glEnd();
+		glPopMatrix();
+	}
+
+}
+
+void Portal::transportBall(Ball &ball, Portal &portal)
+{
+	int nextX = portal.getXPos();
+	int nextY = portal.getYPos();
+	ball.setXPos(nextX);
+	ball.setYPos(nextY);
+}
+
 
 void Portal::render(GLuint portalTexture)
 {
@@ -331,4 +396,180 @@ int setHighScore(int p1Score, int p2Score)
 		}
 	}
 	return finalHighScore;
+}
+
+/**
+*Assert library
+*
+*A collection of testing functions
+*to test correct input/out
+*usage ./battlepong -DEBUG
+*/
+
+void printMenuMap()
+{
+	printf("\n\n");
+	printf("///////////////////////////////////\n");
+	printf("////////////TESTING SUITE//////////\n");
+	printf("///////////////////////////////////\n");
+	printf("Menu Selection\n");
+	printf("1. Test High Score\n");
+	printf("2. Test PPM functionality\n");
+	printf("3. Test Game Object Class\n");
+	printf("4. Test Obstacle Class\n");
+	printf("5. Test Portal Class\n");
+	printf("-1 to exit\n");
+}
+int beginTesting() {
+	int selection = -1;
+	printMenuMap();
+	do {
+
+		int selection = (int)getUserInput();
+		switch(selection)
+		{
+			case(1):
+				if(!testHighScore()) {
+					cout << "FAIL - Test High Score\n";
+				} else {
+					cout << "PASS - Test High Score\n";
+				}
+				break;
+			case(2):
+				if(!testPPM()) {
+					cout << "FAIL - Test PPM\n";
+				} else {
+					cout << "PASS - Test PPM\n";
+				}
+				break;
+			case(3):
+				if(!testGameObject()) {
+					cout << "FAIL - Test GameObject Class\n";
+				} else {
+					cout << "PASS - Test GameObject Class\n";
+				}
+				break;
+			default:
+
+				break;
+		}
+
+	}while(selection < 0);
+	return 1;
+}
+
+
+int getUserInput()
+{
+	int option;
+	scanf("%d", &option);
+	return option;
+}
+
+
+int testHighScore()
+{
+	if(ASSERT_GT_ZERO(setHighScore(5,4))) {
+
+		int currentHighScore = setHighScore(1,2);
+		printf("Current High Score %i\n", currentHighScore);
+	
+		printf("Input new high score\n");
+		int newHighScore = getUserInput();
+		
+		if(ASSERT_GT(newHighScore, currentHighScore)) {
+			
+			currentHighScore = setHighScore(newHighScore,1);
+			if(ASSERT_EQ(currentHighScore, newHighScore)) {
+				cout << "PASS - Assigning new High Score\n";
+				return 1;
+			} else {
+				cout << "FAIL - Assigning new High Score\n";
+				return 0;
+			}
+		} else {
+			return 0;
+		}
+	}
+	return 0;
+}
+
+
+int testPPM()
+{
+	Ppmimage *image = (Ppmimage *)malloc(sizeof(Ppmimage));
+	//Test if enough memory is allocated
+	if(!image) {
+		cout << "FAIL - Error allocating memory for PPM image \n";
+		return 0;
+	} else {
+		cout << "PASS - Memory successfully allocated\n";
+	}
+
+	system("convert ./images/portal0.png ./images/portal0.ppm");
+	image = ppm6GetImage("./images/portal0.ppm");
+	
+	if(!image) {
+		cout << "FAIL - Error assigning image reference to pointer\n";
+		return 0;
+	} else {
+		cout << "PASS - Image reference assigning to pointer\n";
+	}
+	remove("./images/portal0.ppm");
+
+	delete(image);
+	if(!image) {
+		cout << "PASS - Deallocating memory for image pointer\n";
+		return 1;
+	} else {
+		cout << "FAIL - Deallocating memory for image pointer\n";
+		return 0;
+	}
+
+}
+
+int testGameObject()
+{
+	GameObject *gameObject = new GameObject();
+	if(ASSERT_NT_NULL(gameObject)) {
+		cout << "PASS - Instantiating new Game Object\n";
+	} else {
+		cout << "FAIL - Instantiating new Game Object\n";
+		return 0;
+	}
+
+	int xPos = gameObject->getXPos();
+	int yPos = gameObject->getYPos();
+	int width = gameObject->getWidth();
+	int height = gameObject->getHeight();
+
+	if(	(ASSERT_EQ(xPos, gameObject->getXPos())) && (ASSERT_EQ(yPos, gameObject->getYPos())) 
+		&& (ASSERT_EQ(width, gameObject->getWidth())) && ASSERT_EQ(height, gameObject->getHeight())) {
+		cout << "PASS - Testing GameObject GETTERS\n";
+	} else {
+		cout << "FAIL - TESTING GameObject GETTERS\n";
+		return 0;
+	}
+
+	return 1;
+}
+
+bool ASSERT_GT_ZERO(int given)
+{
+	return (given > 0);
+}
+
+bool ASSERT_GT(int given, int expected)
+{
+	return(given > expected);
+}
+
+bool ASSERT_EQ(int given, int expected)
+{
+	return(given == expected);
+}
+
+bool ASSERT_NT_NULL(GameObject *obj)
+{
+	return(obj != NULL);
 }
