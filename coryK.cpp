@@ -22,8 +22,12 @@ using namespace std;
 bool DEBUG = true;
 void printMenuMap();
 int getUserInput();
-void testHighScore();
+int testHighScore();
+int testPPM();
+int testGameObject();
 
+
+bool ASSERT_NT_NULL(GameObject *obj);
 bool ASSERT_GT_ZERO(int given);
 bool ASSERT_GT(int given, int expected);
 bool ASSERT_EQ(int given, int expected);
@@ -404,6 +408,7 @@ int setHighScore(int p1Score, int p2Score)
 
 void printMenuMap()
 {
+	printf("\n\n");
 	printf("///////////////////////////////////\n");
 	printf("////////////TESTING SUITE//////////\n");
 	printf("///////////////////////////////////\n");
@@ -417,17 +422,35 @@ void printMenuMap()
 }
 int beginTesting() {
 	int selection = -1;
+	printMenuMap();
 	do {
-		printMenuMap();
-		int selection = getUserInput();
+
+		int selection = (int)getUserInput();
 		switch(selection)
 		{
 			case(1):
-				testHighScore();
+				if(!testHighScore()) {
+					cout << "FAIL - Test High Score\n";
+				} else {
+					cout << "PASS - Test High Score\n";
+				}
 				break;
 			case(2):
+				if(!testPPM()) {
+					cout << "FAIL - Test PPM\n";
+				} else {
+					cout << "PASS - Test PPM\n";
+				}
+				break;
+			case(3):
+				if(!testGameObject()) {
+					cout << "FAIL - Test GameObject Class\n";
+				} else {
+					cout << "PASS - Test GameObject Class\n";
+				}
 				break;
 			default:
+
 				break;
 		}
 
@@ -444,23 +467,91 @@ int getUserInput()
 }
 
 
-void testHighScore()
+int testHighScore()
 {
 	if(ASSERT_GT_ZERO(setHighScore(5,4))) {
+
 		int currentHighScore = setHighScore(1,2);
 		printf("Current High Score %i\n", currentHighScore);
+	
 		printf("Input new high score\n");
 		int newHighScore = getUserInput();
+		
 		if(ASSERT_GT(newHighScore, currentHighScore)) {
-			currentHighScore = setHighScore(1,1);
+			
+			currentHighScore = setHighScore(newHighScore,1);
 			if(ASSERT_EQ(currentHighScore, newHighScore)) {
-				printf("New High Score %i\n", newHighScore);
-				printf("Testing High Score finished\n");
+				cout << "PASS - Assigning new High Score\n";
+				return 1;
+			} else {
+				cout << "FAIL - Assigning new High Score\n";
+				return 0;
 			}
 		} else {
-			printf("Error - new score is not higher than current score\n");
+			return 0;
 		}
 	}
+	return 0;
+}
+
+
+int testPPM()
+{
+	Ppmimage *image = (Ppmimage *)malloc(sizeof(Ppmimage));
+	//Test if enough memory is allocated
+	if(!image) {
+		cout << "FAIL - Error allocating memory for PPM image \n";
+		return 0;
+	} else {
+		cout << "PASS - Memory successfully allocated\n";
+	}
+
+	system("convert ./images/portal0.png ./images/portal0.ppm");
+	image = ppm6GetImage("./images/portal0.ppm");
+	
+	if(!image) {
+		cout << "FAIL - Error assigning image reference to pointer\n";
+		return 0;
+	} else {
+		cout << "PASS - Image reference assigning to pointer\n";
+	}
+	remove("./images/portal0.ppm");
+
+	delete(image);
+	if(!image) {
+		cout << "PASS - Deallocating memory for image pointer\n";
+		return 1;
+	} else {
+		cout << "FAIL - Deallocating memory for image pointer\n";
+		return 0;
+	}
+
+}
+
+int testGameObject()
+{
+	GameObject *gameObject = new GameObject();
+	if(ASSERT_NT_NULL(gameObject)) {
+		cout << "PASS - Instantiating new Game Object\n";
+	} else {
+		cout << "FAIL - Instantiating new Game Object\n";
+		return 0;
+	}
+
+	int xPos = gameObject->getXPos();
+	int yPos = gameObject->getYPos();
+	int width = gameObject->getWidth();
+	int height = gameObject->getHeight();
+
+	if(	(ASSERT_EQ(xPos, gameObject->getXPos())) && (ASSERT_EQ(yPos, gameObject->getYPos())) 
+		&& (ASSERT_EQ(width, gameObject->getWidth())) && ASSERT_EQ(height, gameObject->getHeight())) {
+		cout << "PASS - Testing GameObject GETTERS\n";
+	} else {
+		cout << "FAIL - TESTING GameObject GETTERS\n";
+		return 0;
+	}
+
+	return 1;
 }
 
 bool ASSERT_GT_ZERO(int given)
@@ -476,4 +567,9 @@ bool ASSERT_GT(int given, int expected)
 bool ASSERT_EQ(int given, int expected)
 {
 	return(given == expected);
+}
+
+bool ASSERT_NT_NULL(GameObject *obj)
+{
+	return(obj != NULL);
 }
