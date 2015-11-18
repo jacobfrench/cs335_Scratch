@@ -314,26 +314,16 @@ void Portal::checkCollision(Ball &ball, Portal &portal) {
 	int leftBoundingBox = xPos-width;
 	int rightBoundingBox = xPos+width;
 
-	bool insideHeight = (ball.getYPos() <= topBoundingBox && 
-						ball.getYPos() >= bottomBoundBox);
-	bool insideWidth = (ball.getXPos() <= rightBoundingBox &&
-						ball.getXPos() >= leftBoundingBox);
-
-	if(insideHeight && insideWidth) {
-		cout << "Ball inside portal\n";
-
-	}
-
-	//Draw bounding box
 	if(DEBUG) {
-		glColor3f(1.0, 1.0, 1.0);
 		glPushMatrix();
-		glTranslatef(xPos, yPos, 0);
-		glRectf(bottomBoundBox, leftBoundingBox, rightBoundingBox, topBoundingBox);
+		glBegin(GL_LINES);
+		glColor3f(1.0f, 1.0f, 1.0f);
+		glVertex2i(1, 1);
+		glVertex2i(0.5, 0.5);
 		glEnd();
 		glPopMatrix();
-	}
 
+	}
 }
 
 void Portal::transportBall(Ball &ball, Portal &portal)
@@ -362,8 +352,6 @@ void Portal::render(GLuint portalTexture)
 	glPopMatrix();
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
-
-
 
 /*======
 High score
@@ -416,21 +404,21 @@ void printMenuMap()
 	printf("1. Test High Score\n");
 	printf("2. Test PPM functionality\n");
 	printf("3. Test Game Object Class\n");
-	printf("4. Test Obstacle Class\n");
-	printf("5. Test Portal Class\n");
-	printf("-1 to exit\n");
+	printf("9. Print Menu Map\n");
+	printf("0. Exit\n");
 }
 int beginTesting() {
 	int selection = -1;
 	printMenuMap();
 	do {
 
-		int selection = (int)getUserInput();
+		selection = (int)getUserInput();
 		switch(selection)
 		{
 			case(1):
 				if(!testHighScore()) {
 					cout << "FAIL - Test High Score\n";
+
 				} else {
 					cout << "PASS - Test High Score\n";
 				}
@@ -449,12 +437,14 @@ int beginTesting() {
 					cout << "PASS - Test GameObject Class\n";
 				}
 				break;
+			case(0):
+				break;
 			default:
-
+				printMenuMap();
 				break;
 		}
 
-	}while(selection < 0);
+	} while(selection != 0);
 	return 1;
 }
 
