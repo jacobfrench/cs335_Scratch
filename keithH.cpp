@@ -799,11 +799,11 @@ void Hud::showHelpMenu(GLuint help_menu_texture){
 	//--------------------------------------------------------
     
 	//PRINT ENTER TO RESTART:
-	Rect r13;
-	r13.bot = yres - 310.0 - push_down_offset;
-	r13.left = xres/2 - 150;
-	r13.center = 0;
-	ggprint16(&r13, 70, cref, "PRESS 'ENTER' TO RESET");
+	Rect r15;
+	r15.bot = yres - 310.0 - push_down_offset;
+	r15.left = xres/2 - 150;
+	r15.center = 0;
+	ggprint16(&r15, 70, cref, "PRESS 'ENTER' TO RESET");
 	//--------------------------------------------------------
 }
 
