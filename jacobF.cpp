@@ -290,8 +290,6 @@ void Paddle::checkAI(int yres, Ball &ball)
 {
 	//If paddle is CPU
 	int center = yPos + (height / 2);
-	int top = yPos+height;
-	int bottom = yPos;
 	float absoluteBallYVel = abs(ball.getYVel());
 	if(isCpu){
 		if(ball.getYPos() == center){
