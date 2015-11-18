@@ -185,13 +185,15 @@ int bomb_radius;
 float speed_theta=1/(10*PI);
 //-----------------
 
-int main(int argc, char **argv[])
+//TEST FLAGS:
+#define TEST_Hud false
+
+int main(int argc, char *argv[])
 {
 	if(argc > 1) {
 		beginTesting();
 		return 0;
-	}
-	
+	}	
 	logOpen();
 	initXWindows();
 	init_opengl();
@@ -201,7 +203,12 @@ int main(int argc, char **argv[])
 	clock_gettime(CLOCK_REALTIME, &timePause);
 	clock_gettime(CLOCK_REALTIME, &timeStart);	
 
-	hud = new Hud(xres ,yres);
+    hud = new Hud(xres ,yres);
+    if (TEST_Hud){
+        hud->testHUDAll();
+        return 0;
+    }
+
 	//DEFUALT IS LEVEL 1 SELECTED:
 	selected_screen = LEFT;    
 	level =1;
