@@ -20,7 +20,287 @@
 #include "ppm.h"
 
 
+
+
 using namespace std;
+
+//IMAGES: intro, help, game_over, bomb, explode, paused:
+//GETTER & SETTERS FOR: pause, is_help_menu, is_show_welcome, player1health, player2health, isAI
+
+bool ASSERT_NOT_NULL(GameObject *obj);
+bool ASSERT_GREATER_THAN_ZERO(int given);
+bool ASSERT_GREATER_THAN(int given, int expected);
+bool ASSERT_EQUALS(int given, int expected);
+
+void Hud::testHUDAll(){
+    bool initVals = testInitializedValues();
+    bool testGets = testGetters();
+    bool testSets = testSetters();
+    bool testImgs = testImages();
+    if (initVals && testGets && testSets && testImgs){
+        cout<<"ALL PASSED\n";
+    }
+    else{
+        cout<<"SOMETHING FAILED...\n";
+    }
+}
+
+bool Hud::testInitializedValues(){
+    cout<<"TESTING INITIALIZED VALUES..."<<endl;
+    cout<<"initial player 1 health=100?: ";
+    if (ASSERT_EQUALS(100,Hud::getPlayer1Health())){
+        cout<<"PASS"<<endl;
+    }
+    else{
+        cout<<"FAIL"<<endl;
+    }
+    cout<<"initial player 2 health=100?: ";
+    if (ASSERT_EQUALS(100,Hud::getPlayer2Health())){
+        cout<<"PASS"<<endl;
+    }
+    else{
+        cout<<"FAIL"<<endl;
+    }
+    cout<<"is_show_welcome=TRUE?: ";
+    if(ASSERT_EQUALS(true,Hud::isShowWelcome())){
+        cout<<"PASS"<<endl;
+    }
+    else{
+        cout<<"FAIL"<<endl;
+    }
+    cout<<"is_paused=FALSE?: ";
+    if(ASSERT_EQUALS(false,Hud::isPaused())){
+        cout<<"PASS"<<endl;
+    }
+    else{
+        cout<<"FAIL"<<endl;
+    }
+    if (ASSERT_EQUALS(100,Hud::getPlayer1Health()) && ASSERT_EQUALS(100,Hud::getPlayer2Health()) && ASSERT_EQUALS(true,Hud::isShowWelcome()) && ASSERT_EQUALS(false,Hud::isPaused())){
+        return true;
+    }
+    return false;
+}
+
+bool Hud::testGetters(){
+    cout<<"TESTING GETTERS..."<<endl;
+    bool ret=true;
+    if (ASSERT_EQUALS(is_paused,Hud::isPaused())){
+        cout<<"PASS is_paused"<<endl;
+    }
+    else{
+        cout<<"FAIL is_paused"<<endl;
+        ret = false;
+    }
+    if (ASSERT_EQUALS(is_show_help_menu,Hud::isShowHelpMenu())){
+        cout<<"PASS is_show_help_menu"<<endl;
+    }
+    else{
+        cout<<"FAIL is_show_help_menu"<<endl;
+        ret = false;
+    }
+    if (ASSERT_EQUALS(is_show_welcome,Hud::isShowWelcome())){
+        cout<<"PASS is_show_welcome"<<endl;
+    }
+    else{
+        cout<<"FAIL is_show_welcome"<<endl;
+        ret = false;
+    }
+    if (ASSERT_EQUALS(player1_health,Hud::getPlayer1Health())){
+        cout<<"PASS player1_health"<<endl;
+    }
+    else{
+        cout<<"FAIL player1_health"<<endl;
+        ret = false;
+    }
+    if (ASSERT_EQUALS(player2_health,Hud::getPlayer2Health())){
+        cout<<"PASS player2_health"<<endl;        
+    }
+    else{
+        cout<<"FAIL player2_health"<<endl;
+        ret = false;
+    }
+    if (ASSERT_EQUALS(isAI,Hud::getAI())){
+        cout<<"PASS isAI"<<endl;
+    }
+    else{
+        cout<<"FAIL isAI"<<endl;
+        ret = false;
+    }
+    return ret;
+}
+
+bool Hud::testSetters(){
+    cout<<"TESTING SETTERS..."<<endl;
+    setPaused(true);
+    setIsShowHelpMenu(true);
+    setIsShowWelcome(true);
+    setPlayer1Health(50);
+    setPlayer2Health(40);
+    setResolution(1000,2000);
+    setAI(true);
+    bool ret = true;
+    if (ASSERT_EQUALS(true,is_paused)){
+        cout<<"PASS set is_paused to true"<<endl;
+    }
+    else{
+        cout<<"FAIL set is_paused to true"<<endl;
+        ret = false;
+    }
+    if (ASSERT_EQUALS(true, is_show_help_menu)){
+        cout<<"PASS set is_show_help_menu to true"<<endl;
+    }
+    else{
+        cout<<"FAIL set is_show_help_menu to true"<<endl;
+        ret = false;
+    }
+    if (ASSERT_EQUALS(true, is_show_welcome)){
+        cout<<"PASS set is_show_welcome to true"<<endl;
+    }
+    else{
+        cout<<"FAIL set is_show_welcome to true"<<endl;
+        ret = false;
+    }
+    if (ASSERT_EQUALS(50, player1_health)){
+        cout<<"PASS set player1_health to 50"<<endl;
+    }
+    else{
+        cout<<"FAIL set player1_health to 50"<<endl;
+        ret = false;
+    }
+    if (ASSERT_EQUALS(40, player2_health)){
+        cout<<"PASS set player2_health to 40"<<endl;
+    }
+    else{
+        cout<<"FAIL set player2_health to 40"<<endl;
+        ret = false;
+    }
+    if (ASSERT_EQUALS(true, isAI)){
+        cout<<"PASS set isAI to true"<<endl;
+    }
+    else{
+        cout<<"FAIL set isAI to true"<<endl;
+        ret = false;
+    }
+    if (ASSERT_EQUALS(1000, xres)){
+        cout<<"PASS set xres to 1000"<<endl;
+    }
+    else{
+        cout<<"FAIL set xres to 1000"<<endl;
+        ret = false;
+    }
+    if (ASSERT_EQUALS(2000, yres)){
+        cout<<"PASS set yres to 2000"<<endl;
+    }
+    else{
+        cout<<"FAIL set yres to 2000"<<endl;
+        ret = false;
+    }
+    return ret;
+}
+
+bool Hud::testImages(){
+    cout<<"TESTING IMAGES..."<<endl;
+    bool ret = true;
+    Ppmimage *image = (Ppmimage *)malloc(sizeof(Ppmimage));
+    //Test if enough memory is allocated
+    if(!image) {
+        cout << "FAIL - Error allocating memory for PPM image \n";
+        ret = false;
+    } else {
+        cout << "PASS - Memory successfully allocated\n";        
+    }
+
+    //IMAGES: ninja_robot,ninja_robot2,titlescreen, help_menu, game_over, bomb, explode, paused:
+    //ninja_robot:
+    system("convert ./images/ninja_robot.png ./images/ninja_robot.ppm");
+    image = ppm6GetImage("./images/ninja_robot.ppm");
+    if(!image) {
+        cout << "FAIL - Error converting image to ppm\n";
+        ret = false;
+    } else {
+        cout << "PASS - Image converted to ppm.\n";
+    }
+    remove("./images/ninja_robot.ppm");    
+
+    //ninja_robot2:    
+    system("convert ./images/ninja_robot2.png ./images/ninja_robot2.ppm");
+    image = ppm6GetImage("./images/ninja_robot2.ppm");
+    if(!image) {
+        cout << "FAIL - Error converting image to ppm\n";
+        ret = false;
+    } else {
+        cout << "PASS - Image converted to ppm.\n";
+    }
+    remove("./images/ninja_robot2.ppm");
+
+    //titlescreen:
+    system("convert ./images/titlescreen.png ./images/titlescreen.ppm");
+    image = ppm6GetImage("./images/titlescreen.ppm");
+    if(!image) {
+        cout << "FAIL - Error converting image to ppm\n";
+        ret = false;
+    } else {
+        cout << "PASS - Image converted to ppm.\n";
+    }
+    remove("./images/titlescreen.ppm");    
+
+    //help_menu:
+    system("convert ./images/help_menu.png ./images/help_menu.ppm");
+    image = ppm6GetImage("./images/help_menu.ppm");
+    if(!image) {
+        cout << "FAIL - Error converting image to ppm\n";
+        ret = false;
+    } else {
+        cout << "PASS - Image converted to ppm.\n";
+    }
+    remove("./images/help_menu.ppm");
+
+    //game_over:    
+    system("convert ./images/game_over.png ./images/game_over.ppm");
+    image = ppm6GetImage("./images/game_over.ppm");
+    if(!image) {
+        cout << "FAIL - Error converting image to ppm\n";
+        ret = false;
+    } else {
+        cout << "PASS - Image converted to ppm.\n";
+    }
+    remove("./images/game_over.ppm");
+
+    //bomb:
+    system("convert ./images/bomb.png ./images/bomb.ppm");
+    image = ppm6GetImage("./images/bomb.ppm");
+    if(!image) {
+        cout << "FAIL - Error converting image to ppm\n";
+        ret = false;
+    } else {
+        cout << "PASS - Image converted to ppm.\n";
+    }
+    remove("./images/bomb.ppm");    
+
+    //explode:    
+    system("convert ./images/explode.png ./images/explode.ppm");
+    image = ppm6GetImage("./images/explode.ppm");
+    if(!image) {
+        cout << "FAIL - Error converting image to ppm\n";
+        ret = false;
+    } else {
+        cout << "PASS - Image converted to ppm.\n";
+    }
+    remove("./images/explode.ppm");    
+
+    //paused:    
+    system("convert ./images/paused.png ./images/paused.ppm");
+    image = ppm6GetImage("./images/paused.ppm");
+    if(!image) {
+        cout << "FAIL - Error converting image to ppm\n";
+        ret = false;
+    } else {
+        cout << "PASS - Image converted to ppm.\n";
+    }
+    remove("./images/paused.ppm");
+
+    return ret;
+}
 
 
 Hud::Hud(const int in_xres, const int in_yres){
@@ -407,6 +687,14 @@ void Hud::showHelpMenu(GLuint help_menu_texture){
 	renderTexture(help_menu_texture, xres, yres);
 	int cref = 0x00ffffff;
     float push_down_offset = yres*(2.0/5.0);
+
+    //PRINT PROMPT TO GO BACK:
+    Rect r0;
+    r0.bot = yres - 50.0;
+    r0.left = xres/2 - 150;
+    r0.center = 0;
+    ggprint16(&r0, 70, cref, "PRESS 'B' TO GO BACK TO MAIN MENU");
+    //--------------------------------------------------------
 	//PRINT PROMPT AI:
 	Rect r1;
 	r1.bot = yres - 50 - push_down_offset;
@@ -502,13 +790,13 @@ void Hud::showHelpMenu(GLuint help_menu_texture){
 	ggprint16(&r13, 70, cref, "PRESS 'P' TO PAUSE");
 	//--------------------------------------------------------
 
-	//PRINT PROMPT TO GO BACK:
-	Rect r14;
-	r14.bot = yres - 280.0 - push_down_offset;
-	r14.left = xres/2 - 150;
-	r14.center = 0;
-	ggprint16(&r14, 70, cref, "PRESS 'B' TO GO BACK TO MAIN MENU");
-	//--------------------------------------------------------
+    //PRINT PROMPT TO QUIT GAME:
+    Rect r14;
+    r14.bot = yres - 280.0 - push_down_offset;
+    r14.left = xres/2 - 150;
+    r14.center = 0;
+    ggprint16(&r14, 70, cref, "PRESS 'Q' TO QUIT GAME TO GO TO MAIN MENU");
+    //--------------------------------------------------------
 }
 
 bool Hud::isShowHelpMenu(){
@@ -551,3 +839,24 @@ void Hud::showPaused(GLuint pausedTexture){
     glPopMatrix();
     glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+bool ASSERT_GREATER_THAN_ZERO(int given)
+{
+    return (given > 0);
+}
+
+bool ASSERT_GREATER_THAN(int given, int expected)
+{
+    return(given > expected);
+}
+
+bool ASSERT_EQUALS(int given, int expected)
+{
+    return(given == expected);
+}
+
+bool ASSERT_NOT_NULL(GameObject *obj)
+{
+    return(obj != NULL);
+}
+

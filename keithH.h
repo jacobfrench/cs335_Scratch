@@ -11,6 +11,8 @@
 #include <string>
 using namespace std;
 
+extern bool TestAll();
+
 class Hud{
   private:
     int xres;
@@ -50,5 +52,11 @@ class Hud{
     void selectHuman();
     void renderBomb(GLuint which_bomb_texture, float bomb_posx, float bomb_posy, float bomb_width, float bomb_height);
     void showPaused(GLuint pausedTexture);
+    //TESTING METHODS:
+    void testHUDAll();
+    bool testGetters();
+    bool testSetters();
+    bool testImages();
+    bool testInitializedValues();
 };
 #endif
