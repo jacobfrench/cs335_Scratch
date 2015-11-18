@@ -308,6 +308,7 @@ void init_ball_paddles(){
 }
 
 void stopGame(){
+	hud->setPaused(false);
 	ball.setXPos(xres/2);
 	ball.setYPos(yres/2);
 	ball.setXVel(0);
@@ -564,11 +565,12 @@ int check_keys(XEvent *e, Game *g){
 		if(key == XK_Return) {
 			//printf("Enter pressed\n");
 			createSound2();
+			hud->setPaused(false);
 			gameStarted = true;
 			hud->setPlayer1Health(100);
 			hud->setPlayer2Health(100);
-			if (is_gameover == true){
-				hud->setIsShowWelcome(true);
+			if (is_gameover == true){				
+				hud->setIsShowWelcome(true);				
 				gameStarted = false;
 				intro = 0;
 			}
@@ -586,7 +588,7 @@ int check_keys(XEvent *e, Game *g){
 			timer.start();            
 		}
 if (hud->isShowHelpMenu()==false && hud->isShowWelcome()==false){
-			if (key == XK_p && hud->isPaused()==true){
+			if (key == XK_p && hud->isPaused()==true){				
 				hud->setPaused(false);
 				resumeGame();
 			}
@@ -596,6 +598,7 @@ if (hud->isShowHelpMenu()==false && hud->isShowWelcome()==false){
 			}
 			else if (key == XK_q){//to quit out of game
 				hud->setIsShowWelcome(true);
+				hud->setPaused(false);
 				gameStarted = false;
 				intro = 0;
 			}
