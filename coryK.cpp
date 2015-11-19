@@ -206,6 +206,11 @@ float GameObject::getYVel()
 	return yVel;
 }
 
+GameObject::~GameObject()
+{
+
+}
+
 void GameObject::render() 
 {
 	glPushMatrix();
@@ -275,11 +280,20 @@ void Obstacle::checkCollision(int xres, int yres, Ball &ball, Player &player)
 	}
 }
 
+Obstacle::~Obstacle()
+{
+
+}
+
 Portal::Portal()
 {
 
 }
 
+Portal::~Portal()
+{
+
+}
 void Portal::setPortalType(int type)
 {
 	if(type == 0) {
@@ -299,39 +313,37 @@ int Portal::getPortalType()
 	return this->portalType;
 }
 
-void Portal::checkCollision(Ball &ball, Portal &portal) {
+void Portal::checkCollision(Ball &ball, Portal &p) {
 	//Build bounding box
 	//TODO turn bounding box into class paramters
-	int width = this->getWidth();
-	int height = this->getWidth();
 
-	int xPos = this->getXPos();
-	int yPos = this->getYPos();
-	
-	int topBoundingBox = yPos+height;
-	int bottomBoundBox = yPos-height;
+	int currWidth = this->getWidth();
+	int currHeight = this->getHeight();
 
-	int leftBoundingBox = xPos-width;
-	int rightBoundingBox = xPos+width;
+	int currXPos = this->getXPos();
+	int currYPos = this->getYPos();
 
-	if(DEBUG) {
-		glPushMatrix();
-		glBegin(GL_LINES);
-		glColor3f(1.0f, 1.0f, 1.0f);
-		glVertex2i(1, 1);
-		glVertex2i(0.5, 0.5);
-		glEnd();
-		glPopMatrix();
+	int ceiling = currYPos + currHeight;
 
+
+	bool betweenX = (ball.getXPos() >= currXPos && ball.getXPos() <= currXPos+currWidth);
+
+	if(ball.getYPos() >= currYPos && ball.getYPos() <= ceiling &&
+		betweenX) {
+		transportBall(ball, p);
 	}
+
 }
 
-void Portal::transportBall(Ball &ball, Portal &portal)
+void Portal::transportBall(Ball &ball, Portal &p)
 {
-	int nextX = portal.getXPos();
-	int nextY = portal.getYPos();
-	ball.setXPos(nextX);
-	ball.setYPos(nextY);
+	if(this->getPortalType() == 1) {
+		ball.setXPos(-700);
+		ball.setYPos(-300.0);
+	} else {
+		ball.setXPos(p.getXPos());
+		ball.setYPos(p.getYPos());
+	}
 }
 
 
@@ -418,7 +430,6 @@ int beginTesting() {
 			case(1):
 				if(!testHighScore()) {
 					cout << "FAIL - Test High Score\n";
-
 				} else {
 					cout << "PASS - Test High Score\n";
 				}

@@ -24,7 +24,7 @@ public:
 	void render();
 	void setXVel(float xVel);
 	float getXVel();
-    
+	
 	void setYVel(float yVel);
 	float getYVel();
 

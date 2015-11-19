@@ -52,7 +52,7 @@ bool Ball::checkCollision(float xres, float yres)
 	float ballspeed = 10.0f;
 	float ballXVel = ballspeed * cos(0) + 10;
 	float ballYVel = ballspeed * -sin(35);
-    
+	
 	bool hitTopOfScreen = yPos >= yres && yVel > 0;
 	bool hitBottomOfScreen = yPos <= 0 && yVel < 0;
 	bool hitRightSide = xPos >= xres && xVel > 0;
@@ -96,7 +96,7 @@ float Ball::getXVel()
 void Ball::setYVel(float yVel)
 {
 	this->yVel = yVel;
- 	this->yPos += yVel;
+	this->yPos += yVel;
 }
 
 float Ball::getYVel()
@@ -227,7 +227,7 @@ bool Paddle::checkCollision(int yres, Ball &ball)
 	float ballspeed = 15.0f;
 	float ballXVel = ballspeed * cos(0)+10;
 	float ballYVel = ballspeed * -sin(35);
-    
+	
 	//ball collision with paddles
 	bool onLeftSide = ball.getXPos() < 150 && xPos < 150;
 	bool onRightSide = ball.getXPos() > 150 && xPos > 150;
@@ -252,7 +252,7 @@ bool Paddle::checkCollision(int yres, Ball &ball)
 	if(onLeftSide && hitLeftPaddle){
 		ball.setXVel(ballXVel);
 		createSound(1);
-        
+		
 		if(paddleMovingUp){
 			ballYVel = ballspeed * -sin(-angle);
 			ball.setYVel(ballYVel);
@@ -369,7 +369,7 @@ void Timer::resume()
 {
 	if( !paused )
 		return;
-        
+		
 	paused = false;
 	startedAt += clock() - pausedAt;
 }
@@ -383,7 +383,7 @@ void Timer::start()
 {
 	if( started )
 		return;
-        
+		
 	started = true;
 	paused = false;
 	startedAt = clock();

@@ -72,7 +72,7 @@ void createSound(int trackNo)
 			alSourcef(alSource, AL_GAIN, 1.0f);
 			alSourcef(alSource, AL_PITCH, 1.0f);         
 			break;
-    case 8:
+	case 8:
 			alBuffer = alutCreateBufferFromFile("./explode.wav");
 			alSourcef(alSource, AL_GAIN, 1.0f);
 			alSourcef(alSource, AL_PITCH, 1.0f);         
@@ -82,7 +82,7 @@ void createSound(int trackNo)
 			alSourcef(alSource, AL_GAIN, 1.0f);
 			alSourcef(alSource, AL_PITCH, 1.0f);         
 			break; 
-    }
+	}
 
 
 	// // Source refers to the sound.
