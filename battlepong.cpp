@@ -42,7 +42,7 @@ typedef Flt	Matrix[4][4];
 #define VecCopy(a,b) (b)[0]=(a)[0];(b)[1]=(a)[1];(b)[2]=(a)[2]
 #define VecDot(a,b)	((a)[0]*(b)[0]+(a)[1]*(b)[1]+(a)[2]*(b)[2])
 #define VecSub(a,b,c) (c)[0]=(a)[0]-(b)[0]; \
-				 (c)[1]=(a)[1]-(b)[1]; \
+			     (c)[1]=(a)[1]-(b)[1]; \
 (c)[2]=(a)[2]-(b)[2]
 //constants
 const float timeslice = 1.0f;
@@ -197,7 +197,7 @@ int main(int argc, char **argv[])
 		beginTesting();
 		return 0;
 	}
-	
+
 	logOpen();
 	initXWindows();
 	init_opengl();
@@ -208,10 +208,10 @@ int main(int argc, char **argv[])
 	clock_gettime(CLOCK_REALTIME, &timeStart);	
 
 	hud = new Hud(xres ,yres);
-	    if (TEST_Hud){
-	      hud->testHUDAll();
-	      return 0;
-	    }
+	if (TEST_Hud){
+		hud->testHUDAll();
+		return 0;
+	}
 	//DEFUALT IS LEVEL 1 SELECTED:
 	selected_screen = LEFT;    
 	level =1;
@@ -236,7 +236,7 @@ int main(int argc, char **argv[])
 	int min;
 	if (xres<yres){
 		min=xres;
-  }
+	}
 	else{
 		min=yres;
 	}
@@ -288,19 +288,19 @@ void init_ball_paddles(){
 	ball.setXPos(xres/2);
 	ball.setYPos(yres/2);
 	ball.setRadius(15.0f);
-	
+
 	//ball velocity
 	ballXVel = 8.0f * cos(30);
 	ballYVel = 8.0f * sin(90);
 	ball.setYVel(ballXVel);
 	ball.setXVel(ballYVel);
-	
+
 	//init paddle1
 	paddle1.setXPos(50.0f);
 	paddle1.setYPos((float)yres/2);
 	paddle1.setHeight(100.0f);
 	paddle1.setWidth(15.0f);
-	
+
 	//init paddle2
 	paddle2.setXPos((float)xres - 65.0f);
 	paddle2.setYPos((float)yres/2);
@@ -583,7 +583,7 @@ int check_keys(XEvent *e, Game *g){
 				hud->setIsShowWelcome(false);
 				init_ball_paddles();
 				//REINITIALIZE OBSTACLE POSITION AND VELIOCITY:
-					obstacle->setXPos((1250 / 2.0) - 25);
+				obstacle->setXPos((1250 / 2.0) - 25);
 				obstacle->setYPos(900 / 2.0);	
 				obstacle->setYVel(-5.0f);	
 				intro = 1;
@@ -592,7 +592,7 @@ int check_keys(XEvent *e, Game *g){
 			timer.reset();
 			timer.start();            
 		}
-if (hud->isShowHelpMenu()==false && hud->isShowWelcome()==false){
+		if (hud->isShowHelpMenu()==false && hud->isShowWelcome()==false){
 			if (key == XK_p && hud->isPaused()==true){				
 				hud->setPaused(false);
 				resumeGame();
@@ -619,7 +619,7 @@ if (hud->isShowHelpMenu()==false && hud->isShowWelcome()==false){
 				selected_screen = RIGHT;
 				level = 2;
 			}
-else if (key == XK_Up) {
+			else if (key == XK_Up) {
 				hud->setAI(false);//player 2 is human
 				paddle2.setCpuPlayer(false);
 			}
@@ -677,7 +677,7 @@ void physics(Game *g)
 
 	//ball collision
 	if(gameStarted){
-	ball.setYVel(ball.getYVel());
+		ball.setYVel(ball.getYVel());
 		ball.setXVel(ball.getXVel());
 		obstacle->setYVel(obstacle->getYVel());
 		bool is_ball_hit_edge = ball.checkCollision(xres, yres);
@@ -685,7 +685,7 @@ void physics(Game *g)
 			lastPaddleHit = 'N';
 		}
 	}
-	
+
 
 	//paddle collision
 	bool isLeftHit = paddle1.checkCollision(yres, ball);
@@ -700,7 +700,7 @@ void physics(Game *g)
 	if(level == 2){
 		obstacle->checkCollision(xres, yres, ball, p1);
 	}
-	
+
 
 	//paddle1 movement
 	paddle1.setYVel(paddle1YVel);
@@ -709,74 +709,76 @@ void physics(Game *g)
 	paddle2.setYVel(paddle2YVel);
 
 	if (level == 1 && hud->isPaused()==false){
-	//SET BOMBS POSITION:         
-			bomb_theta = bomb_theta + speed_theta;
-			if (fabs(bomb_theta) >= 2*PI){
-				bomb_theta=0;
-				speed_theta *= -1;
-			}
-			bomb_posx=(int)(xres/2 + bomb_radius*cos(bomb_theta - PI/2) - bomb_width/2);
-			bomb_posy=(int)(yres/2 + bomb_radius*sin(bomb_theta - PI/2) - bomb_height/2);
-
-	//CHECK LEFT COLLISION WITH BOMB:
-	if ((beginSmallLeftPaddle + smallLeftPaddleTime) < time(NULL)){
-		paddle1.setHeight(100.0f);
-	bool isBallBetweenX = (ball.getXPos() > bomb_posx) && (ball.getXPos() < (bomb_posx + bomb_width));
-	bool isBallBetweenY = (ball.getYPos() > bomb_posy) && (ball.getYPos() < (bomb_posy + bomb_height));
-	if (lastPaddleHit == 'L' && (isBallBetweenX && isBallBetweenY)){
-			bombBegin = time(NULL);
-			createSound(8);
-			createSound(9);
-			//set to half normal height:            
-			paddle1.setHeight(60.0f);
-			if (hud->getPlayer1Health()>0){
-				hud->setPlayer1Health(hud->getPlayer1Health()-10*(1+random(8)));
-				//GAMEOVER:
-				if (hud->getPlayer1Health() <= 0){
-					createSound(5);
-					is_gameover = true;
-					ball.setXVel(0.0f);
-					ball.setYVel(0.0f);
-					stopGame();
-				}
-			}
-			beginSmallLeftPaddle = time(NULL);
-	}
-	}
-
-	//CHECK RIGHT COLLISION WITH BOMB:
-	if ((beginSmallRightPaddle + smallRightPaddleTime) < time(NULL)){
-		paddle2.setHeight(100.0f);
-		//is_bomb_visible = true;
-		bool isBallBetweenX = (ball.getXPos() > bomb_posx) && (ball.getXPos() < (bomb_posx + bomb_width));
-		bool isBallBetweenY = (ball.getYPos() > bomb_posy) && (ball.getYPos() < (bomb_posy + bomb_height));
-		if (lastPaddleHit == 'R' && (isBallBetweenX && isBallBetweenY)){
-			bombBegin = time(NULL);
-			createSound(8);
-			createSound(9);
-			//is_bomb_visible = false;
-			//set to half normal height:
-			paddle2.setHeight(60.0f);
-			if (hud->getPlayer2Health()>0){
-				hud->setPlayer2Health(hud->getPlayer2Health()- 10*(1+random(8)));
-				//GAMEOVER:
-				if (hud->getPlayer2Health() <= 0){
-					createSound(5);
-					is_gameover = true;
-					ball.setXVel(0.0f);
-					ball.setYVel(0.0f);
-					stopGame();
-				}
-			}
-	  beginSmallRightPaddle = time(NULL);
+		//SET BOMBS POSITION:         
+		bomb_theta = bomb_theta + speed_theta;
+		if (fabs(bomb_theta) >= 2*PI){
+			bomb_theta=0;
+			speed_theta *= -1;
 		}
-	}
-	}
-	if(ball.getXPos() >= (xres/2)){
-		portal1.checkCollision(ball, portal0);
-	} else {
-		portal0.checkCollision(ball, portal1);
-	}
+		bomb_posx=(int)(xres/2 + bomb_radius*cos(bomb_theta - PI/2) - bomb_width/2);
+		bomb_posy=(int)(yres/2 + bomb_radius*sin(bomb_theta - PI/2) - bomb_height/2);
+
+		//CHECK LEFT COLLISION WITH BOMB:
+		if ((beginSmallLeftPaddle + smallLeftPaddleTime) < time(NULL)){
+			paddle1.setHeight(100.0f);
+			bool isBallBetweenX = (ball.getXPos() > bomb_posx) && (ball.getXPos() < (bomb_posx + bomb_width));
+			bool isBallBetweenY = (ball.getYPos() > bomb_posy) && (ball.getYPos() < (bomb_posy + bomb_height));
+			if (lastPaddleHit == 'L' && (isBallBetweenX && isBallBetweenY)){
+				bombBegin = time(NULL);
+				createSound(8);
+				createSound(9);
+				//set to half normal height:            
+				paddle1.setHeight(60.0f);
+				if (hud->getPlayer1Health()>0){
+					hud->setPlayer1Health(hud->getPlayer1Health()-10*(1+random(8)));
+					//GAMEOVER:
+					if (hud->getPlayer1Health() <= 0){
+						createSound(5);
+						is_gameover = true;
+						ball.setXVel(0.0f);
+						ball.setYVel(0.0f);
+						stopGame();
+					}
+				}
+				beginSmallLeftPaddle = time(NULL);
+			}
+		}
+
+		//CHECK RIGHT COLLISION WITH BOMB:
+		if ((beginSmallRightPaddle + smallRightPaddleTime) < time(NULL)){
+			paddle2.setHeight(100.0f);
+			//is_bomb_visible = true;
+			bool isBallBetweenX = (ball.getXPos() > bomb_posx) && (ball.getXPos() < (bomb_posx + bomb_width));
+			bool isBallBetweenY = (ball.getYPos() > bomb_posy) && (ball.getYPos() < (bomb_posy + bomb_height));
+			if (lastPaddleHit == 'R' && (isBallBetweenX && isBallBetweenY)){
+				bombBegin = time(NULL);
+				createSound(8);
+				createSound(9);
+				//is_bomb_visible = false;
+				//set to half normal height:
+				paddle2.setHeight(60.0f);
+				if (hud->getPlayer2Health()>0){
+					hud->setPlayer2Health(hud->getPlayer2Health()- 10*(1+random(8)));
+					//GAMEOVER:
+					if (hud->getPlayer2Health() <= 0){
+						createSound(5);
+						is_gameover = true;
+						ball.setXVel(0.0f);
+						ball.setYVel(0.0f);
+						stopGame();
+					}
+				}
+				beginSmallRightPaddle = time(NULL);
+			}
+		}
+		if(ball.getXPos() >= (xres/2)){
+			portal1.checkCollision(ball, portal0);
+		} else {
+			portal0.checkCollision(ball, portal1);
+		}
+	}//end if level 1 and not paused
+
+
 }
 
 
@@ -805,7 +807,7 @@ void render(Game *g)
 	g->mouseThrustOn=false;    
 	glClear(GL_COLOR_BUFFER_BIT);
 	if(intro < 1) {
-char screen;
+		char screen;
 		if (selected_screen == LEFT){
 			screen = 'L';
 		}
@@ -826,7 +828,7 @@ char screen;
 			hud->showHelpMenu(helpMenuTexture);
 			return;
 		}
-return;
+		return;
 	}
 	else{
 		renderTexture(bgTexture, xres, yres);
