@@ -189,12 +189,12 @@ float speed_theta=1/(10*PI);
 //TEST FLAGS:
 #define TEST_Hud false
 
-int main(int argc, char **argv[])
+int main(int argc, char *argv[])
 {
 	if(argc > 1) {
-		// char c = &argv[1];
-		// printf("C %c\n", c);
-		beginTesting();
+		if(argv[1] != NULL) {
+			beginTesting();
+		}
 		return 0;
 	}
 
