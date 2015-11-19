@@ -29,7 +29,7 @@ Hud::Hud(const int in_xres, const int in_yres){
 	is_show_welcome=true;
 	player1_health = 100;
 	player2_health = 100;
-    is_paused = false;
+	is_paused = false;
 }
 
 void Hud::setResolution(const int in_xres, const int in_yres){
@@ -227,7 +227,7 @@ void Hud::showGameOver(int in_highscore,int p1_score,int p2_score){
 }
 
 void Hud::selectLeftScreen(){
-    glColor3ub( 0, 255, 0);
+	glColor3ub( 0, 255, 0);
 	glBegin(GL_QUADS);
 	glLineWidth(10);
 	glVertex2f( xres/2 - 360, yres/2 - 150 + 10 );
@@ -238,13 +238,13 @@ void Hud::selectLeftScreen(){
 }
 
 void Hud::selectRightScreen(){
-    glColor3ub( 0, 255, 0 );
+	glColor3ub( 0, 255, 0 );
 	glBegin(GL_QUADS);
 	glLineWidth(10);
-    glVertex2f( xres/2 + 370, yres/2 -150 + 10 );
-    glVertex2f( xres/2 + 370, yres/2 - 350 - 10 );
-    glVertex2f( xres/2 + 100, yres/2 - 350 - 10);
-    glVertex2f( xres/2 + 100, yres/2 -150 + 10);
+	glVertex2f( xres/2 + 370, yres/2 -150 + 10 );
+	glVertex2f( xres/2 + 370, yres/2 - 350 - 10 );
+	glVertex2f( xres/2 + 100, yres/2 - 350 - 10);
+	glVertex2f( xres/2 + 100, yres/2 -150 + 10);
 	glEnd();
 }
 
@@ -305,7 +305,7 @@ void Hud::showIntro(char which_screen,GLuint introTexture, GLuint bgTexture1, GL
 
 	Rect r2;
 	r2.bot = (yres / 2.0) - 150;
-    r2.left = xres / 2.0 - 85.0;
+	r2.left = xres / 2.0 - 85.0;
 	r2.center = 0;
 	ggprint16(&r2, 16, 0xffffff, "Press 'Enter' to start");
 
@@ -334,12 +334,12 @@ void Hud::showIntro(char which_screen,GLuint introTexture, GLuint bgTexture1, GL
 	//RENDER OPTION BG2:
 	glBindTexture(GL_TEXTURE_2D, bgTexture2);
 	glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 1.0f); glVertex2i(xres/2 + 360, yres/2 - 350);
-    glTexCoord2f(0.0f, 0.0f); glVertex2i(xres/2 + 360, yres/2 - 150);
-    glTexCoord2f(1.0f, 0.0f); glVertex2i(xres/2 + 110 , yres/2 - 150);
-    glTexCoord2f(1.0f, 1.0f); glVertex2i(xres/2 + 110, yres/2 - 350);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(xres/2 + 360, yres/2 - 350);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(xres/2 + 360, yres/2 - 150);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(xres/2 + 110 , yres/2 - 150);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(xres/2 + 110, yres/2 - 350);
 	glEnd();   
-    glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Hud::setAI(bool in_AI){
@@ -351,31 +351,31 @@ bool Hud::getAI(){
 }
 
 void Hud::selectAI(){
-    glColor3ub( 0, 255, 0);
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-    glOrtho( 0, xres, 0, yres, -1, 1);
-    glMatrixMode( GL_MODELVIEW );
-    glLoadIdentity();
+	glColor3ub( 0, 255, 0);
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
+	glOrtho( 0, xres, 0, yres, -1, 1);
+	glMatrixMode( GL_MODELVIEW );
+	glLoadIdentity();
 
-    glLineWidth(10.0);
-    glBegin(GL_LINE_LOOP);
-    glVertex2f( xres/2 +100, yres - 170 );
-    glVertex2f(xres/2 + 100, yres - 130 );
-    glVertex2f( xres/2 - 120, yres - 130 );
-    glVertex2f( xres/2 - 120, yres - 170 );
-    glEnd();
+	glLineWidth(10.0);
+	glBegin(GL_LINE_LOOP);
+	glVertex2f( xres/2 +100, yres - 170 );
+	glVertex2f(xres/2 + 100, yres - 130 );
+	glVertex2f( xres/2 - 120, yres - 130 );
+	glVertex2f( xres/2 - 120, yres - 170 );
+	glEnd();
 
 }
 
 void Hud::selectHuman(){        
-    glColor3ub( 0, 255, 0);
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-    glOrtho( 0, xres, 0, yres, -1, 1);
-    glMatrixMode( GL_MODELVIEW );
-    glLoadIdentity();
-    glColor3ub( 0, 255, 0 );
+	glColor3ub( 0, 255, 0);
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
+	glOrtho( 0, xres, 0, yres, -1, 1);
+	glMatrixMode( GL_MODELVIEW );
+	glLoadIdentity();
+	glColor3ub( 0, 255, 0 );
 
 	glLineWidth(10.0);
 	glBegin(GL_LINE_LOOP);
@@ -406,7 +406,7 @@ void Hud::renderBomb(GLuint which_bomb_texture, float bomb_posx, float bomb_posy
 void Hud::showHelpMenu(GLuint help_menu_texture){
 	renderTexture(help_menu_texture, xres, yres);
 	int cref = 0x00ffffff;
-    float push_down_offset = yres*(2.0/5.0);
+	float push_down_offset = yres*(2.0/5.0);
 	//PRINT PROMPT AI:
 	Rect r1;
 	r1.bot = yres - 50 - push_down_offset;
@@ -528,26 +528,26 @@ void Hud::setIsShowWelcome(bool in_is_show_welcome){
 }
 
 bool Hud::isPaused(){
-    return is_paused;
+	return is_paused;
 }
 
 void Hud::setPaused(bool in_is_paused){
-    is_paused = in_is_paused;
+	is_paused = in_is_paused;
 }
 
 void Hud::showPaused(GLuint pausedTexture){
-    glColor3f(1.0, 1.0, 1.0);
-    glPushMatrix();
-    glBindTexture(GL_TEXTURE_2D, pausedTexture);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 1.0f); glVertex2i(xres/2 - 300, yres/2 - 100);
-    glTexCoord2f(0.0f, 0.0f); glVertex2i(xres/2 - 300, yres/2 + 100);
-    glTexCoord2f(1.0f, 0.0f); glVertex2i(xres/2 + 300 , yres/2 + 100);
-    glTexCoord2f(1.0f, 1.0f); glVertex2i(xres/2 + 300, yres/2 - 100);
-    glEnd();
-    glDisable(GL_BLEND);
-    glPopMatrix();
-    glBindTexture(GL_TEXTURE_2D, 0);
+	glColor3f(1.0, 1.0, 1.0);
+	glPushMatrix();
+	glBindTexture(GL_TEXTURE_2D, pausedTexture);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(xres/2 - 300, yres/2 - 100);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(xres/2 - 300, yres/2 + 100);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i(xres/2 + 300 , yres/2 + 100);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i(xres/2 + 300, yres/2 - 100);
+	glEnd();
+	glDisable(GL_BLEND);
+	glPopMatrix();
+	glBindTexture(GL_TEXTURE_2D, 0);
 }

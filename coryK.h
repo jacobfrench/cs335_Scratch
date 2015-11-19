@@ -67,8 +67,8 @@ class Portal:Obstacle
 		void setPortalType(int type);
 		int getPortalType();
 		void render(GLuint portalTexture);
-		void checkCollision(Ball &ball, Portal &portal);
-		void transportBall(Ball &ball, Portal &portal);
+		void checkCollision(Ball &ball, Portal &p);
+		void transportBall(Ball &ball, Portal &p);
 		~Portal();
 };
 
