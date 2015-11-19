@@ -790,13 +790,21 @@ void Hud::showHelpMenu(GLuint help_menu_texture){
 	ggprint16(&r13, 70, cref, "PRESS 'P' TO PAUSE");
 	//--------------------------------------------------------
 
-    //PRINT PROMPT TO QUIT GAME:
-    Rect r14;
-    r14.bot = yres - 280.0 - push_down_offset;
-    r14.left = xres/2 - 150;
-    r14.center = 0;
-    ggprint16(&r14, 70, cref, "PRESS 'Q' TO QUIT GAME TO GO TO MAIN MENU");
-    //--------------------------------------------------------
+	//PRINT PROMPT TO QUIT GAME:
+	Rect r14;
+	r14.bot = yres - 280.0 - push_down_offset;
+	r14.left = xres/2 - 150;
+	r14.center = 0;
+	ggprint16(&r14, 70, cref, "PRESS 'Q' TO QUIT GAME TO GO TO MAIN MENU");
+	//--------------------------------------------------------
+    
+	//PRINT ENTER TO RESTART:
+	Rect r15;
+	r15.bot = yres - 310.0 - push_down_offset;
+	r15.left = xres/2 - 150;
+	r15.center = 0;
+	ggprint16(&r15, 70, cref, "PRESS 'ENTER' TO RESET");
+	//--------------------------------------------------------
 }
 
 bool Hud::isShowHelpMenu(){
