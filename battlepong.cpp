@@ -163,8 +163,8 @@ int level;
 GameObject* obj = new GameObject(xres / 2.0, yres / 2.0, 50.0f, 50.0f);
 /* Test - Create Derivd Class - Obstacle */
 Obstacle *obstacle = new Obstacle();
-Portal *portal0 = new Portal();
-Portal *portal1 = new Portal();
+Portal portal0;
+Portal portal1;
 
 time_t bombBegin, bombRandom, beginSmallLeftPaddle, smallLeftPaddleTime, beginSmallRightPaddle, smallRightPaddleTime;
 time_t beginExplode;
@@ -185,12 +185,15 @@ int bomb_radius;
 float speed_theta=1/(10*PI);
 //-----------------
 
+
 //TEST FLAGS:
 #define TEST_Hud false
 
 int main(int argc, char **argv[])
 {
 	if(argc > 1) {
+		// char c = &argv[1];
+		// printf("C %c\n", c);
 		beginTesting();
 		return 0;
 	}
@@ -509,6 +512,8 @@ void check_resize(XEvent *e)
 }
 
 void init(Game *g) {
+	portal0.setPortalType(0);
+	portal1.setPortalType(1);
 	g->mouseThrustOn=false;
 }
 
@@ -767,9 +772,11 @@ void physics(Game *g)
 		}
 	}
 	}
-	//Check collision with portal
-	portal0->checkCollision(ball, *portal1);
-	portal1->checkCollision(ball, *portal0);
+	if(ball.getXPos() >= (xres/2)){
+		portal1.checkCollision(ball, portal0);
+	} else {
+		portal0.checkCollision(ball, portal1);
+	}
 }
 
 
@@ -848,10 +855,8 @@ return;
 			which_bomb_texture = bombTexture;
 		}
 
-		portal0->setPortalType(0);
-		portal1->setPortalType(1);
-		portal0->render(portalTexture0);
-		portal1->render(portalTexture1);
+		portal0.render(portalTexture0);
+		portal1.render(portalTexture1);
 
 
 		hud->renderBomb(which_bomb_texture,bomb_posx,bomb_posy,bomb_width,bomb_height);
